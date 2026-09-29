@@ -10,7 +10,7 @@
 {{ 'section-hero-split.css' | asset_url | stylesheet_tag }}
 
 <div class="hero-split color-{{ section.settings.color_scheme }}">
-  <div class="hero-split__text">
+  <div class="hero-split__text{% if section.settings.text_image != blank %} hero-split__text--has-image{% endif %}">
     {%- if section.settings.text_image != blank -%}
       {{
         section.settings.text_image
@@ -21,7 +21,6 @@
           widths: '400,600,800,1200',
           sizes: '(min-width: 750px) 50vw, 100vw'
       }}
-      <div class="hero-split__text-scrim"></div>
     {%- endif -%}
     <div class="hero-split__text-inner">
       {%- if section.settings.overline != blank -%}
@@ -33,13 +32,30 @@
       {%- if section.settings.text != blank -%}
         <div class="hero-split__body rte">{{ section.settings.text }}</div>
       {%- endif -%}
-      {%- if section.settings.button_label != blank -%}
-        <a
-          href="{{ section.settings.button_link | default: '#' }}"
-          class="button{% unless section.settings.button_style_secondary %} button--primary{% else %} button--secondary{% endunless %}"
-        >
-          {{ section.settings.button_label }}
-        </a>
+      {%- comment -%}
+        Zwei Knoepfe nebeneinander: der erste fuehrt ins Sortiment, der
+        zweite zur Haendlerregistrierung. Die Reihe bricht auf schmalen
+        Schirmen um, statt die Knoepfe zu stauchen.
+      {%- endcomment -%}
+      {%- if section.settings.button_label != blank or section.settings.button_2_label != blank -%}
+        <div class="hero-split__buttons">
+          {%- if section.settings.button_label != blank -%}
+            <a
+              href="{{ section.settings.button_link | default: '#' }}"
+              class="button{% unless section.settings.button_style_secondary %} button--primary{% else %} button--secondary{% endunless %}"
+            >
+              {{ section.settings.button_label }}
+            </a>
+          {%- endif -%}
+          {%- if section.settings.button_2_label != blank -%}
+            <a
+              href="{{ section.settings.button_2_link | default: '#' }}"
+              class="button{% if section.settings.button_2_style_secondary %} button--secondary{% else %} button--primary{% endif %}"
+            >
+              {{ section.settings.button_2_label }}
+            </a>
+          {%- endif -%}
+        </div>
       {%- endif -%}
     </div>
   </div>
@@ -58,6 +74,31 @@
     {%- endif -%}
   </div>
 </div>
+
+<script>
+  (function () {
+    /* Wie viel ueber dem Hero steht, weiss nur der Browser: die Kopfzeile
+       meldet ihre Hoehe zwar als --header-height, das Ankuendigungsband
+       aber nicht. Gemessen wird deshalb der Hero selbst. */
+    var hero = document.currentScript.previousElementSibling;
+    if (!hero || !hero.classList.contains('hero-split')) {
+      hero = document.querySelector('.hero-split');
+    }
+    if (!hero) return;
+
+    function messen() {
+      /* Erst den Deckel loesen, sonst misst man den eigenen Wert mit. */
+      hero.style.setProperty('--b2b-hero-oben', '0px');
+      var oben = hero.getBoundingClientRect().top + window.scrollY;
+      hero.style.setProperty('--b2b-hero-oben', Math.round(Math.max(0, oben)) + 'px');
+    }
+
+    messen();
+    window.addEventListener('resize', messen, { passive: true });
+    window.addEventListener('load', messen);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(messen);
+  })();
+</script>
 
 {% schema %}
 {
@@ -100,6 +141,23 @@
       "type": "url",
       "id": "button_link",
       "label": "t:sections.hero-split.settings.button_link.label"
+    },
+    {
+      "type": "text",
+      "id": "button_2_label",
+      "label": "Beschriftung zweiter Knopf",
+      "default": "Händler werden"
+    },
+    {
+      "type": "url",
+      "id": "button_2_link",
+      "label": "Ziel zweiter Knopf"
+    },
+    {
+      "type": "checkbox",
+      "id": "button_2_style_secondary",
+      "label": "Zweiter Knopf zurückhaltend",
+      "default": true
     },
     {
       "type": "checkbox",

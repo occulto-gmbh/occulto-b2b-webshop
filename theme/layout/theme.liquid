@@ -319,6 +319,19 @@
         document.documentElement.classList.add('shopify-design-mode');
       }
     </script>
+
+    {%- comment -%}
+      Ganz am Ende des Kopfbereichs, damit die Schriftvariablen die aus dem
+      Theme-Stilblock darueber ueberschreiben.
+    {%- endcomment -%}
+    {% render 'brand-schrift' %}
+
+    {%- comment -%}
+      Markenwerte und Knopfverhalten fuer den ganzen Shop. Nach der Schrift,
+      damit beide zusammen am Ende des Kopfbereichs stehen und die Werte des
+      Themes ueberschreiben koennen.
+    {%- endcomment -%}
+    {{ 'b2b-stil.css' | asset_url | stylesheet_tag }}
   </head>
 
   <body class="gradient{% if settings.animations_hover_elements != 'none' %} animate--hover-{{ settings.animations_hover_elements }}{% endif %}">
@@ -401,5 +414,15 @@
     {%- if settings.cart_type == 'drawer' -%}
       <script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
     {%- endif -%}
+
+    {%- comment -%}
+      Der schwebende Kontaktknopf, auf jeder Seite des Shops. Er stand
+      vorher nur auf der B2B-Landingpage; dort ist er dafuer jetzt aus der
+      Vorlage genommen, sonst stuenden zwei Knoepfe uebereinander.
+
+      Ganz am Ende des Koerpers, damit er ueber allem liegt, ohne dass es
+      eine hohe z-index-Nummer braucht.
+    {%- endcomment -%}
+    {% render 'b2b-kontakt' %}
   </body>
 </html>

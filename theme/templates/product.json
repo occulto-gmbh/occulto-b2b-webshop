@@ -22,6 +22,7 @@
         },
         "description": {
           "type": "description",
+          "disabled": true,
           "settings": {}
         },
         "collapsible-row-1": {
@@ -29,8 +30,8 @@
           "settings": {
             "heading": "Produktmerkmale",
             "icon": "star",
-            "content": "",
-            "page": "product-features"
+            "content": "{{ product.description }}",
+            "page": ""
           }
         },
         "collapsible-row-0": {
@@ -38,8 +39,8 @@
           "settings": {
             "heading": "Material und Pflege",
             "icon": "leaf",
-            "content": "",
-            "page": "materials-and-care"
+            "content": "<p><strong>Material: </strong>{{ product.metafields.custom.materialeigenschaft.value }}</p><p><strong>Pflege:</strong></p><ul><li>Bei maximal 30°C in der Maschine waschen</li><li>Trockner besser vermeiden</li><li>Flach an der Luft trocknen </li><li>Neue Produkte vor dem ersten Tragen waschen</li><li>Textilien farblich voneinander trennen</li><li>Weichspüler & Bleichmittel meiden</li></ul>",
+            "page": ""
           }
         },
         "share": {
@@ -64,13 +65,24 @@
         "constrain_to_viewport": false,
         "media_fit": "cover",
         "gallery_layout": "thumbnail_slider",
+        "mobile_thumbnails": "hide",
         "media_position": "right",
         "image_zoom": "lightbox",
-        "mobile_thumbnails": "hide",
         "hide_variants": true,
         "enable_video_looping": false,
         "padding_top": 36,
         "padding_bottom": 36
+      }
+    },
+    "disclosures": {
+      "type": "disclosures",
+      "settings": {
+        "heading": "Pflichtangaben",
+        "heading_size": "h2",
+        "open_by_default": false,
+        "color_scheme": "",
+        "padding_top": 36,
+        "padding_bottom": 0
       }
     },
     "quick-order-list": {
@@ -91,22 +103,15 @@
         "heading_size": "h2",
         "products_to_show": 5,
         "columns_desktop": 5,
+        "columns_mobile": "2",
         "color_scheme": "scheme-1",
         "image_ratio": "adapt",
         "image_shape": "default",
         "show_secondary_image": false,
         "show_vendor": false,
         "show_rating": false,
-        "columns_mobile": "2",
         "padding_top": 36,
         "padding_bottom": 44
-      }
-    },
-    "disclosures": {
-      "type": "disclosures",
-      "settings": {
-        "padding_top": 36,
-        "padding_bottom": 0
       }
     }
   },

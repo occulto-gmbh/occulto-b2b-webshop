@@ -1,0 +1,42 @@
+{%- comment -%}
+  Ein Abschnitt, der nichts tut ausser seinen Inhalt auszugeben.
+
+  Warum nicht der custom-liquid-Abschnitt des Themes: der beginnt mit einem
+  {% style %}-Block fuer seine Polsterung. Im fertigen HTML steht deshalb ein
+  <style> als erstes Element im Abschnitt - und genau darauf zielt das
+  Uebergangsskript in b2b-marke, das die Hoehe des ersten Kindes misst, um den
+  Laufweg zu bestimmen. Es mass null und schaltete den Uebergang ueberall ab.
+
+  Ausserdem traegt der Theme-Abschnitt die Klasse "section", und base.css legt
+  zwischen je zwei davon einen Aussenabstand. Auf dieser Seite bringt jeder
+  Abschnitt seinen Abstand selbst mit, der zusaetzliche waere doppelt.
+
+  Aufbau wie im Hauptshop: aussen der Abschnitt, darin genau ein div, das den
+  senkrechten Abstand (.section-spacing) und den Seitenrand (.container)
+  tragen kann. Beides kommt aus der Vorlage, die Regeln dazu stehen in
+  b2b-marke.
+{%- endcomment -%}
+<div class="{{ section.settings.wrapper_classes }}">
+  {{- section.settings.custom_liquid -}}
+</div>
+
+{% schema %}
+{
+  "name": "B2B-Abschnitt",
+  "tag": "section",
+  "class": "shopify-section--custom-liquid",
+  "settings": [
+    {
+      "type": "liquid",
+      "id": "custom_liquid",
+      "label": "Inhalt"
+    },
+    {
+      "type": "text",
+      "id": "wrapper_classes",
+      "label": "Klassen der Huelle",
+      "info": "section-spacing fuer senkrechten Abstand, container fuer den Seitenrand."
+    }
+  ]
+}
+{% endschema %}

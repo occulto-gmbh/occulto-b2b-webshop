@@ -49,7 +49,7 @@
 {%- unless target == null and placeholder == null -%}
   {%- unless b2b_price_visible -%}
     <div class="price price--locked{% if price_class %} {{ price_class }}{% endif %}">
-      <a href="{{ routes.account_login_url }}" class="price__login-link">{{ 'products.product.price.login_to_see_price' | t }}</a>
+      {% render 'b2b-freigabe-link', klasse: 'price__login-link' %}
     </div>
   {%- else -%}
   <div

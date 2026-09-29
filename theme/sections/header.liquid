@@ -16,6 +16,43 @@
   <link rel="stylesheet" href="{{ 'component-mega-menu.css' | asset_url }}" media="print" onload="this.media='all'">
 {%- endif -%}
 
+{%- comment -%}
+  Ab welcher Fensterbreite die Menuezeile passt - gerechnet, nicht geraten.
+  Siehe scratchpad/p18-navbar-mitte.js fuer die Eichung der Faktoren.
+{%- endcomment -%}
+{%- liquid
+  assign b2b_menue = 0
+  for link in section.settings.menu.links
+    assign zeichen = link.title | size
+    assign eintrag = zeichen | times: 7.7 | plus: 16
+    if link.links != blank
+      assign eintrag = eintrag | plus: 10
+    endif
+    assign b2b_menue = b2b_menue | plus: eintrag
+  endfor
+
+  if section.settings.b2b_link_label != blank
+    assign zeichen = section.settings.b2b_link_label | size
+    assign eintrag = zeichen | times: 7.7 | plus: 16
+    assign b2b_menue = b2b_menue | plus: eintrag
+  endif
+
+  comment
+    Was neben dem Menue noch in der Zeile steht, gemessen:
+      Logospalte    224  (Bild 200 plus Innenabstand)
+      Symbolblock   295  (davon 167 Land und Sprache)
+      zwei Rasterabstaende je 20
+    Die ersten beiden fehlten in der ersten Fassung, deshalb lief die Zeile
+    bei 1366 ueber, obwohl die Rechnung sie fuer passend hielt.
+  endcomment
+  assign b2b_noetig = b2b_menue | plus: 559
+  assign b2b_schwelle = b2b_noetig | times: 100 | divided_by: 94 | round
+  assign b2b_schwelle_minus = b2b_schwelle | minus: 1
+  if b2b_schwelle_minus < 990
+    assign b2b_schwelle_minus = 989
+  endif
+-%}
+
 <style>
   header-drawer {
     justify-self: start;
@@ -31,6 +68,26 @@
   {%- if section.settings.menu_type_desktop != "drawer" -%}
     @media screen and (min-width: 990px) {
       header-drawer {
+        display: none;
+      }
+    }
+
+    /* Zwischen 990 und 1200 bleibt es beim Schubladenmenue.
+
+       Das Theme schaltet bei 990 auf die Zeile um. Mit acht Eintraegen
+       passt die dort aber nicht mehr neben Logo und Symbolen - gemessen bei
+       1024 brauchte das Menue 623 Bildpunkte, verfuegbar waren 439.
+       Umbrechen lassen war die Vorgabe ausdruecklich nicht, also bleibt
+       in diesem Band der Hamburger.
+
+       Die Grenze steht nicht fest, sie wird oben aus den Beschriftungen
+       gerechnet - aktuell {{ b2b_schwelle }} Bildpunkte. Faellt ein
+       Menuepunkt weg, ruecht sie von selbst nach unten. */
+    @media screen and (min-width: 990px) and (max-width: {{ b2b_schwelle_minus }}px) {
+      header-drawer {
+        display: block;
+      }
+      .header__inline-menu {
         display: none;
       }
     }
@@ -121,6 +178,91 @@
       padding-top: {{ section.settings.padding_top }}px;
       padding-bottom: {{ section.settings.padding_bottom }}px;
     }
+  }
+
+  /* ---------------------------------------------------------------
+     Die Kopfzeile ueber die volle Breite, das Menue in einer Zeile.
+
+     Vorher: die Kopfzeile trug .page-width und war damit auf
+     --page-width begrenzt, waehrend das Menue mit flex-wrap: wrap in die
+     zweite Zeile umbrach. Bei acht Eintraegen sah das aus wie ein Fehler.
+
+     Erst ab 990 Bildpunkten: darunter zeigt das Theme das Schubladenmenue,
+     dort gibt es nichts umzubrechen - und nowrap wuerde die Eintraege dort
+     aus dem Bild schieben.
+
+     Der seitliche Abstand bleibt am Rand stehen, damit Logo und Warenkorb
+     nicht am Bildschirmrand kleben. min() haelt ihn auf grossen Schirmen
+     bei 5rem und laesst ihn auf kleineren mitschrumpfen.
+     --------------------------------------------------------------- */
+  @media screen and (min-width: 990px) {
+    .section-header .header.page-width {
+      max-width: 100%;
+      padding-inline: min(4rem, 3vw);
+    }
+
+    /* Logo links, Menue mittig, Symbole rechts - wie im Hauptshop.
+
+       Das Theme hatte hier auto auto 1fr: Logo und Menue klebten
+       zusammen am linken Rand, und rechts stand die ganze Leere. Mit
+       1fr auto 1fr bekommen Logo und Symbole gleich viel Platz, und das
+       Menue sitzt genau in der Mitte dazwischen. */
+    /* Logo und Symbole so breit wie ihr Inhalt, das Menue bekommt den Rest
+       und zentriert sich darin.
+
+       Vorher stand hier 1fr auto 1fr. Das sah richtig aus, solange das Menue
+       kurz war - mit einem Eintrag mehr fiel die Logospalte auf 7,5
+       Bildpunkte zusammen und das Logo wurde auf null gequetscht (es traegt
+       max-width: 100%, hat also keine eigene Mindestbreite). */
+    .header--middle-left {
+      grid-template-columns: 1fr auto 1fr;
+    }
+
+    /* Ohne Mindestbreite faellt das Logo in einer 1fr-Spalte auf null
+       zusammen: es traegt max-width: 100% und bringt keine eigene mit. */
+    .header--middle-left > .header__heading,
+    .header--middle-left > .header__heading-link {
+      min-width: max-content;
+    }
+    .header__icons {
+      justify-self: end;
+    }
+
+    .header__inline-menu .list-menu--inline {
+      flex-wrap: nowrap;
+      justify-content: center;
+    }
+
+    /* Ohne Umbruch braucht die Zeile eine Notbremse: bei sehr langen
+       Menuepunkten oder schmalen Fenstern duerfen die Eintraege enger
+       zusammenruecken, statt Logo und Warenkorb zu verdraengen. */
+    /* Die Kopfzeilenlinks heissen header__menu-item. list-menu__item--link
+       gibt es nur in der Fusszeile - der alte Selektor lief ins Leere und
+       das Menue blieb bei 783 Bildpunkten. */
+    .header__inline-menu .header__menu-item {
+      white-space: nowrap;
+      padding-inline: 0.8rem;
+      font-size: 1.5rem;
+    }
+
+    /* Flex-Elemente schrumpfen von sich aus. Ohne diese Zeile quetscht die
+       Zeile die Eintraege zusammen, statt zu zeigen, dass sie nicht passen -
+       genau so sah die Navigation vorher aus. */
+    .header__inline-menu .list-menu--inline > li {
+      flex: 0 0 auto;
+    }
+
+    .header__inline-menu summary.list-menu__item {
+      padding-right: 1.8rem;
+    }
+  }
+
+  /* Menuelinks dicker. Das Theme setzte sie auf die normale
+     Textstaerke, womit sie im Kopf am duennsten waren. */
+  .header__menu-item,
+  .header__menu-item span,
+  .menu-drawer__menu-item {
+    font-weight: 700;
   }
 {%- endstyle -%}
 
@@ -222,6 +364,7 @@
         endif
       endif
     %}
+
 
     {%- if section.settings.logo_position == 'middle-center' -%}
       {%- if request.page_type == 'index' -%}
@@ -550,6 +693,27 @@
       "id": "menu",
       "default": "main-menu",
       "label": "t:sections.header.settings.menu.label"
+    },
+    {
+      "type": "text",
+      "id": "b2b_link_label",
+      "label": "Zusätzlicher Menüpunkt: Beschriftung",
+      "info": "Leer lassen, um ihn auszublenden.",
+      "default": "Personalisierte Socken"
+    },
+    {
+      "type": "text",
+      "id": "b2b_link_url",
+      "label": "Zusätzlicher Menüpunkt: Ziel",
+      "info": "Pfad wie /pages/name. Absichtlich ein Textfeld: ein url-Feld liefert einfache Pfade leer zurück.",
+      "default": "/pages/personalisierte-socken-mit-logo"
+    },
+    {
+      "type": "text",
+      "id": "b2b_link_nach",
+      "label": "Zusätzlicher Menüpunkt: einfügen nach",
+      "info": "Titel des Menüpunkts, hinter dem er stehen soll. Passt keiner, hängt er hinten an.",
+      "default": "Downloads"
     },
     {
       "type": "select",

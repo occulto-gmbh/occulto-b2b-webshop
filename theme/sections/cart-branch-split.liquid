@@ -1,0 +1,169 @@
+{% comment %}
+  Filial-Aufteilung im Warenkorb: Der Shopify-Checkout kennt nur eine
+  Lieferadresse, deshalb verteilt der Händler die Stückzahlen hier vor dem
+  Checkout auf seine Filialen (= gespeicherte Adressen im Kundenkonto). Jede
+  Aufteilung wird eine eigene Warenkorbzeile mit der Line-Property
+  "Lieferfiliale" – die steht an jeder Position der Bestellung (und in JTL).
+
+  Zusatzpakete: Versand läuft nativ über Gewichtsstaffeln (1 g = 1 Pack,
+  9,99 € je angefangene 275 g). Pro zusätzlichem Paket legt
+  assets/cart-branch-split.js einen 0-€-Hilfsartikel "Zusatzpaket
+  Filialversand" (275 g, Tag filialversand-zuschlag) in den Warenkorb, der
+  den Versand um genau eine Stufe anhebt. Die Shopify Function
+  extensions/branch-shipping-rule prüft im Checkout, dass die Menge stimmt.
+{% endcomment %}
+
+{%- liquid
+  assign b2b_price_visible = false
+  if customer and customer.tags contains 'dealer-approved'
+    assign b2b_price_visible = true
+  endif
+  assign surcharge_product = all_products[section.settings.surcharge_product_handle]
+  # Filialen pflegt der Händler selbst im Kundenkonto ("Meine Filialen",
+  # b2b-webshop/extensions/dealer-branches) – B2B-Kontakte können dort keine
+  # normalen Adressen anlegen.
+  assign branch_list = customer.metafields['app--416332316673'].branch_addresses.value
+-%}
+
+{%- if b2b_price_visible and cart.item_count > 0 and surcharge_product.id != blank -%}
+  {{ 'cart-branch-split.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'cart-branch-split.js' | asset_url }}" defer="defer"></script>
+
+  <div class="color-{{ section.settings.color_scheme }} gradient">
+    <div class="page-width cart-branch-split__wrapper">
+      <cart-branch-split
+        data-surcharge-variant-id="{{ surcharge_product.selected_or_first_available_variant.id }}"
+        data-packs-per-parcel="{{ section.settings.packs_per_parcel }}"
+        data-parcel-price-cents="{{ section.settings.parcel_price | times: 100 | round }}"
+      >
+        <script type="application/json" data-branch-split-config>
+          {
+            "addresses": [
+              {%- if customer.default_address -%}
+                {%- assign address = customer.default_address -%}
+                {%- capture label -%}
+                  {%- if address.company != blank -%}{{ address.company }}, z. Hd. {% endif -%}
+                  {{- address.first_name }} {{ address.last_name }}, {{ address.address1 -}}
+                  {%- if address.address2 != blank %}, {{ address.address2 }}{% endif -%}
+                  , {{ address.zip }} {{ address.city -}}
+                  {%- if address.country_code != 'DE' %}, {{ address.country }}{% endif -%}
+                {%- endcapture -%}
+                {%- capture short -%}
+                  {{- 'sections.branch_split.main_address' | t }} – {{ address.city -}}
+                {%- endcapture -%}
+                { "label": {{ label | strip | json }}, "short": {{ short | strip | json }} }
+                {%- if branch_list.size > 0 -%},{%- endif -%}
+              {%- endif -%}
+              {%- for branch in branch_list -%}
+                {%- capture label -%}
+                  {{- branch.company }}, z. Hd. {{ branch.name }}, {{ branch.address1 -}}
+                  {%- if branch.address2 != blank %}, {{ branch.address2 }}{% endif -%}
+                  , {{ branch.zip }} {{ branch.city -}}
+                  {%- case branch.country -%}
+                    {%- when 'AT' %}, Österreich
+                    {%- when 'CH' %}, Schweiz
+                  {%- endcase -%}
+                {%- endcapture -%}
+                {%- capture short -%}
+                  {{- branch.label }} – {{ branch.city -}}
+                {%- endcapture -%}
+                { "label": {{ label | strip | json }}, "short": {{ short | strip | json }} }
+                {%- unless forloop.last -%},{%- endunless -%}
+              {%- endfor -%}
+            ],
+            "strings": {
+              "article": {{ 'sections.branch_split.article' | t | json }},
+              "total": {{ 'sections.branch_split.total' | t | json }},
+              "before": {{ 'sections.branch_split.before' | t | json }},
+              "packs": {{ 'sections.branch_split.packs' | t | json }},
+              "parcels": {{ 'sections.branch_split.parcels' | t | json }},
+              "extraParcels": {{ 'sections.branch_split.extra_parcels' | t | json }},
+              "packWarning": {{ 'sections.branch_split.pack_warning' | t | json }},
+              "minBranches": {{ 'sections.branch_split.min_branches' | t | json }},
+              "saving": {{ 'sections.branch_split.saving' | t | json }},
+              "error": {{ 'sections.branch_split.error' | t | json }},
+              "active": {{ 'sections.branch_split.active' | t | json }},
+              "unassigned": {{ 'sections.branch_split.unassigned' | t | json }}
+            }
+          }
+        </script>
+
+        <details class="cart-branch-split" data-branch-split-details>
+          <summary class="cart-branch-split__summary">
+            <span class="h4">{{ 'sections.branch_split.heading' | t }}</span>
+            <span class="cart-branch-split__status caption-large" data-branch-split-status></span>
+          </summary>
+
+          <div class="cart-branch-split__body">
+            <p class="cart-branch-split__intro">{{ 'sections.branch_split.intro' | t }}</p>
+
+            {%- if branch_list.size < 1 -%}
+              <p class="cart-branch-split__hint">
+                {{ 'sections.branch_split.no_addresses_html' | t | replace: '[url]', routes.account_url }}
+              </p>
+            {%- else -%}
+              <fieldset class="cart-branch-split__branches">
+                <legend class="caption-large">{{ 'sections.branch_split.choose_branches' | t }}</legend>
+                <div data-branch-split-branches></div>
+                <p class="cart-branch-split__hint caption">
+                  {{ 'sections.branch_split.manage_addresses_html' | t | replace: '[url]', routes.account_url }}
+                </p>
+              </fieldset>
+
+              <div class="cart-branch-split__table-wrapper" data-branch-split-table></div>
+              <p class="cart-branch-split__summary-line" data-branch-split-totals></p>
+              <p class="cart-branch-split__warning" data-branch-split-warning hidden></p>
+              <p class="cart-branch-split__hint caption">{{ 'sections.branch_split.checkout_note' | t }}</p>
+
+              <div class="cart-branch-split__actions">
+                <button type="button" class="button" data-branch-split-apply>
+                  {{ 'sections.branch_split.apply' | t }}
+                </button>
+                <button type="button" class="button button--secondary" data-branch-split-reset hidden>
+                  {{ 'sections.branch_split.reset' | t }}
+                </button>
+              </div>
+            {%- endif -%}
+            <p class="cart-branch-split__message" data-branch-split-message role="status"></p>
+          </div>
+        </details>
+      </cart-branch-split>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:sections.cart-branch-split.name",
+  "limit": 1,
+  "enabled_on": {
+    "templates": ["cart"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-2"
+    },
+    {
+      "type": "text",
+      "id": "surcharge_product_handle",
+      "label": "Handle Hilfsartikel Zusatzpaket",
+      "default": "zusatzpaket-filialversand"
+    },
+    {
+      "type": "number",
+      "id": "packs_per_parcel",
+      "label": "Packs pro Paket (wie Gewichtsstaffel)",
+      "default": 275
+    },
+    {
+      "type": "text",
+      "id": "parcel_price",
+      "label": "Preis je Paket in € (nur Anzeige)",
+      "default": "9.99"
+    }
+  ]
+}
+{% endschema %}

@@ -6,8 +6,7 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */
-{
+ */{
   "general": {
     "password_page": {
       "login_form_heading": "Enter store using password:",
@@ -124,6 +123,8 @@
       "inventory_low_stock": "Low stock",
       "inventory_low_stock_show_count": "Low stock: {{ quantity }} left",
       "inventory_out_of_stock": "Out of stock",
+      "inventory_all_in_cart": "All stock in cart",
+      "inventory_in_cart": "{{ quantity }} in cart",
       "inventory_out_of_stock_continue_selling": "In stock",
       "sku": "SKU",
       "on_sale": "Sale",
@@ -227,6 +228,10 @@
     }
   },
   "templates": {
+    "404": {
+      "title": "Page not found",
+      "subtext": "404"
+    },
     "search": {
       "no_results": "No results found for “{{ terms }}”. Check the spelling or use a different word or phrase.",
       "page": "Page",
@@ -309,7 +314,9 @@
       "submit": "Send dealer request",
       "error_missing_fields": "Please fill in all required fields.",
       "error_create_failed": "Your request could not be saved. Please try again later.",
-      "error_not_ready": "Dealer registration is currently unavailable. Please try again later."
+      "error_not_ready": "Dealer registration is currently unavailable. Please try again later.",
+      "become_dealer": "Become a dealer",
+      "approval_pending": "Your approval is still pending"
     },
     "dealer_confirmation": {
       "pending_heading": "Thank you for registering",
@@ -317,10 +324,6 @@
       "already_approved_heading": "You're already approved",
       "already_approved_body": "Your dealer account is already active. Log in to place an order.",
       "login_cta": "Go to dealer login"
-    },
-    "404": {
-      "title": "Page not found",
-      "subtext": "404"
     }
   },
   "sections": {
@@ -331,7 +334,6 @@
       "announcement": "Announcement",
       "announcement_bar": "Announcement bar"
     },
-
     "header": {
       "announcement": "Announcement",
       "menu": "Menu",
@@ -345,6 +347,9 @@
       "caption": "Cart items",
       "remove_title": "Remove {{ title }}",
       "estimated_total": "Estimated total",
+      "quantity_discount_progress": "{{ missing }} more packs to get 5% volume discount ({{ packs }} of 500 packs).",
+      "quantity_discount_reached": "5% volume discount reached ({{ packs }} packs) – applied automatically at checkout.",
+      "quantity_discount_hint": "Volume discount: 5% off the whole order from 500 packs (applied automatically at checkout, pre-orders excluded).",
       "new_estimated_total": "New estimated total",
       "note": "Order special instructions",
       "checkout": "Check out",
@@ -438,6 +443,31 @@
       "heading": "Bulk order",
       "cart_total": "Cart total",
       "no_products": "No products are currently available for bulk ordering."
+    },
+    "branch_split": {
+      "heading": "Split delivery across several branches",
+      "intro": "Distribute the quantities across your branches. Each branch is shipped separately – €9.99 per started 275 packs applies per branch. The branch is stored on every line of your order.",
+      "open": "Split across branches",
+      "close": "Close",
+      "choose_branches": "Choose branches",
+      "manage_addresses_html": "Add more branches in your <a href=\"[url]\">account</a> under Profile → “My branches”.",
+      "unassigned": "New items are not assigned to a branch yet – please check and apply the split.",
+      "main_address": "Main address",
+      "no_addresses_html": "First add your branches in your <a href=\"[url]\">account</a> under Profile → “My branches” – then you can split here.",
+      "article": "Item",
+      "total": "Total",
+      "before": "previously [count]",
+      "packs": "packs",
+      "parcels": "parcels",
+      "extra_parcels": "Extra parcels due to splitting: [count] (+ [amount] shipping)",
+      "pack_warning": "Please split in steps of 5 per branch (5, 10, 15 …).",
+      "min_branches": "Please choose at least one branch.",
+      "apply": "Apply split",
+      "reset": "Remove split",
+      "saving": "Updating cart …",
+      "error": "The cart could not be updated. Please reload the page and try again.",
+      "active": "Current split: [count] branches, [parcels] extra parcel(s).",
+      "checkout_note": "In checkout, please enter your main address – the branch delivery addresses are stored on the individual lines."
     },
     "csv_order": {
       "heading": "Bulk order",

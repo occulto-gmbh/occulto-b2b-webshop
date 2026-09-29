@@ -6,8 +6,7 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */
-{
+ */{
   "general": {
     "password_page": {
       "login_form_heading": "Shop mit Passwort betreten:",
@@ -177,6 +176,8 @@
       "inventory_low_stock": "Niedriger Lagerbestand",
       "inventory_low_stock_show_count": "Niedriger Lagerbestand: {{ quantity }} verbleibend",
       "inventory_out_of_stock": "Nicht vorrätig",
+      "inventory_all_in_cart": "Gesamter Bestand im Warenkorb",
+      "inventory_in_cart": "{{ quantity }} im Warenkorb",
       "inventory_out_of_stock_continue_selling": "Auf Lager",
       "sku": "SKU",
       "volume_pricing": {
@@ -227,6 +228,10 @@
     }
   },
   "templates": {
+    "404": {
+      "title": "Seite nicht gefunden",
+      "subtext": "404"
+    },
     "search": {
       "no_results": "Keine Ergebnisse gefunden für \"{{ terms }}\". Überprüfe die Schreibweise oder versuche es mit einer anderen Suchanfrage.",
       "results_with_count": {
@@ -280,7 +285,7 @@
     },
     "dealer_registration": {
       "heading": "Händler werden",
-      "intro": "Werden Sie Occulto Handelspartner und bestellen Sie zu Ihren individuellen Händlerkonditionen.",
+      "intro": "Werde Occulto Handelspartner und bestell zu deinen Händlerkonditionen.",
       "section_company": "Unternehmen",
       "company_name": "Firmenname",
       "legal_form": "Rechtsform",
@@ -309,18 +314,16 @@
       "submit": "Händleranfrage senden",
       "error_missing_fields": "Bitte fülle alle Pflichtfelder aus.",
       "error_create_failed": "Deine Anfrage konnte nicht gespeichert werden. Bitte versuche es später erneut.",
-      "error_not_ready": "Die Händlerregistrierung ist derzeit nicht verfügbar. Bitte versuche es später erneut."
+      "error_not_ready": "Die Händlerregistrierung ist derzeit nicht verfügbar. Bitte versuche es später erneut.",
+      "become_dealer": "Händler werden",
+      "approval_pending": "Deine Freigabe läuft noch"
     },
     "dealer_confirmation": {
-      "pending_heading": "Vielen Dank für Ihre Registrierung",
-      "pending_body": "Wir prüfen Ihre Händleranfrage und informieren Sie per E-Mail, sobald Ihr Konto freigeschaltet wurde.",
-      "already_approved_heading": "Sie sind bereits freigeschaltet",
-      "already_approved_body": "Ihr Händlerkonto ist bereits aktiv. Melden Sie sich an, um zu bestellen.",
+      "pending_heading": "Danke für deine Registrierung",
+      "pending_body": "Wir prüfen deine Händleranfrage und melden uns per E-Mail, sobald dein Konto freigeschaltet ist.",
+      "already_approved_heading": "Du bist schon freigeschaltet",
+      "already_approved_body": "Dein Händlerkonto ist aktiv. Melde dich an, dann kann es losgehen.",
       "login_cta": "Zum Händler-Login"
-    },
-    "404": {
-      "title": "Seite nicht gefunden",
-      "subtext": "404"
     }
   },
   "sections": {
@@ -356,6 +359,9 @@
         "paragraph_html": "<a href=\"{{ link }}\" class=\"link underlined-link\">Logge dich ein</a>, damit es beim Checkout schneller geht."
       },
       "estimated_total": "Geschätzte Gesamtkosten",
+      "quantity_discount_progress": "Noch {{ missing }} Packs bis 5 % Mengenrabatt (aktuell {{ packs }} von 500 Packs).",
+      "quantity_discount_reached": "5 % Mengenrabatt erreicht ({{ packs }} Packs) – wird im Checkout automatisch abgezogen.",
+      "quantity_discount_hint": "Mengenrabatt: 5 % auf die gesamte Bestellung ab 500 Packs (wird automatisch im Checkout abgezogen, Vororderware ausgeschlossen).",
       "new_estimated_total": "Neuer geschätzter Gesamtbetrag",
       "duties_and_taxes_included_shipping_at_checkout_with_policy_html": "Inkl. Zollgebühren und Steuern. Rabatte und <a href=\"{{ link }}\">Versand</a> werden beim Checkout berechnet.",
       "duties_and_taxes_included_shipping_at_checkout_without_policy": "Inkl. Zollgebühren und Steuern. Rabatte und Versand werden beim Checkout berechnet.",
@@ -437,6 +443,31 @@
       "heading": "Sammelbestellung",
       "cart_total": "Warenkorb gesamt",
       "no_products": "Aktuell sind keine Produkte für die Sammelbestellung verfügbar."
+    },
+    "branch_split": {
+      "heading": "Lieferung auf mehrere Filialen aufteilen",
+      "intro": "Verteil die Stückzahlen auf deine Filialen. Jede Filiale geht als eigene Sendung raus – pro Filiale fallen 9,99 € je angefangene 275 Packs an. Die Filiale steht an jeder Position deiner Bestellung.",
+      "open": "Auf Filialen aufteilen",
+      "close": "Schließen",
+      "choose_branches": "Filialen auswählen",
+      "manage_addresses_html": "Weitere Filialen legst du in deinem <a href=\"[url]\">Kundenkonto</a> unter Profil → „Meine Filialen“ an.",
+      "unassigned": "Neue Artikel sind noch keiner Filiale zugeordnet – bitte Aufteilung prüfen und übernehmen.",
+      "main_address": "Hauptadresse",
+      "no_addresses_html": "Leg deine Filialen zuerst in deinem <a href=\"[url]\">Kundenkonto</a> unter Profil → „Meine Filialen“ an – danach kannst du hier aufteilen.",
+      "article": "Artikel",
+      "total": "Summe",
+      "before": "bisher [count]",
+      "packs": "Packs",
+      "parcels": "Pakete",
+      "extra_parcels": "Zusätzliche Pakete durch Aufteilung: [count] (+ [amount] Versand)",
+      "pack_warning": "Bitte je Filiale in 5er-Schritten aufteilen (5, 10, 15 …).",
+      "min_branches": "Bitte mindestens eine Filiale auswählen.",
+      "apply": "Aufteilung übernehmen",
+      "reset": "Aufteilung aufheben",
+      "saving": "Warenkorb wird aktualisiert …",
+      "error": "Der Warenkorb konnte nicht aktualisiert werden. Lade die Seite neu und versuch es noch einmal.",
+      "active": "Aktuelle Aufteilung: [count] Filialen, [parcels] Zusatzpaket(e).",
+      "checkout_note": "Im Checkout gibst du deine Hauptadresse an – die Lieferadressen der Filialen hängen an den einzelnen Positionen."
     },
     "csv_order": {
       "heading": "Massenbestellung",
@@ -602,6 +633,16 @@
       "send_on_label": "Senden am (optional)",
       "expanded": "Formular für den Empfänger des Gutscheins erweitert",
       "collapsed": "Formular für den Empfänger des Gutscheins minimiert"
+    }
+  },
+  "shopify": {
+    "checkout": {
+      "order_summary": {
+        "estimated_taxes_label": "zzgl. 19 % MwSt.",
+        "information_estimated_taxes_label": "zzgl. 19 % MwSt.",
+        "estimated_tax_label": "zzgl. 19 % MwSt.",
+        "estimated_taxes_label_short": "zzgl. MwSt."
+      }
     }
   }
 }

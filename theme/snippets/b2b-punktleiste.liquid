@@ -1,0 +1,87 @@
+{%- comment -%}
+  Die Punktleiste am rechten Rand: eine Linie, die sich beim Scrollen rot
+  fuellt, mit einem Punkt je Abschnitt. Der Punkt des Abschnitts, in dem man
+  gerade steht, ist rot; beim Ueberfahren waechst er und zeigt seinen Namen.
+
+  Vorher stand das alles inline im Abschnitt `punktnav` der Landingpage. Als
+  die Produktseiten dieselbe Orientierung bekommen sollten, waere es ein
+  zweites Mal dagewesen - Markup, 40 Zeilen Skript und die Fuellung. Jetzt
+  einmal hier.
+
+  AUFRUF
+
+    {%- render 'b2b-punktleiste', ziele: 'kopf|Produkt, ablauf|Ablauf' -%}
+
+  `ziele` ist eine Liste aus `schluessel|Beschriftung`, durch Komma getrennt.
+  Der Schluessel ist der Section-Key aus der Vorlage; das Skript findet den
+  Abschnitt ueber `#b2b-<schluessel>` oder ueber die Section-Kennung, die
+  Shopify vergibt. Was es nicht findet, faellt still aus der Leiste - so
+  steht nie ein Punkt da, der ins Leere zeigt.
+
+  Das Aussehen steckt in `b2b-marke`, damit Linie, Punkte und Akzent an
+  derselben Stelle stehen wie der Rest des Designsystems.
+{%- endcomment -%}
+<nav class="b2b-punktnav" aria-label="Abschnitte">
+  <ul>
+    {%- assign b2b_eintraege = ziele | split: ',' -%}
+    {%- for eintrag in b2b_eintraege -%}
+      {%- assign teile = eintrag | strip | split: '|' -%}
+      {%- assign schluessel = teile[0] | strip -%}
+      {%- assign beschriftung = teile[1] | default: schluessel | strip -%}
+      <li><a href="#" data-ziel="{{ schluessel }}"><span class="b2b-punktnav__label">{{ beschriftung }}</span><span class="b2b-punktnav__punkt"></span></a></li>
+    {%- endfor -%}
+  </ul>
+</nav>
+<style>
+  .b2b-punktnav { position: fixed; right: 16px; top: 50%; transform: translateY(-50%); z-index: 20; }
+  .b2b-punktnav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+  .b2b-punktnav a { display: flex; align-items: center; justify-content: flex-end; text-decoration: none; color: rgb(var(--text-color, 28 28 28)); }
+  .b2b-punktnav__label { font-size: 13px; opacity: 0; transition: opacity .2s; white-space: nowrap; }
+  .b2b-punktnav a:hover .b2b-punktnav__label, .b2b-punktnav a:focus-visible .b2b-punktnav__label { opacity: 1; }
+  @media screen and (max-width: 1023px) { .b2b-punktnav { display: none; } }
+</style>
+<script>
+  (function () {
+    var nav = document.querySelector(".b2b-punktnav");
+    if (!nav) return;
+    var links = Array.prototype.slice.call(nav.querySelectorAll("a"));
+    function finde(schluessel) {
+      return document.getElementById("b2b-" + schluessel)
+        || document.getElementById("shopify-section-" + schluessel)
+        || document.querySelector('[id^="shopify-section-"][id$="__' + schluessel + '"]');
+    }
+    var ziele = links
+      .map(function (a) { return { a: a, el: finde(a.dataset.ziel) }; })
+      .filter(function (z) { return z.el; });
+    if (!ziele.length) { nav.remove(); return; }
+    ziele.forEach(function (z) {
+      if (!z.el.id) z.el.id = "b2b-" + z.a.dataset.ziel;
+      z.a.setAttribute("href", "#" + z.el.id);
+    });
+    links.forEach(function (a) { if (a.getAttribute("href") === "#") a.closest("li").remove(); });
+    var beobachter = new IntersectionObserver(function (eintraege) {
+      eintraege.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        links.forEach(function (a) { a.classList.remove("ist-aktiv"); });
+        var treffer = ziele.filter(function (z) { return z.el === e.target; })[0];
+        if (treffer) treffer.a.classList.add("ist-aktiv");
+      });
+    }, { rootMargin: "-45% 0px -45% 0px" });
+    ziele.forEach(function (z) { beobachter.observe(z.el); });
+
+    // Die Fuellung der Linie. Eine Variable statt animation-timeline:
+    // scroll() - auf der fixierten Leiste tickt die Scroll-Zeitachse in
+    // Chromium nicht mit. Direkt am Scroll-Ereignis statt ueber
+    // requestAnimationFrame: der Browser fasst Scroll-Ereignisse ohnehin auf
+    // ein Bild zusammen.
+    function fortschritt() {
+      var de = document.documentElement;
+      var weg = de.scrollHeight - de.clientHeight;
+      var anteil = weg > 0 ? Math.min(1, Math.max(0, window.scrollY / weg)) : 0;
+      nav.style.setProperty("--b2b-fortschritt", anteil.toFixed(4));
+    }
+    window.addEventListener("scroll", fortschritt, { passive: true });
+    window.addEventListener("resize", fortschritt, { passive: true });
+    fortschritt();
+  })();
+</script>

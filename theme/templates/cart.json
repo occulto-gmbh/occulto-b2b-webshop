@@ -17,6 +17,15 @@
         "padding_bottom": 36
       }
     },
+    "cart-branch-split": {
+      "type": "cart-branch-split",
+      "settings": {
+        "color_scheme": "scheme-2",
+        "surcharge_product_handle": "zusatzpaket-filialversand",
+        "packs_per_parcel": 275,
+        "parcel_price": "9.99"
+      }
+    },
     "cart-footer": {
       "type": "main-cart-footer",
       "blocks": {
@@ -44,6 +53,7 @@
   },
   "order": [
     "cart-items",
+    "cart-branch-split",
     "cart-footer"
   ]
 }

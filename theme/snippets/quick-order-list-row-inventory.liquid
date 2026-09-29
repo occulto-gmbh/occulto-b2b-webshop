@@ -1,6 +1,9 @@
 {% comment %}
   Renders a per-variant stock badge for the quick order list rows.
   Shows the exact quantity so B2B buyers can plan orders around remaining stock.
+  Shopify only decrements inventory once an order is placed, so the quantity
+  already in this cart is subtracted here — the badge shows what the dealer
+  can still add, plus how much is already in the cart.
 
   Accepts:
   - variant: {Object} Variant object
@@ -10,25 +13,31 @@
 {% endcomment %}
 {%- liquid
   assign low_stock_threshold = 10
+  assign in_cart = cart | item_count_for_variant: variant.id
+  assign remaining = variant.inventory_quantity | minus: in_cart
 -%}
 {%- if variant.inventory_management == 'shopify' -%}
   <span class="variant-item__inventory caption">
-    {%- if variant.inventory_quantity > 0 -%}
-      {%- if variant.inventory_quantity <= low_stock_threshold -%}
+    {%- if remaining > 0 -%}
+      {%- if remaining <= low_stock_threshold -%}
         <span class="variant-item__inventory-dot variant-item__inventory-dot--low"></span>
-        {{- 'products.product.inventory_low_stock_show_count' | t: quantity: variant.inventory_quantity -}}
+        {{- 'products.product.inventory_low_stock_show_count' | t: quantity: remaining -}}
       {%- else -%}
         <span class="variant-item__inventory-dot variant-item__inventory-dot--in-stock"></span>
-        {{- 'products.product.inventory_in_stock_show_count' | t: quantity: variant.inventory_quantity -}}
+        {{- 'products.product.inventory_in_stock_show_count' | t: quantity: remaining -}}
       {%- endif -%}
+    {%- elsif variant.inventory_policy == 'continue' -%}
+      <span class="variant-item__inventory-dot variant-item__inventory-dot--in-stock"></span>
+      {{- 'products.product.inventory_out_of_stock_continue_selling' | t -}}
+    {%- elsif in_cart > 0 and variant.inventory_quantity > 0 -%}
+      <span class="variant-item__inventory-dot variant-item__inventory-dot--low"></span>
+      {{- 'products.product.inventory_all_in_cart' | t -}}
     {%- else -%}
-      {%- if variant.inventory_policy == 'continue' -%}
-        <span class="variant-item__inventory-dot variant-item__inventory-dot--in-stock"></span>
-        {{- 'products.product.inventory_out_of_stock_continue_selling' | t -}}
-      {%- else -%}
-        <span class="variant-item__inventory-dot variant-item__inventory-dot--out-of-stock"></span>
-        {{- 'products.product.inventory_out_of_stock' | t -}}
-      {%- endif -%}
+      <span class="variant-item__inventory-dot variant-item__inventory-dot--out-of-stock"></span>
+      {{- 'products.product.inventory_out_of_stock' | t -}}
+    {%- endif -%}
+    {%- if in_cart > 0 -%}
+      {{ ' · ' }}{{- 'products.product.inventory_in_cart' | t: quantity: in_cart -}}
     {%- endif -%}
   </span>
 {%- endif -%}

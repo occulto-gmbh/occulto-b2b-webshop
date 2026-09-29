@@ -747,7 +747,18 @@
       -%}
 
       <script type="application/ld+json">
-        {{ product | structured_data }}
+        {%- comment -%}
+          structured_data enthaelt die Angebote samt Preis. Fuer Gaeste
+          faellt der Block deshalb ganz weg - sonst stuende der
+          Haendlerpreis im Quelltext, obwohl die Seite ihn verbirgt.
+
+          Kein Ersatz ohne Preis: ein Angebot ohne Preis ist fuer Google
+          unvollstaendig und bringt keine Rich Results. Und dieser Shop
+          soll ohnehin nicht ueber Produktpreise gefunden werden.
+        {%- endcomment -%}
+        {%- if customer and customer.tags contains 'dealer-approved' -%}
+          {{ product | structured_data }}
+        {%- endif -%}
       </script>
     </div>
   </product-component>

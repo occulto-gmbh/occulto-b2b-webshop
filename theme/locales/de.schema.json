@@ -3406,6 +3406,9 @@
         "name": "Sammelbestellung"
       }
     },
+    "cart-branch-split": {
+      "name": "Filial-Aufteilung (Warenkorb)"
+    },
     "csv-order": {
       "name": "Massenbestellung (CSV)",
       "presets": {

@@ -6,8 +6,7 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */
-{
+ */{
   "name": "t:sections.header.name",
   "type": "header",
   "sections": {
@@ -50,7 +49,10 @@
         "enable_language_selector": true,
         "margin_bottom": 0,
         "padding_top": 8,
-        "padding_bottom": 8
+        "padding_bottom": 8,
+        "b2b_link_label": "Personalisierte Socken",
+        "b2b_link_url": "/pages/personalisierte-socken-mit-logo",
+        "b2b_link_nach": "Downloads"
       }
     }
   },

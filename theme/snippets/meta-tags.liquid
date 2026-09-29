@@ -26,9 +26,19 @@
   <meta property="og:image:height" content="{{ page_image.height }}">
 {%- endif -%}
 
+{%- comment -%}
+  Der Preis steht hier im Quelltext, unabhaengig davon, was die Seite
+  anzeigt. Solange der Shop hinter dem Passwort lag, war das folgenlos -
+  ohne Passwort waeren die Haendlerpreise damit fuer jeden lesbar, obwohl
+  price.liquid sie verbirgt.
+
+  Dieselbe Bedingung wie dort: nur angemeldete, freigegebene Haendler.
+{%- endcomment -%}
 {%- if request.page_type == 'product' -%}
-  <meta property="og:price:amount" content="{{ product.price | money_without_currency | strip_html }}">
-  <meta property="og:price:currency" content="{{ cart.currency.iso_code }}">
+  {%- if customer and customer.tags contains 'dealer-approved' -%}
+    <meta property="og:price:amount" content="{{ product.price | money_without_currency | strip_html }}">
+    <meta property="og:price:currency" content="{{ cart.currency.iso_code }}">
+  {%- endif -%}
 {%- endif -%}
 
 {%- if settings.social_twitter_link != blank -%}

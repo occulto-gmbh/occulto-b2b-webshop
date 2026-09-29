@@ -1,0 +1,168 @@
+{% comment %}
+  Prominent volume-discount banner at the top of the homepage, only for
+  logged-in customers (the discount itself is the Shopify Function
+  b2b-webshop/extensions/order-value-discount: 5% ab 500 Packs).
+  Renders nothing for anonymous visitors.
+{% endcomment %}
+
+{%- if customer and customer.tags contains 'dealer-approved' -%}
+  {%- style -%}
+    .dealer-discount-banner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.6rem 3.2rem;
+      padding-top: 2.8rem;
+      padding-bottom: 2.8rem;
+    }
+
+    .dealer-discount-banner__badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      width: 9.6rem;
+      height: 9.6rem;
+      border-radius: 50%;
+      border: 0.2rem solid rgb(var(--color-button));
+      color: rgb(var(--color-button));
+      font-family: var(--font-heading-family);
+      font-size: 3.2rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .dealer-discount-banner__content {
+      display: flex;
+      align-items: center;
+      gap: 2.4rem;
+      flex: 1 1 42rem;
+    }
+
+    .dealer-discount-banner__overline {
+      margin: 0 0 0.4rem;
+      font-size: 1.3rem;
+      letter-spacing: 0.15rem;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+
+    .dealer-discount-banner__heading {
+      margin: 0;
+    }
+
+    .dealer-discount-banner__text {
+      margin: 0.8rem 0 0;
+    }
+
+    .dealer-discount-banner__note {
+      display: block;
+      margin-top: 0.4rem;
+      font-size: 1.3rem;
+      opacity: 0.8;
+    }
+
+    @media screen and (max-width: 749px) {
+      .dealer-discount-banner__badge {
+        width: 7.2rem;
+        height: 7.2rem;
+        font-size: 2.4rem;
+      }
+
+      .dealer-discount-banner__content {
+        gap: 1.6rem;
+      }
+
+      .dealer-discount-banner .button {
+        width: 100%;
+      }
+    }
+  {%- endstyle -%}
+
+  <div class="color-{{ section.settings.color_scheme }} gradient">
+    <div class="page-width dealer-discount-banner">
+      <div class="dealer-discount-banner__content">
+        <span class="dealer-discount-banner__badge" aria-hidden="true">{{ section.settings.badge | escape }}</span>
+        <div>
+          {%- if section.settings.overline != blank -%}
+            <p class="dealer-discount-banner__overline">{{ section.settings.overline | escape }}</p>
+          {%- endif -%}
+          <h2 class="dealer-discount-banner__heading h1">{{ section.settings.heading | escape }}</h2>
+          <p class="dealer-discount-banner__text">
+            {{ section.settings.text | escape }}
+            {%- if section.settings.note != blank -%}
+              <span class="dealer-discount-banner__note">{{ section.settings.note | escape }}</span>
+            {%- endif -%}
+          </p>
+        </div>
+      </div>
+      {%- if section.settings.button_label != blank -%}
+        <a href="{{ section.settings.button_link | default: routes.all_products_collection_url }}" class="button">
+          {{- section.settings.button_label | escape -}}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Rabatt-Banner (Händler)",
+  "limit": 1,
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-5"
+    },
+    {
+      "type": "text",
+      "id": "badge",
+      "label": "Badge",
+      "default": "-5 %"
+    },
+    {
+      "type": "text",
+      "id": "overline",
+      "label": "Überzeile",
+      "default": "Exklusiv für Handelspartner"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Überschrift",
+      "default": "5 % Rabatt ab 500 Packs"
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Text",
+      "default": "Ab 500 Packs pro Bestellung ziehen wir automatisch 5 % vom gesamten Warenwert ab – sichtbar im Checkout."
+    },
+    {
+      "type": "text",
+      "id": "note",
+      "label": "Hinweis",
+      "default": "Vororderware ausgeschlossen."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button-Text",
+      "default": "Jetzt bestellen"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button-Link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Rabatt-Banner (Händler)"
+    }
+  ]
+}
+{% endschema %}

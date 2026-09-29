@@ -1,0 +1,336 @@
+{%- comment -%}
+  Konditionen und Vororder.
+
+  Deckt zwei Punkte der Liste ab:
+    7. Versandkostenfrei ab 500 Euro Bestellwert
+    8. Vororder-Rabatt 10 %, ab 500 Packs, zwei Termine im Jahr
+
+  WICHTIG - was dieser Abschnitt NICHT tut: er rechnet nichts ab. Er sagt nur,
+  was gilt. Der Versandkostenfrei-Schwellenwert ist eine Versandeinstellung des
+  Shops, der Vororder-Rabatt braucht - wie der bestehende Mengenrabatt - eine
+  Shopify Function in der App (b2b-webshop/extensions/order-value-discount
+  macht heute die 5 % ab 500 Packs). Beides liegt ausserhalb des Themes.
+
+  Der naechste Vororder-Termin wird gerechnet, nicht gepflegt: zwei feste
+  Stichtage im Jahr, und je nach heutigem Datum ist der naechste der im Juni,
+  der im Dezember oder wieder der im Juni des Folgejahres. So steht dort nie
+  ein abgelaufenes Datum, ohne dass jemand daran denken muss.
+{%- endcomment -%}
+
+{%- liquid
+  assign heute = 'now' | date: '%Y%m%d' | plus: 0
+  assign jahr = 'now' | date: '%Y' | plus: 0
+
+  assign termin_juni = jahr | times: 10000 | plus: 615
+  assign termin_dezember = jahr | times: 10000 | plus: 1215
+
+  if heute <= termin_juni
+    assign naechster_tag = 15
+    assign naechster_monat = 'Juni'
+    assign naechstes_jahr = jahr
+  elsif heute <= termin_dezember
+    assign naechster_tag = 15
+    assign naechster_monat = 'Dezember'
+    assign naechstes_jahr = jahr
+  else
+    assign naechster_tag = 15
+    assign naechster_monat = 'Juni'
+    assign naechstes_jahr = jahr | plus: 1
+  endif
+
+  assign naechster_termin = naechster_tag | append: '. ' | append: naechster_monat | append: ' ' | append: naechstes_jahr
+-%}
+
+<div class="b2b-kond">
+  <div class="b2b-kond__inner">
+    {%- if section.settings.overline != blank -%}
+      <p class="b2b-kond__label">{{ section.settings.overline | escape }}</p>
+    {%- endif -%}
+    {%- if section.settings.heading != blank -%}
+      <h2 class="b2b-kond__titel">{{ section.settings.heading | escape }}</h2>
+    {%- endif -%}
+
+    <ul class="b2b-kond__liste">
+      <li class="b2b-kond__punkt">
+        <span class="b2b-kond__wert">{{ section.settings.versandfrei_ab | escape }}</span>
+        <span class="b2b-kond__text">{{ section.settings.versandfrei_text | escape }}</span>
+      </li>
+      <li class="b2b-kond__punkt">
+        <span class="b2b-kond__wert">{{ section.settings.vororder_rabatt | escape }}</span>
+        <span class="b2b-kond__text">{{ section.settings.vororder_text | escape }}</span>
+      </li>
+      <li class="b2b-kond__punkt">
+        <span class="b2b-kond__wert">{{ section.settings.mindestmenge | escape }}</span>
+        <span class="b2b-kond__text">{{ section.settings.mindestmenge_text | escape }}</span>
+      </li>
+    </ul>
+
+    <div class="b2b-kond__termine">
+      <p class="b2b-kond__terminkopf">
+        {{ section.settings.termin_kopf | escape }}
+        <strong>{{ naechster_termin }}</strong>
+      </p>
+
+      <div class="b2b-kond__knoepfe">
+        {%- comment -%}
+          Zwei Knoepfe, einer je Stichtag. Der naechste ist hervorgehoben,
+          der andere bleibt sichtbar - so ist auf einen Blick klar, dass es
+          zwei Termine im Jahr gibt und welcher als naechstes ansteht.
+        {%- endcomment -%}
+        <a
+          class="b2b-kond__knopf{% if naechster_monat == 'Juni' %} b2b-kond__knopf--naechster{% endif %}"
+          href="{{ section.settings.vororder_link | default: '#' }}"
+        >
+          {{ section.settings.knopf_text | escape }}
+          <span class="b2b-kond__knopfdatum">bis 15. Juni</span>
+        </a>
+        <a
+          class="b2b-kond__knopf{% if naechster_monat == 'Dezember' %} b2b-kond__knopf--naechster{% endif %}"
+          href="{{ section.settings.vororder_link | default: '#' }}"
+        >
+          {{ section.settings.knopf_text | escape }}
+          <span class="b2b-kond__knopfdatum">bis 15. Dezember</span>
+        </a>
+      </div>
+
+      {%- if section.settings.hinweis != blank -%}
+        <p class="b2b-kond__hinweis">{{ section.settings.hinweis | escape }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+<style>
+  .b2b-kond {
+    background: rgb(var(--b2b-hell, 246 246 246));
+  }
+
+  .b2b-kond__inner {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 56px var(--container-gutter, 20px);
+  }
+
+  .b2b-kond__label {
+    margin: 0 0 10px;
+    color: rgb(var(--b2b-akzent, 199 42 9));
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .b2b-kond__titel {
+    margin: 0 0 28px;
+    font-size: clamp(2.8rem, 3.4vw, 4.6rem);
+    line-height: 1.02;
+    text-wrap: balance;
+  }
+
+  .b2b-kond__liste {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin: 0 0 32px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .b2b-kond__punkt {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 20px 22px;
+    border-radius: 10px;
+    background: rgb(255 255 255);
+  }
+
+  .b2b-kond__wert {
+    color: rgb(var(--b2b-akzent, 199 42 9));
+    font-size: 26px;
+    font-weight: 900;
+    line-height: 1.05;
+  }
+
+  .b2b-kond__text {
+    font-size: 15px;
+    line-height: 1.5;
+    opacity: 0.85;
+  }
+
+  .b2b-kond__terminkopf {
+    margin: 0 0 14px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  .b2b-kond__knoepfe {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .b2b-kond__knopf {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 12px 24px;
+    border: 1px solid rgb(var(--b2b-tinte, 46 46 45));
+    border-radius: 6px;
+    background: transparent;
+    color: rgb(var(--b2b-tinte, 46 46 45));
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.2s ease;
+  }
+
+  /* Der anstehende Termin ist gefuellt, der andere nur umrandet. */
+  .b2b-kond__knopf--naechster {
+    border-color: rgb(var(--b2b-akzent, 199 42 9));
+    background: rgb(var(--b2b-akzent, 199 42 9));
+    color: rgb(255 255 255);
+  }
+
+  .b2b-kond__knopfdatum {
+    font-size: 13px;
+    font-weight: 400;
+    opacity: 0.85;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .b2b-kond__knopf:hover {
+      border-color: rgb(var(--b2b-akzent, 199 42 9));
+      background: rgb(var(--b2b-akzent, 199 42 9));
+      color: rgb(255 255 255);
+      transform: translateY(-2px);
+    }
+  }
+
+  .b2b-kond__hinweis {
+    margin: 14px 0 0;
+    font-size: 13px;
+    line-height: 1.5;
+    opacity: 0.7;
+  }
+
+  @media screen and (min-width: 750px) {
+    .b2b-kond__liste {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media screen and (max-width: 599px) {
+    .b2b-kond__inner {
+      padding-block: 40px;
+    }
+    .b2b-kond__wert {
+      font-size: 22px;
+    }
+    .b2b-kond__knopf {
+      flex: 1 1 100%;
+      align-items: center;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "B2B-Konditionen",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "overline",
+      "label": "Label",
+      "default": "Konditionen"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Überschrift",
+      "default": "Vororder und Versand"
+    },
+    {
+      "type": "header",
+      "content": "Versand"
+    },
+    {
+      "type": "text",
+      "id": "versandfrei_ab",
+      "label": "Wert",
+      "default": "ab 500 €"
+    },
+    {
+      "type": "text",
+      "id": "versandfrei_text",
+      "label": "Text",
+      "default": "Versandkostenfrei innerhalb Deutschlands ab 500 € Bestellwert netto."
+    },
+    {
+      "type": "header",
+      "content": "Vororder"
+    },
+    {
+      "type": "text",
+      "id": "vororder_rabatt",
+      "label": "Wert",
+      "default": "10 % Rabatt"
+    },
+    {
+      "type": "text",
+      "id": "vororder_text",
+      "label": "Text",
+      "default": "Auf jede Vororder – und du bekommst die Ware exklusiv zuerst."
+    },
+    {
+      "type": "text",
+      "id": "mindestmenge",
+      "label": "Mindestmenge",
+      "default": "ab 500 Packs"
+    },
+    {
+      "type": "text",
+      "id": "mindestmenge_text",
+      "label": "Text zur Mindestmenge",
+      "default": "Mindestbestellmenge für eine Vororder."
+    },
+    {
+      "type": "text",
+      "id": "termin_kopf",
+      "label": "Text vor dem Termin",
+      "default": "Nächster Vororder-Termin:"
+    },
+    {
+      "type": "text",
+      "id": "knopf_text",
+      "label": "Beschriftung der Knöpfe",
+      "default": "Vororder abgeben"
+    },
+    {
+      "type": "url",
+      "id": "vororder_link",
+      "label": "Ziel der Knöpfe",
+      "info": "Noch nicht gesetzt: Es gibt bisher keinen eigenen Vororder-Ablauf. Bis dahin bietet sich die Kontaktseite an."
+    },
+    {
+      "type": "text",
+      "id": "hinweis",
+      "label": "Kleingedrucktes",
+      "default": "Vororder-Rabatt nur ab 500 Packs und nur bis zum jeweiligen Stichtag."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Farbschema",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "B2B-Konditionen"
+    }
+  ]
+}
+{% endschema %}

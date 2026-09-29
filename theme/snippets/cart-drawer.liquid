@@ -301,7 +301,7 @@
                                     class="quantity__button"
                                     name="minus"
                                     type="button"
-                                    {% if item.instructions and item.instructions.can_update_quantity == false %}
+                                    {% if item.product.tags contains 'filialversand-zuschlag' or item.instructions.can_update_quantity == false %}
                                       disabled
                                     {% endif %}
                                   >
@@ -345,7 +345,7 @@
                                     aria-label="{{ 'products.product.quantity.input_label' | t: product: item.product.title | escape }}"
                                     id="Drawer-quantity-{{ item.index | plus: 1 }}"
                                     data-index="{{ item.index | plus: 1 }}"
-                                    {% if item.instructions and item.instructions.can_update_quantity == false %}
+                                    {% if item.product.tags contains 'filialversand-zuschlag' or item.instructions.can_update_quantity == false %}
                                       disabled
                                     {% endif %}
                                   >
@@ -353,7 +353,7 @@
                                     class="quantity__button"
                                     name="plus"
                                     type="button"
-                                    {% if item.instructions and item.instructions.can_update_quantity == false %}
+                                    {% if item.product.tags contains 'filialversand-zuschlag' or item.instructions.can_update_quantity == false %}
                                       disabled
                                     {% endif %}
                                   >
@@ -379,7 +379,7 @@
                                   class="button button--tertiary cart-remove-button"
                                   aria-label="{{ 'sections.cart.remove_title' | t: title: item.title | escape }}"
                                   data-variant-id="{{ item.variant.id }}"
-                                  {% if item.instructions and item.instructions.can_remove == false %}
+                                  {% if item.product.tags contains 'filialversand-zuschlag' or item.instructions.can_remove == false %}
                                     class="hidden"
                                   {% endif %}
                                 >
@@ -538,6 +538,8 @@
               </ul>
             {%- endif -%}
           </div>
+
+          {% render 'dealer-discount-hint' %}
 
           <div class="totals" role="status">
             <h2 class="totals__total">{{ 'sections.cart.estimated_total' | t }}</h2>

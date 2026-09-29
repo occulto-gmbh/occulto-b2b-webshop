@@ -14,23 +14,24 @@
 
 <div class="color-{{ section.settings.color_scheme }} gradient">
   <div class="contact page-width page-width--narrow section-{{ section.id }}-padding">
-    {%- liquid
-      assign dealer_status = 'pending'
-      if request.query_string contains 'status=approved'
-        assign dealer_status = 'approved'
-      elsif request.query_string contains 'status=rejected'
-        assign dealer_status = 'rejected'
-      endif
-    -%}
-
-    {%- if dealer_status == 'approved' -%}
+    <div id="DealerConfirmationApproved" hidden>
       <h1 class="title">{{ 'templates.dealer_confirmation.already_approved_heading' | t }}</h1>
       <p>{{ 'templates.dealer_confirmation.already_approved_body' | t }}</p>
       <a href="{{ routes.account_url }}" class="button">{{ 'templates.dealer_confirmation.login_cta' | t }}</a>
-    {%- else -%}
+    </div>
+    <div id="DealerConfirmationPending">
       <h1 class="title">{{ 'templates.dealer_confirmation.pending_heading' | t }}</h1>
       <p>{{ 'templates.dealer_confirmation.pending_body' | t }}</p>
-    {%- endif -%}
+    </div>
+
+    <script>
+      (function () {
+        var status = new URLSearchParams(window.location.search).get('status');
+        if (status !== 'approved') return;
+        document.getElementById('DealerConfirmationApproved').hidden = false;
+        document.getElementById('DealerConfirmationPending').hidden = true;
+      })();
+    </script>
   </div>
 </div>
 

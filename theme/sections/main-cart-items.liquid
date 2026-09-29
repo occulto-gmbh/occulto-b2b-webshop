@@ -249,6 +249,8 @@
                             {%- endif -%}
                             <quantity-input class="quantity cart-quantity">
                               {% assign can_update_quantity = item.instructions.can_update_quantity | default: true %}
+                              {%- # Zusatzpaket Filialversand wird von cart-branch-split.js gesteuert, nicht vom Händler -%}
+                              {% if item.product.tags contains 'filialversand-zuschlag' %}{% assign can_update_quantity = false %}{% endif %}
                               <button
                                 class="quantity__button"
                                 name="minus"
@@ -318,6 +320,7 @@
                             id="Remove-{{ item.index | plus: 1 }}"
                             data-index="{{ item.index | plus: 1 }}"
                             {% assign can_remove = item.instructions.can_remove | default: true %}
+                            {% if item.product.tags contains 'filialversand-zuschlag' %}{% assign can_remove = false %}{% endif %}
                             {% if can_remove == false %}
                               class="hidden"
                             {% endif %}

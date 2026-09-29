@@ -1,0 +1,28 @@
+{% comment %}
+  Renders the B2B volume-discount progress (5% ab 500 Packs, Shopify Function
+  b2b-webshop/extensions/order-value-discount), only visible to logged-in
+  dealer-approved customers. The 0 € "Zusatzpaket Filialversand" helper line
+  counts parcels, not packs, so it is left out — same as in the function.
+
+  Usage:
+  {% render 'dealer-discount-hint' %}
+{% endcomment %}
+{%- if customer and customer.tags contains 'dealer-approved' -%}
+  {%- liquid
+    assign discount_min_packs = 500
+    assign cart_packs = 0
+    for item in cart.items
+      unless item.product.tags contains 'filialversand-zuschlag'
+        assign cart_packs = cart_packs | plus: item.quantity
+      endunless
+    endfor
+    assign packs_missing = discount_min_packs | minus: cart_packs
+  -%}
+  <p class="caption-large rte dealer-discount-hint">
+    {%- if packs_missing > 0 -%}
+      {{ 'sections.cart.quantity_discount_progress' | t: missing: packs_missing, packs: cart_packs }}
+    {%- else -%}
+      <strong>{{ 'sections.cart.quantity_discount_reached' | t: packs: cart_packs }}</strong>
+    {%- endif -%}
+  </p>
+{%- endif -%}

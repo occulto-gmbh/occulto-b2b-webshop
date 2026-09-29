@@ -1,0 +1,304 @@
+/* ====================================================================
+   Markenstil fuer den ganzen Shop.
+
+   Bis hierher lebten die Markenwerte in b2b-marke.liquid, und das wird nur
+   von der B2B-Landingpage gerendert. Auf allen anderen Seiten war
+   --b2b-akzent schlicht nicht definiert - gemessen am 29.09.2026 auf der
+   Startseite: "(nicht gesetzt)". Jeder Abschnitt, der die Farbe brauchte,
+   fiel auf einen fest eingetragenen Ersatzwert zurueck.
+
+   Diese Datei zieht die Werte heraus und legt sie ins Layout, damit sie
+   ueberall gelten. b2b-marke bleibt unveraendert - dort stehen weiterhin
+   dieselben Werte, und da beide identisch sind, ist die Doppelung folgenlos.
+
+   Was hier NICHT drinsteht: Ueberschriftengroessen. Die kommen im Theme aus
+   den Einstellungen und aus heading_size je Abschnitt; sie global zu
+   ueberschreiben wuerde auch Produkttitel, Warenkorb und Konto treffen.
+   Das gehoert vorgelegt, nicht nebenbei gemacht.
+   ==================================================================== */
+
+:root {
+  /* --- Aus den Markenrichtlinien --- */
+  --b2b-schwarz: 0 0 0;
+  --b2b-tinte: 46 46 45;
+  --b2b-weiss: 255 255 255;
+  --b2b-hell: 246 246 246;
+  --b2b-akzent: 199 42 9;
+
+  /* --- Abgeleitet ---
+     Die Palette kennt nur sehr hell und sehr dunkel. Trennlinien brauchen
+     eine Zwischenstufe; sie ist eine neutrale Abstufung von #2e2e2d. */
+  --b2b-linie: 226 226 225;
+
+  /* Ein Mass fuer den Abstand zwischen Kopf und Inhalt. */
+  --b2b-kopfabstand: clamp(28px, 3vw, 44px);
+
+  /* Eine Dauer fuer alle Uebergaenge, damit sich der Shop einheitlich
+     anfuehlt statt an jeder Stelle anders schnell. */
+  --b2b-takt: 0.18s;
+}
+
+/* ====================================================================
+   KNOEPFE
+
+   Gemessen war: font-weight 400 und transition nur auf box-shadow. Auf der
+   Landingpage sind es 700 und ein Anheben beim Ueberfahren. Hier wird der
+   Shop auf die Landingpage gezogen, nicht umgekehrt - sie ist der Stand, den
+   der Nutzer abgenommen hat.
+   ==================================================================== */
+
+.button,
+.shopify-challenge__button,
+.customer button,
+button.shopify-payment-button__button--unbranded {
+  font-weight: 700;
+  transition:
+    background-color var(--b2b-takt) ease,
+    border-color var(--b2b-takt) ease,
+    color var(--b2b-takt) ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* Nur fuer Zeiger: auf dem Handy gibt es kein Ueberfahren, dort bliebe der
+   angehobene Zustand nach dem Tippen haengen. */
+@media (hover: hover) and (pointer: fine) {
+  .button:not([disabled]):not(.button--tertiary):hover,
+  .shopify-challenge__button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgb(0 0 0 / 0.16);
+  }
+}
+
+/* Der Fokusrahmen in der Akzentfarbe - bisher uebernahm ihn das Theme in
+   Schriftfarbe und er ging auf dunklen Flaechen unter. */
+.button:focus-visible,
+a:focus-visible,
+summary:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid rgb(var(--b2b-akzent));
+  outline-offset: 2px;
+}
+
+/* ====================================================================
+   VERWEISE
+
+   Rot heisst im ganzen Shop dasselbe: hier geht es weiter. Ueberschriften
+   und Fliesstext bleiben in Schriftfarbe - ein roter Absatz waere Laerm.
+   ==================================================================== */
+
+@media (hover: hover) and (pointer: fine) {
+  .rte a:hover,
+  .list-menu__item:hover,
+  .link:hover:not(.button) {
+    color: rgb(var(--b2b-akzent));
+  }
+}
+
+
+/* Der laufende Menuepunkt bekommt die Akzentfarbe statt nur einer
+   Unterstreichung - so ist auf jeder Seite ohne Lesen erkennbar, wo man ist. */
+.header__menu-item.list-menu__item--active,
+.list-menu__item--active {
+  color: rgb(var(--b2b-akzent));
+}
+
+/* ====================================================================
+   UEBERSCHRIFTEN
+
+   Eine Stufenleiter statt drei fast gleich grosser Groessen. Die Werte
+   stehen in Bildpunkten, nicht in rem: das Theme setzt die Wurzelschrift
+   auf 10px, und in rem gerechnet liest sich hier niemand mehr zurecht.
+   ==================================================================== */
+
+:where(h1, h2, h3) {
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+/* h1: die eine Aussage der Seite. */
+:where(h1) {
+  font-size: clamp(30px, 4.4vw, 52px);
+  line-height: 1.04;
+}
+
+.h1 {
+  font-size: clamp(30px, 4.4vw, 52px);
+  line-height: 1.04;
+  font-weight: 900;
+}
+
+/* h2: der Kopf eines Abschnitts. */
+:where(h2) {
+  font-size: clamp(24px, 3vw, 36px);
+  line-height: 1.1;
+}
+
+.h2 {
+  font-size: clamp(24px, 3vw, 36px);
+  line-height: 1.1;
+  font-weight: 900;
+}
+
+/* h3: der Kopf eines Teils darin. Bewusst nicht in 900 - in dieser Groesse
+   wirkt das gedrungen, und Produktkacheln tragen die Klasse ebenfalls. */
+:where(h3) {
+  font-size: clamp(18px, 1.6vw, 22px);
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+.h3 {
+  font-size: clamp(18px, 1.6vw, 22px);
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+/* Die Karten der Sammlungsuebersicht tragen h3, sollen aber ruhig bleiben:
+   dort steht ein Produktname, keine Ueberschrift. */
+.card__heading,
+.card__heading .full-unstyled-link {
+  font-weight: 700;
+  letter-spacing: normal;
+}
+
+/* Die Titelklassen des Themes.
+
+   .title und Geschwister setzen eine eigene Groesse und stechen damit das
+   Grundmass aus :where() - gemessen blieben Seitentitel bei 42px statt 52.
+   Mit dem Element davor gewinnt die Regel wieder (0,1,1 gegen 0,1,0), ohne
+   dass die Klassen fuer sich angefasst werden muessten.
+
+   Kommt spaeter eine Titelklasse dazu, gehoert sie hier in die Liste. */
+h1:is(.title, .collection-hero__title, .cart__empty-text, .main-page-title, .article-template__title),
+.hxl {
+  font-size: clamp(30px, 4.4vw, 52px);
+  line-height: 1.04;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+
+h2:is(.title, .collection-list-title, .multicolumn__title) {
+  font-size: clamp(24px, 3vw, 36px);
+  line-height: 1.1;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+
+/* Die Ueberschriften der eigenen Shopabschnitte auf dieselbe Stufe wie h2.
+
+   Sie brachten eine eigene Groesse mit (43,5px) und keine Schriftstaerke,
+   standen also weder auf der h2-Stufe noch in Schwarz. Die Abschnitte der
+   B2B-Landingpage sind hier bewusst nicht aufgefuehrt: die hat ihre eigene,
+   groessere Stufenleiter in b2b-marke, und die ist abgenommen. */
+.b2b-vorteile__titel,
+.b2b-kond__titel {
+  font-size: clamp(24px, 3vw, 36px);
+  line-height: 1.1;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+
+
+/* ====================================================================
+   FUSSZEILE
+
+   Gemessen auf dem dunklen Grund (#2e2e2d): Text und Links auf 75 Prozent
+   Weiss, Links 14, Copyright 12 Bildpunkte. Lesbar, aber klein und blass -
+   und die Fusszeile traegt Impressum, Datenschutz und AGB.
+   ==================================================================== */
+
+.footer {
+  font-size: 16px;
+}
+
+.footer .footer-block__heading {
+  margin-bottom: 14px;
+  font-size: 20px;
+  font-weight: 700;
+  color: rgb(255 255 255);
+}
+
+.footer .footer-block__details-content,
+.footer .footer__column {
+  color: rgb(255 255 255 / 0.88);
+}
+
+/* Links gross genug zum Treffen und mit Luft dazwischen. */
+.footer .list-menu__item,
+.footer .footer-block__details-content a,
+.footer .policies a,
+.footer .link {
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgb(255 255 255 / 0.88);
+}
+
+.footer .list-menu__item {
+  padding-block: 6px;
+}
+
+/* Die globale Hover-Regel faerbt Verweise in der Akzentfarbe. Auf diesem
+   dunklen Grund waere das Rot auf Dunkelgrau - rund 3:1 Kontrast und kaum
+   zu lesen. Hier stattdessen ganz weiss und unterstrichen. */
+.footer .link:hover,
+.footer .list-menu__item:hover,
+.footer .footer-block__details-content a:hover,
+.footer .policies a:hover {
+  color: rgb(255 255 255);
+  text-decoration: underline;
+}
+
+.footer .footer__copyright,
+.footer .copyright__content {
+  font-size: 13px;
+  color: rgb(255 255 255 / 0.7);
+}
+
+.footer .footer__content-top {
+  padding-bottom: 36px;
+}
+
+@media screen and (max-width: 749px) {
+  .footer .footer-block__heading {
+    font-size: 18px;
+  }
+}
+
+/* ====================================================================
+   SEITENRAND
+
+   Die Abschnitte mit b2b-Markup tragen die Klasse .container fuer ihren
+   seitlichen Abstand. Die Regel dazu stand bisher in b2b-marke.liquid -
+   und das wird nur auf der B2B-Landingpage gerendert. Auf Startseite,
+   Kontakt und Downloads hatte .container deshalb gar keine Wirkung: die
+   Stichpunkte unter dem Hero klebten auf dem Handy bei x=0 am Rand.
+
+   Die Werte sind am Hauptshop gemessen: 20 Bildpunkte, 32 ab 700, 48 ab
+   1000. --container-gutter steht auch fuer sich, der Kontaktstreifen holt
+   sich seinen Abstand direkt daraus.
+   ==================================================================== */
+
+main {
+  --container-gutter: 20px;
+}
+
+main .container {
+  margin-inline: var(--container-gutter);
+}
+
+@media screen and (min-width: 700px) {
+  main {
+    --container-gutter: 32px;
+  }
+}
+
+@media screen and (min-width: 1000px) {
+  main {
+    --container-gutter: 48px;
+  }
+}

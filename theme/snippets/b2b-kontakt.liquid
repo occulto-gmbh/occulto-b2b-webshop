@@ -1,0 +1,131 @@
+{% doc %}
+  Schwebender Kontaktknopf unten rechts fuer die B2B-Seiten.
+  Ersetzt dort den Chatbot des uebrigen Shops durch Telefon und E-Mail.
+  Blendet auf Mobil zusaetzlich das Trusted-Shops-Badge aus.
+
+  @example
+  {% render 'b2b-kontakt' %}
+{% enddoc %}
+
+<div class="b2b-kontakt">
+  <div class="b2b-kontakt__panel" id="b2b-kontakt-panel" hidden>
+    <p class="b2b-kontakt__titel">Direkt zu uns</p>
+    <a class="b2b-kontakt__weg" href="tel:+4980313506041">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.24 11.4 11.4 0 0 0 3.6.58 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.46.57 3.6a1 1 0 0 1-.25 1z" fill="currentColor"/></svg>
+      <span>08031 350 60 41</span>
+    </a>
+    <a class="b2b-kontakt__weg" href="mailto:b2b@occulto.de">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5z" fill="currentColor"/></svg>
+      <span>b2b@occulto.de</span>
+    </a>
+  </div>
+
+  <button type="button" class="b2b-kontakt__knopf" data-b2b-kontakt aria-expanded="false" aria-controls="b2b-kontakt-panel" aria-label="Kontakt aufnehmen">
+    <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.24 11.4 11.4 0 0 0 3.6.58 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.46.57 3.6a1 1 0 0 1-.25 1z" fill="currentColor"/></svg>
+  </button>
+</div>
+
+<style>
+  .b2b-kontakt {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 40;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+  }
+  .b2b-kontakt__knopf {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border: 0;
+    border-radius: 50%;
+    background: rgb(var(--button-background, 46 46 45));
+    color: rgb(var(--button-text-color, 255 255 255));
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgb(0 0 0 / 0.18);
+  }
+  .b2b-kontakt__knopf:focus-visible {
+    outline: 2px solid rgb(var(--text-color, 28 28 28));
+    outline-offset: 3px;
+  }
+  .b2b-kontakt__panel {
+    padding: 16px 18px;
+    border: 1px solid rgb(var(--border-color, 221 221 221));
+    border-radius: 10px;
+    background: rgb(var(--background, 255 255 255));
+    box-shadow: 0 8px 28px rgb(0 0 0 / 0.14);
+    text-align: left;
+  }
+  .b2b-kontakt__titel {
+    margin: 0 0 10px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.6;
+  }
+  .b2b-kontakt__weg {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 14px;
+    color: inherit;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+  .b2b-kontakt__weg:hover {
+    text-decoration: underline;
+  }
+
+  /* Auf den B2B-Seiten kein Shop-Chatbot. */
+  shopify-chat {
+    display: none !important;
+  }
+
+  @media screen and (max-width: 767px) {
+    [id^='trustbadge-container'],
+    .trustbadge {
+      display: none !important;
+    }
+    .b2b-kontakt {
+      right: 14px;
+      bottom: 14px;
+    }
+    .b2b-kontakt__panel {
+      max-width: calc(100vw - 28px);
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    var knopf = document.querySelector('[data-b2b-kontakt]');
+    var wurzel = knopf && knopf.closest('.b2b-kontakt');
+    var panel = wurzel && wurzel.querySelector('.b2b-kontakt__panel');
+    if (!knopf || !panel) return;
+
+    function zeige(offen) {
+      panel.hidden = !offen;
+      knopf.setAttribute('aria-expanded', offen ? 'true' : 'false');
+    }
+
+    knopf.addEventListener('click', function () {
+      zeige(panel.hidden);
+    });
+    document.addEventListener('click', function (e) {
+      if (!panel.hidden && !wurzel.contains(e.target)) zeige(false);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !panel.hidden) {
+        zeige(false);
+        knopf.focus();
+      }
+    });
+  })();
+</script>

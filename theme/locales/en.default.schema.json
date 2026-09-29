@@ -2796,6 +2796,9 @@
         "name": "Bulk order"
       }
     },
+    "cart-branch-split": {
+      "name": "Branch split (cart)"
+    },
     "csv-order": {
       "name": "Bulk order (CSV)",
       "presets": {
