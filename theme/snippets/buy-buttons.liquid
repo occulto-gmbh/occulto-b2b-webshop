@@ -106,7 +106,12 @@
               {{ form | payment_button }}
             {%- endif -%}
           {%- else -%}
-            {% render 'b2b-freigabe-link', klasse: 'product-form__submit button button--full-width button--primary' %}
+            {%- comment -%}
+              Hier stand fuer Gaeste ein zweiter Knopf mit derselben
+              Beschriftung wie der an der Preisstelle. Zwei gleiche Knoepfe auf
+              einer Seite sind keine zwei Angebote, sondern eine Verdopplung -
+              der Verweis steht jetzt nur noch oben am Preis.
+            {%- endcomment -%}
           {%- endif -%}
         </div>
       {%- endform -%}

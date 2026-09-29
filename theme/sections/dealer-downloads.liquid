@@ -158,7 +158,8 @@
       <p>
         Die Downloads (Produktstammdaten und Produktbilder) stehen freigeschalteten Handelspartnern zur Verfügung.
       </p>
-      <p>{% render 'b2b-freigabe-link', klasse: 'button', gast_text: 'Anmelden' %}</p>
+      {%- assign gast_zugang = 'templates.dealer_registration.request_access' | t -%}
+      <p>{% render 'b2b-freigabe-link', klasse: 'button', gast_text: gast_zugang %}</p>
     {%- endif -%}
   </div>
 </div>

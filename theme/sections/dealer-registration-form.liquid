@@ -26,6 +26,24 @@
     </h1>
     <p>{{ 'templates.dealer_registration.intro' | t }}</p>
 
+    {%- comment -%}
+      Der zweite Weg. Wer schon ein Haendlerkonto hat, kommt ueber die
+      Produktkacheln ebenfalls hier heraus - ohne diesen Balken muesste er
+      das Formular ein zweites Mal ausfuellen. Angemeldeten Besuchern wird
+      er nicht gezeigt; die sehen das Formular, weil ihnen die Freigabe
+      fehlt, nicht das Konto.
+    {%- endcomment -%}
+    {%- unless customer -%}
+      <div class="b2b-schon-haendler">
+        <p class="b2b-schon-haendler__text">
+          {{- 'templates.dealer_registration.already_dealer_bar' | t -}}
+        </p>
+        <a href="{{ routes.account_login_url }}" class="b2b-schon-haendler__knopf">
+          {{- 'templates.dealer_registration.already_dealer_login' | t -}}
+        </a>
+      </div>
+    {%- endunless -%}
+
     <div class="form__message" id="DealerRegistrationError" hidden>
       <h2 class="form-status caption-large text-body" role="alert" tabindex="-1">
         {{- 'icon-error.svg' | inline_asset_content -}}
@@ -312,6 +330,26 @@
           <input type="checkbox" id="terms_accepted" name="terms_accepted" required>
           <span>{{ 'templates.dealer_registration.terms_accepted' | t }} <span class="b2b-feld__stern" aria-hidden="true">*</span></span>
         </label>
+
+        {%- comment -%}
+          Die Texte zum Lesen, nicht nur zum Abhaken. Bewusst unter den
+          Kaestchen und nicht im Beschriftungstext: ein Verweis innerhalb
+          eines <label> schaltet beim Anklicken nebenbei das Kaestchen um.
+          Neues Fenster, damit die 19 ausgefuellten Felder nicht verloren
+          gehen.
+        {%- endcomment -%}
+        <p class="b2b-haken__quellen">
+          {%- if shop.privacy_policy != blank -%}
+            <a href="{{ shop.privacy_policy.url }}" target="_blank" rel="noopener">
+              {{- shop.privacy_policy.title -}}
+            </a>
+          {%- endif -%}
+          {%- if shop.terms_of_service != blank -%}
+            <a href="{{ shop.terms_of_service.url }}" target="_blank" rel="noopener">
+              {{- shop.terms_of_service.title -}}
+            </a>
+          {%- endif -%}
+        </p>
       </div>
 
       <div class="b2b-absenden">
@@ -582,16 +620,39 @@
   .b2b-haken__zeile {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
-    font-size: 14px;
+    gap: 12px;
+    color: rgb(var(--b2b-tinte, 46 46 45));
+    font-size: 16px;
     line-height: 1.5;
     cursor: pointer;
   }
 
+  /* Die Verweise auf die Texte selbst. Gross genug zum Treffen mit dem
+     Daumen (44px Zeilenhoehe) und unterstrichen, damit sie nicht wie
+     Fliesstext aussehen. */
+  .b2b-haken__quellen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 24px;
+    margin: 4px 0 0;
+    padding-left: 30px;
+  }
+
+  .b2b-haken__quellen a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    color: rgb(var(--b2b-akzent, 199 42 9));
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
   .b2b-haken__zeile input {
     flex: 0 0 auto;
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     margin: 2px 0 0;
     accent-color: rgb(var(--b2b-akzent, 199 42 9));
   }

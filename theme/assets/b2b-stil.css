@@ -302,3 +302,131 @@ main .container {
     --container-gutter: 48px;
   }
 }
+
+/* ====================================================================
+   HAENDLERSPERRE
+
+   Der Verweis, den Gaeste anstelle von Preis und Kaufknopf sehen.
+
+   Vorher standen hier zwei blaue Textlinks untereinander - auf einer
+   Sammlungsseite 85 Mal. Jetzt ist es ein Element, das wie ein Knopf
+   aussieht und die Markenfarbe traegt statt des Browser-Blaus.
+
+   Wo der Aufrufer schon eine Knopfklasse mitgibt (Produktseite,
+   Bestelllisten, Downloads), gilt dessen Aussehen - die Regeln hier
+   greifen nur, wo keine kommt: im Preisfeld der Produktkacheln.
+   ==================================================================== */
+
+.b2b-freigabe {
+  text-decoration: none;
+}
+
+/* Das Preisfeld der Kachel und der Produktseite. Klein genug fuer eine
+   Kachel, deutlich genug, um als anklickbar gelesen zu werden. */
+.price__login-link.b2b-freigabe {
+  /* Inhaltsbreit, aber gedeckelt. Als Block zog sich der Knopf auf der
+     Produktseite ueber 570px; mit nowrap sprengte er umgekehrt die 170px
+     schmale Kachel um 43px. inline-block plus max-width laesst ihn so breit
+     werden wie sein Text und nicht breiter als sein Kasten. */
+  display: inline-block;
+  max-width: 100%;
+  padding: 6px 12px;
+  text-align: center;
+  border: 1px solid rgb(var(--b2b-akzent, 199 42 9));
+  border-radius: 6px;
+  color: rgb(var(--b2b-akzent, 199 42 9));
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.3;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+/* Auf dem Handy sind die Kacheln 170px breit - der Knopf braucht dort
+   zwei Zeilen. Eine Stufe kleiner haelt ihn in der Kachel unauffaellig. */
+@media screen and (max-width: 749px) {
+  .price__login-link.b2b-freigabe {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .price__login-link.b2b-freigabe:hover {
+    background: rgb(var(--b2b-akzent, 199 42 9));
+    color: rgb(255 255 255);
+    text-decoration: none;
+  }
+}
+
+/* ---- Der Balken auf der Haendlerseite ---- */
+
+/* Grau auf grau ging unter. Der Balken traegt jetzt die Markenfarbe am
+   linken Rand und im Knopf: wer schon ein Konto hat, soll ihn sehen, bevor
+   er anfaengt, ein zweites Mal 19 Felder auszufuellen. */
+.b2b-schon-haendler {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  margin-bottom: 32px;
+  padding: 20px 24px;
+  border: 1px solid rgb(var(--b2b-akzent, 199 42 9) / 0.35);
+  border-left: 5px solid rgb(var(--b2b-akzent, 199 42 9));
+  border-radius: 8px;
+  background: rgb(var(--b2b-akzent, 199 42 9) / 0.06);
+}
+
+.b2b-schon-haendler__text {
+  margin: 0;
+  color: rgb(var(--b2b-tinte, 46 46 45));
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.b2b-schon-haendler__knopf {
+  flex: 0 0 auto;
+  padding: 13px 30px;
+  border: 1px solid rgb(var(--b2b-akzent, 199 42 9));
+  border-radius: 6px;
+  background: rgb(var(--b2b-akzent, 199 42 9));
+  color: rgb(255 255 255);
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color 0.18s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .b2b-schon-haendler__knopf:hover {
+    background: rgb(160 33 7);
+    color: rgb(255 255 255);
+  }
+}
+
+@media screen and (max-width: 599px) {
+  .b2b-schon-haendler {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+}
+
+/* Auf der Produktseite traegt dieser Knopf die ganze Handlung - der zweite,
+   schwarze Knopf an der Kaufstelle ist entfallen. Also gefuellt und in der
+   Groesse eines Kaufknopfes statt als zurueckhaltender Umriss wie in der
+   Kachel. price--large setzt Shopify nur auf der Produktseite. */
+.price--large .price__login-link.b2b-freigabe {
+  padding: 13px 28px;
+  background: rgb(var(--b2b-akzent, 199 42 9));
+  color: rgb(255 255 255);
+  font-size: 16px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .price--large .price__login-link.b2b-freigabe:hover {
+    background: rgb(160 33 7);
+    color: rgb(255 255 255);
+  }
+}

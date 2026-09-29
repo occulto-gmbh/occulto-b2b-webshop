@@ -37,6 +37,7 @@
         "collapsible-row-0": {
           "type": "collapsible_tab",
           "settings": {
+            "b2b_offen": true,
             "heading": "Material und Pflege",
             "icon": "leaf",
             "content": "<p><strong>Material: </strong>{{ product.metafields.custom.materialeigenschaft.value }}</p><p><strong>Pflege:</strong></p><ul><li>Bei maximal 30°C in der Maschine waschen</li><li>Trockner besser vermeiden</li><li>Flach an der Luft trocknen </li><li>Neue Produkte vor dem ersten Tragen waschen</li><li>Textilien farblich voneinander trennen</li><li>Weichspüler & Bleichmittel meiden</li></ul>",

@@ -33,10 +33,12 @@
     show_image: section.settings.show_image,
     show_sku: section.settings.show_sku
   %}
-{%- else -%}
-  <div class="quick-order-list-login-gate page-width section-{{ section.id }}-padding">
-    {% render 'b2b-freigabe-link', klasse: 'button button--secondary' %}
-  </div>
+{%- comment -%}
+  Fuer Gaeste bleibt hier nichts stehen. Vorher stand an dieser Stelle ein
+  zweiter Knopf mit derselben Beschriftung wie der am Preis - auf einer
+  Produktseite also zweimal dasselbe Angebot, einmal rot oben und einmal
+  grau in der Mitte. Der Verweis steht jetzt nur noch am Preis.
+{%- endcomment -%}
 {%- endif -%}
 
 {% schema %}
