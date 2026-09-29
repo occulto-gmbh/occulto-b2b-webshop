@@ -173,11 +173,15 @@
     line-height: 1.5;
   }
 
+  /* Zwei gleich breite Knoepfe ueber die volle Breite statt zweier schmaler
+     Kaesten in der Mitte - bei 1120px Inhaltsbreite wirkten 238px gedraengt.
+     Gedeckelt, damit sie auf einem breiten Bildschirm nicht auseinanderlaufen. */
   .b2b-kond__knoepfe {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px;
+    max-width: 760px;
+    margin-inline: auto;
   }
 
   .b2b-kond__knopf {
@@ -242,9 +246,8 @@
     .b2b-kond__wert {
       font-size: 22px;
     }
-    .b2b-kond__knopf {
-      flex: 1 1 100%;
-      align-items: center;
+    .b2b-kond__knoepfe {
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 </style>

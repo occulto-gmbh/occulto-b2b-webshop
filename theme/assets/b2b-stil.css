@@ -422,3 +422,59 @@ main .container {
   padding: 13px 28px;
   font-size: 16px;
 }
+
+/* ====================================================================
+   RABATTPREIS
+
+   Der Listenpreis durchgestrichen, daneben der Preis, der berechnet
+   wird. Gerendert von snippets/b2b-preis.liquid - die Prozentsaetze
+   stehen dort, nicht hier.
+   ==================================================================== */
+
+.b2b-preis {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+}
+
+.b2b-preis__alt {
+  color: rgb(var(--b2b-tinte, 46 46 45) / 0.55);
+  font-size: 0.9em;
+  text-decoration: line-through;
+}
+
+.b2b-preis__neu {
+  font-weight: 700;
+}
+
+.b2b-preis__satz {
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgb(var(--b2b-akzent, 199 42 9));
+  color: rgb(255 255 255);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
+/* In der rechten Summenspalte steht wenig Platz zur Verfuegung: dort
+   untereinander statt nebeneinander. */
+.b2b-preis--summe {
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.b2b-preis__bedingung {
+  color: rgb(var(--b2b-tinte, 46 46 45) / 0.6);
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
+.b2b-preis__vorsatz {
+  color: rgb(var(--b2b-tinte, 46 46 45) / 0.7);
+  font-size: 0.9em;
+}

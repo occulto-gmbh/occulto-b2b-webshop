@@ -1,0 +1,64 @@
+{%- comment -%}
+  Preis mit Rabatt: der Listenpreis durchgestrichen, daneben der Preis, der
+  tatsaechlich berechnet wird.
+
+  Die beiden Saetze stehen HIER und sonst nirgends im Theme. Sie muessen mit
+  b2b-webshop/extensions/order-value-discount/src/run.ts uebereinstimmen -
+  dort wird gerechnet, hier wird nur angezeigt. Weichen sie voneinander ab,
+  steht im Shop ein anderer Preis als im Checkout.
+
+  Am 29.09.2026 mit Occulto festgelegt:
+    Nachbestellung  5 %  ab 500 Packs im Warenkorb
+    Vororder       10 %  ohne weitere Bedingung
+  Die fruehere Staffel nach Bestellsumme (ab 2.500 EUR 5 %, ab 5.000 EUR
+  10 %) ist damit abgeloest.
+
+  Die Schwelle laesst sich beim Anzeigen nicht pruefen: auf einer Kachel oder
+  in der Liste steht noch nicht fest, was am Ende im Warenkorb liegt. Deshalb
+  wird der Preis mit Rabatt gezeigt und die Bedingung danebengeschrieben,
+  statt sie zu verschweigen.
+
+  @param preis     Listenpreis in Cent
+  @param vororder  true -> Vororder-Satz, sonst Nachbestellung
+  @param je_pack   true -> "/Pack" anhaengen
+  @param klasse    zusaetzliche CSS-Klassen
+  @param vorsatz   Text vor dem Preis, z. B. "ab" bei mehreren Varianten
+{%- endcomment -%}
+
+{%- liquid
+  assign b2b_satz_nachbestellung = 5
+  assign b2b_satz_vororder = 10
+
+  if vororder
+    assign satz = b2b_satz_vororder
+    assign bedingung = ''
+  else
+    assign satz = b2b_satz_nachbestellung
+    assign bedingung = 'ab 500 Packs'
+  endif
+
+  comment
+    Ganzzahlrechnung auf Cent. divided_by schneidet ab, der Abzug faellt also
+    hoechstens einen Cent kleiner aus als der rechnerische - nie groesser.
+    Damit steht im Shop nie ein niedrigerer Preis, als der Checkout berechnet.
+  endcomment
+  assign abzug = preis | times: satz | divided_by: 100
+  assign neuer_preis = preis | minus: abzug
+
+  assign alt_text = preis | money
+  assign neu_text = neuer_preis | money
+  if je_pack
+    assign alt_text = 'sections.quick_order_list.each' | t: money: alt_text
+    assign neu_text = 'sections.quick_order_list.each' | t: money: neu_text
+  endif
+-%}
+
+<span class="b2b-preis {{ klasse }}">
+  {%- if vorsatz != blank -%}<span class="b2b-preis__vorsatz">{{ vorsatz }}</span>{%- endif -%}
+  <s class="b2b-preis__alt">{{ alt_text }}</s>
+  <span class="b2b-preis__neu price">{{ neu_text }}</span>
+  <span class="b2b-preis__satz">&minus;{{ satz }}&nbsp;%</span>
+  {%- if bedingung != '' -%}
+    <span class="b2b-preis__bedingung">{{ bedingung }}</span>
+  {%- endif -%}
+</span>

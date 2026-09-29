@@ -96,9 +96,17 @@
           </span>
         {%- else -%}
           <span class="visually-hidden visually-hidden--inline">{{ 'products.product.price.regular_price' | t }}</span>
-          <span class="price-item price-item--regular">
-            {{ money_price }}
-          </span>
+          {%- comment -%}
+            Statt des nackten Listenpreises der Preis mit Haendlerrabatt:
+            Listenpreis durchgestrichen, daneben der Preis, der berechnet
+            wird. Hier gilt immer der Nachbestellungs-Satz - die Vororder hat
+            ihre eigene Maske.
+          {%- endcomment -%}
+          {%- if product.price_varies -%}
+            {% render 'b2b-preis', preis: price, vorsatz: 'ab', klasse: 'price-item price-item--regular' %}
+          {%- else -%}
+            {% render 'b2b-preis', preis: price, klasse: 'price-item price-item--regular' %}
+          {%- endif -%}
         {%- endif -%}
       </div>
       <div class="price__sale">
