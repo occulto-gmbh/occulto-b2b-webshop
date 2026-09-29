@@ -282,13 +282,12 @@
             {% assign cart_qty = cart | item_count_for_variant: variant.id %}
             {% # theme-check-enable %}
             {%- comment -%}
-              min kommt von aussen: die Vororder-Maske verlangt 500 Packs je
-              Artikel, ueberall sonst bleibt es bei 0 wie bisher. Bewusst als
-              eigenes assign und nicht als Filter im render-Aufruf - Liquid
-              nimmt dort zwar Filter an, aber lesbar ist es so nicht.
+              mindestmenge kommt von aussen: die Vororder-Maske verlangt 500
+              Packs je Artikel, ueberall sonst ist es leer und es bleibt beim
+              5er-Gebinde. min bleibt bei 0, damit Minus die Position wieder
+              leeren kann - siehe Erklaerung in quantity-input.
             {%- endcomment -%}
-            {%- assign zeilen_min = mindestmenge | default: 0 -%}
-            {% render 'quantity-input', variant: variant, min: zeilen_min %}
+            {% render 'quantity-input', variant: variant, min: 0, mindestmenge: mindestmenge %}
           {%- endif -%}
         </div>
         {% if cart_qty > 0 %}

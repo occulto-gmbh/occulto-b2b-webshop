@@ -19,9 +19,21 @@
 
 {%- liquid
   assign pack_step = 5
-  assign quantity_min = pack_step
+
+  comment
+    quantity_min landet in data-min, nicht in min. Der Unterschied ist
+    wichtig: global.js springt beim Klick auf Plus von 0 direkt auf data-min,
+    wenn data-min groesser als der Schritt ist, und prueft die Eingabe gegen
+    data-min. Das min-Attribut ist dagegen der Boden, auf den Minus
+    zurueckfaellt - steht dort 500, kommt man nie wieder auf 0 und damit nie
+    wieder aus der Position heraus.
+
+    Die Vororder-Maske gibt deshalb mindestmenge: 500 herein und laesst min
+    bei 0. Plus springt dann auf 500 und danach in 5er-Schritten weiter.
+  endcomment
+  assign quantity_min = mindestmenge | default: pack_step
   assign quantity_step = pack_step
-  assign input_min = min | default: quantity_min
+  assign input_min = min | default: pack_step
 
   assign quantity_max = null
   if variant.inventory_management == 'shopify' and variant.inventory_policy != 'continue'

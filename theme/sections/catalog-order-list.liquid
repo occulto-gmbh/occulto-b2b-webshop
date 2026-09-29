@@ -48,7 +48,12 @@
       Vororder-Betrieb: dieselbe Tabelle, aber mit Mindestmenge je Artikel.
       Ohne die Einstellung verhaelt sich der Abschnitt wie bisher.
     endcomment
-    assign zeilen_mindestmenge = 0
+    comment
+      Bewusst ohne Vorbelegung: bleibt die Variable leer, greift in
+      quantity-input der default-Filter und es gilt wie bisher das
+      5er-Gebinde. Eine 0 waere in Liquid wahr und wuerde den default
+      ueberspringen - dann stuende dort gar keine Mindestmenge.
+    endcomment
     if section.settings.b2b_vororder
       assign zeilen_mindestmenge = section.settings.b2b_mindestmenge
     endif
@@ -98,6 +103,29 @@
       data-product-id="catalog"
       data-url="{{ request.path }}"
     >
+      {%- if section.settings.b2b_vororder -%}
+      {%- comment -%}
+        Sortierung. Sie greift im Browser und ordnet die Bloecke der
+        angezeigten Seite um - nicht den ganzen Katalog. Grund: Shopify gibt
+        Liquid hoechstens 50 Produkte je Seite, und Abfrageparameter aus der
+        URL sind in Liquid gar nicht lesbar. Bei 108 Produkten und 50 je
+        Seite sind das drei Seiten.
+      {%- endcomment -%}
+      <div class="b2b-vororder-leiste page-width">
+        <label class="b2b-vororder-leiste__label" for="b2b-sortierung-{{ section.id }}">
+          Sortieren nach
+        </label>
+        <select class="b2b-vororder-leiste__wahl" id="b2b-sortierung-{{ section.id }}">
+          <option value="standard">Reihenfolge des Katalogs</option>
+          <option value="name">Name A–Z</option>
+          <option value="preis-auf">Preis aufsteigend</option>
+          <option value="preis-ab">Preis absteigend</option>
+          <option value="lager">Verfügbarkeit</option>
+          <option value="art">Produktart</option>
+        </select>
+      </div>
+      {%- endif -%}
+
       <form
         action="{{ routes.cart_update_url }}"
         class="quick-order-list__contents critical-hidden"
@@ -138,7 +166,24 @@
 
               <tbody>
                 {%- for product in collection.products -%}
-                  <tr class="catalog-order-list__product-row">
+                  {%- comment -%}
+                    Die Kennwerte, nach denen die Sortierung greift. Sie
+                    stehen an der Produktzeile, weil die Sortierung ganze
+                    Bloecke verschiebt - Produktzeile samt ihrer Varianten.
+                  {%- endcomment -%}
+                  {%- liquid
+                    assign lager = 0
+                    for v in product.variants
+                      assign lager = lager | plus: v.inventory_quantity
+                    endfor
+                  -%}
+                  <tr
+                    class="catalog-order-list__product-row"
+                    data-b2b-name="{{ product.title | escape }}"
+                    data-b2b-preis="{{ product.price_min }}"
+                    data-b2b-art="{{ product.type | default: '' | escape }}"
+                    data-b2b-lager="{{ lager }}"
+                  >
                     {%- render 'quick-order-product-row', item: product, image: product.featured_media -%}
                   </tr>
                   {%- for variant in product.variants -%}
@@ -265,6 +310,61 @@
         font-size: 15px;
         line-height: 1.4;
       }
+      /* ---- Sortierleiste ---- */
+      .b2b-vororder-leiste {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px 14px;
+        margin-bottom: 20px;
+      }
+      .b2b-vororder-leiste__label {
+        font-size: 15px;
+        font-weight: 700;
+      }
+      .b2b-vororder-leiste__wahl {
+        min-height: 44px;
+        padding: 0 40px 0 14px;
+        border: 1px solid rgb(var(--b2b-linie, 226 226 225));
+        border-radius: 6px;
+        background: rgb(255 255 255);
+        font-size: 15px;
+        line-height: 1.4;
+      }
+
+      /* ---- Produktbild ----
+         Das Theme deckelt den Bildkasten auf 4.5rem (45px). Fuer die Vororder
+         ist das Bild die einzige Orientierung ueber 108 Artikel hinweg,
+         deshalb hier 72px - und contain statt cover, weil Socken auf Weiss
+         sonst angeschnitten werden. */
+      #{{ section.id }} .variant-item__media,
+      #{{ section.id }} .variant-item__image-container {
+        width: 72px;
+        height: 72px;
+      }
+      #{{ section.id }} .variant-item__image {
+        object-fit: contain;
+      }
+
+      /* ---- Warenkorbknopf ----
+         Rot statt grau: es ist der Abschluss der Vororder und der einzige
+         Weg weiter. */
+      #{{ section.id }} .quick-order-list__button.button {
+        border-color: rgb(var(--b2b-akzent, 199 42 9));
+        background: rgb(var(--b2b-akzent, 199 42 9));
+        color: rgb(255 255 255);
+      }
+      #{{ section.id }} .quick-order-list__button.button::before,
+      #{{ section.id }} .quick-order-list__button.button::after {
+        box-shadow: none;
+      }
+      @media (hover: hover) and (pointer: fine) {
+        #{{ section.id }} .quick-order-list__button.button:hover {
+          background: rgb(160 33 7);
+          color: rgb(255 255 255);
+        }
+      }
+
       /* Der Hinweis unter der Tabelle, solange eine Position zu klein ist. */
       .b2b-vororder-sperre {
         margin: 0 0 12px;
@@ -334,11 +434,94 @@
           }
         }
 
+        /* ---- Sortierung ----
+           Verschoben werden ganze Bloecke: eine Produktzeile und alle
+           Variantenzeilen, die ihr folgen. Die Kennwerte stehen als
+           data-Attribute an der Produktzeile. */
+        var wahl = document.getElementById('b2b-sortierung-' + {{ section.id | json }});
+
+        function bloecke(koerper) {
+          var gruppen = [];
+          var aktuell = null;
+          var kinder = koerper.children;
+          for (var i = 0; i < kinder.length; i++) {
+            var zeile = kinder[i];
+            if (zeile.hasAttribute('data-b2b-name')) {
+              aktuell = { kopf: zeile, zeilen: [zeile] };
+              gruppen.push(aktuell);
+            } else if (aktuell) {
+              aktuell.zeilen.push(zeile);
+            }
+          }
+          return gruppen;
+        }
+
+        function sortiere() {
+          if (!wahl) return;
+          var koerper = wurzel.querySelector('.quick-order-list__table tbody');
+          if (!koerper) return;
+
+          var gruppen = bloecke(koerper);
+          if (gruppen.length < 2) return;
+
+          /* Die Ausgangsreihenfolge einmal festhalten, damit "Reihenfolge des
+             Katalogs" auch nach mehrmaligem Umsortieren wieder stimmt. */
+          gruppen.forEach(function (g, i) {
+            if (g.kopf.dataset.b2bRang === undefined) g.kopf.dataset.b2bRang = i;
+          });
+
+          var art = wahl.value;
+          var zahl = function (g, feld) { return parseInt(g.kopf.dataset[feld], 10) || 0; };
+          var text = function (g, feld) { return (g.kopf.dataset[feld] || '').toLowerCase(); };
+
+          gruppen.sort(function (a, b) {
+            switch (art) {
+              case 'name':
+                return text(a, 'b2bName').localeCompare(text(b, 'b2bName'), 'de');
+              case 'preis-auf':
+                return zahl(a, 'b2bPreis') - zahl(b, 'b2bPreis');
+              case 'preis-ab':
+                return zahl(b, 'b2bPreis') - zahl(a, 'b2bPreis');
+              case 'lager':
+                return zahl(b, 'b2bLager') - zahl(a, 'b2bLager');
+              case 'art':
+                /* Innerhalb derselben Produktart nach Namen, sonst stehen
+                   85 Tennissocken in zufaelliger Folge. */
+                return (
+                  text(a, 'b2bArt').localeCompare(text(b, 'b2bArt'), 'de') ||
+                  text(a, 'b2bName').localeCompare(text(b, 'b2bName'), 'de')
+                );
+              default:
+                return zahl(a, 'b2bRang') - zahl(b, 'b2bRang');
+            }
+          });
+
+          var neu = document.createDocumentFragment();
+          gruppen.forEach(function (g) {
+            g.zeilen.forEach(function (z) { neu.appendChild(z); });
+          });
+          koerper.appendChild(neu);
+        }
+
+        if (wahl) wahl.addEventListener('change', sortiere);
+
         wurzel.addEventListener('input', pruefe);
         wurzel.addEventListener('change', pruefe);
-        /* Die Liste baut sich nach jeder Warenkorbaenderung neu auf, dabei
-           gehen die Felder verloren - deshalb zusaetzlich beobachten. */
-        new MutationObserver(pruefe).observe(wurzel, { childList: true, subtree: true });
+
+        /* Die Liste baut sich nach jeder Warenkorbaenderung neu auf: die
+           Felder werden ersetzt und die Reihenfolge steht wieder auf
+           Katalog. Deshalb beobachten und beides nachziehen.
+
+           Waehrend des Sortierens abgemeldet, sonst loest das Umhaengen der
+           Zeilen den Beobachter aus, der wieder sortiert - eine Schleife. */
+        var beobachter = new MutationObserver(function () {
+          pruefe();
+          beobachter.disconnect();
+          sortiere();
+          beobachter.observe(wurzel, { childList: true, subtree: true });
+        });
+        beobachter.observe(wurzel, { childList: true, subtree: true });
+
         pruefe();
       })();
     </script>

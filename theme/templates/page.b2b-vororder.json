@@ -32,7 +32,7 @@
         "b2b_titel": "Vororder abgeben",
         "b2b_mindestmenge": 500,
         "collection": "all",
-        "products_per_page": 20,
+        "products_per_page": 50,
         "show_sku": true,
         "color_scheme": "scheme-1",
         "padding_top": 36,
