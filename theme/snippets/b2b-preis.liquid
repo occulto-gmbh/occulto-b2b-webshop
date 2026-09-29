@@ -1,22 +1,26 @@
 {%- comment -%}
-  Preis mit Rabatt: der Listenpreis durchgestrichen, daneben der Preis, der
-  tatsaechlich berechnet wird.
+  Preis mit Haendlerrabatt.
 
-  Die beiden Saetze stehen HIER und sonst nirgends im Theme. Sie muessen mit
+  Gezeigt wird immer der Preis, den der Checkout fuer den AKTUELLEN Warenkorb
+  berechnen wuerde - nicht der bestmoegliche. Vorher stand hier auf jeder
+  Kachel ein Preis mit -5 %, auch bei einem einzigen Pack, und die Bedingung
+  nur klein daneben. Das war ein Preisversprechen, das der Checkout nicht
+  eingeloest haette.
+
+  Die Regeln stehen HIER und sonst nirgends im Theme. Sie muessen mit
   b2b-webshop/extensions/order-value-discount/src/run.ts uebereinstimmen -
   dort wird gerechnet, hier wird nur angezeigt. Weichen sie voneinander ab,
-  steht im Shop ein anderer Preis als im Checkout.
+  steht im Shop ein anderer Preis als an der Kasse.
 
   Am 29.09.2026 mit Occulto festgelegt:
-    Nachbestellung  5 %  ab 500 Packs im Warenkorb
-    Vororder       10 %  ohne weitere Bedingung
+    Nachbestellung   5 %  ab 500 Packs im Warenkorb
+    Vororder        10 %  ohne weitere Bedingung
   Die fruehere Staffel nach Bestellsumme (ab 2.500 EUR 5 %, ab 5.000 EUR
   10 %) ist damit abgeloest.
 
-  Die Schwelle laesst sich beim Anzeigen nicht pruefen: auf einer Kachel oder
-  in der Liste steht noch nicht fest, was am Ende im Warenkorb liegt. Deshalb
-  wird der Preis mit Rabatt gezeigt und die Bedingung danebengeschrieben,
-  statt sie zu verschweigen.
+  Die Schwelle laesst sich beim Anzeigen pruefen, weil Liquid den laufenden
+  Warenkorb kennt: cart.item_count zaehlt die Packs. Unter der Schwelle steht
+  deshalb der Listenpreis und daneben, was noch fehlt.
 
   @param preis     Listenpreis in Cent
   @param vororder  true -> Vororder-Satz, sonst Nachbestellung
@@ -28,13 +32,27 @@
 {%- liquid
   assign b2b_satz_nachbestellung = 5
   assign b2b_satz_vororder = 10
+  assign b2b_ab_packs = 500
 
-  if vororder
+  comment
+    Ist der laufende Warenkorb eine Vororder, gilt der Vororder-Satz auf jeder
+    Seite - auch auf einer Kachel ausserhalb der Maske. Sonst stuende dort
+    -5 %, waehrend die Kasse 10 % abzieht.
+  endcomment
+  assign ist_vororder = vororder
+  if cart.attributes.Vororder != blank
+    assign ist_vororder = true
+  endif
+
+  assign greift = false
+  if ist_vororder
     assign satz = b2b_satz_vororder
-    assign bedingung = ''
+    assign greift = true
   else
     assign satz = b2b_satz_nachbestellung
-    assign bedingung = 'ab 500 Packs'
+    if cart.item_count >= b2b_ab_packs
+      assign greift = true
+    endif
   endif
 
   comment
@@ -51,14 +69,30 @@
     assign alt_text = 'sections.quick_order_list.each' | t: money: alt_text
     assign neu_text = 'sections.quick_order_list.each' | t: money: neu_text
   endif
+
+  assign fehlende_packs = b2b_ab_packs | minus: cart.item_count
 -%}
 
 <span class="b2b-preis {{ klasse }}">
   {%- if vorsatz != blank -%}<span class="b2b-preis__vorsatz">{{ vorsatz }}</span>{%- endif -%}
-  <s class="b2b-preis__alt">{{ alt_text }}</s>
-  <span class="b2b-preis__neu price">{{ neu_text }}</span>
-  <span class="b2b-preis__satz">&minus;{{ satz }}&nbsp;%</span>
-  {%- if bedingung != '' -%}
-    <span class="b2b-preis__bedingung">{{ bedingung }}</span>
+
+  {%- if greift -%}
+    <s class="b2b-preis__alt">{{ alt_text }}</s>
+    <span class="b2b-preis__neu price">{{ neu_text }}</span>
+    <span class="b2b-preis__satz">&minus;{{ satz }}&nbsp;%</span>
+  {%- else -%}
+    {%- comment -%}
+      Kein Streichpreis, solange der Rabatt nicht greift. Stattdessen der
+      Hinweis, wie viele Packs noch fehlen - das ist dieselbe Zahl, die auch
+      im Warenkorb steht.
+    {%- endcomment -%}
+    <span class="b2b-preis__neu price">{{ alt_text }}</span>
+    <span class="b2b-preis__bedingung">
+      {%- if cart.item_count > 0 -%}
+        noch {{ fehlende_packs }} Packs bis &minus;{{ satz }}&nbsp;%
+      {%- else -%}
+        &minus;{{ satz }}&nbsp;% ab {{ b2b_ab_packs }} Packs
+      {%- endif -%}
+    </span>
   {%- endif -%}
 </span>
