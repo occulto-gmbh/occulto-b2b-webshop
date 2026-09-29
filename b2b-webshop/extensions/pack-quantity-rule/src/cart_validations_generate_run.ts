@@ -15,6 +15,13 @@ import type {
 // (see app/routes/webhooks.inventory_levels.update.tsx).
 const PACK_STEP = 5;
 
+// Vororder: mindestens 500 Packs je Position. Am 2026-09-29 mit Occulto so
+// entschieden - "je" heisst pro Artikel, nicht in Summe. Die Maske im Theme
+// setzt min=500 auf die Eingabefelder und sperrt den Warenkorbknopf; das hier
+// ist die Absicherung dahinter, weil ein Eingabefeld niemand daran hindert,
+// direkt an /cart/add zu posten.
+const VORORDER_MINDESTMENGE = 500;
+
 export function cartValidationsGenerateRun(
   input: CartValidationsGenerateRunInput,
 ): CartValidationsGenerateRunResult {
@@ -27,8 +34,22 @@ export function cartValidationsGenerateRun(
     return { operations: [{ validationAdd: { errors } }] };
   }
 
+  const istVororder = Boolean(input.cart.vororder?.value);
+
   input.cart.lines.forEach((line) => {
     const { quantity, merchandise } = line;
+
+    if (istVororder && quantity < VORORDER_MINDESTMENGE) {
+      const name =
+        merchandise.__typename === "ProductVariant"
+          ? [merchandise.product.title, merchandise.title].filter(Boolean).join(" – ")
+          : "Ein Artikel";
+
+      errors.push({
+        message: `${name}: Eine Vororder braucht mindestens ${VORORDER_MINDESTMENGE} Packs je Artikel. Aktuelle Menge: ${quantity}.`,
+        target: "$.cart",
+      });
+    }
 
     if (quantity % PACK_STEP === 0) {
       return;

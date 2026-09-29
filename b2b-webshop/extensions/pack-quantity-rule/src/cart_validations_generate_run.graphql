@@ -1,5 +1,10 @@
 query CartValidationsGenerateRunInput {
   cart {
+    # Setzt die Vororder-Maske im Theme. Steht hier etwas drin, gilt
+    # zusaetzlich die Mindestmenge je Position.
+    vororder: attribute(key: "Vororder") {
+      value
+    }
     lines {
       quantity
       merchandise {

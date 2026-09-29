@@ -5,5 +5,12 @@ query RunInput {
         amount
       }
     }
+    # Setzt die Vororder-Maske im Theme (sections/catalog-order-list.liquid,
+    # Betriebsart b2b_vororder). Der Wert ist der Stichtag als Text, z. B.
+    # "15. Dezember 2026" - gebraucht wird hier nur, dass ueberhaupt etwas
+    # drinsteht.
+    vororder: attribute(key: "Vororder") {
+      value
+    }
   }
 }
