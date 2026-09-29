@@ -8,6 +8,12 @@
  *
  * main-page ist abgeschaltet: der Kopf der Section bringt Titel und Regeln
  * schon mit, ein zweiter Seitentitel darueber waere doppelt.
+ *
+ * collection steht auf "all" - Shopifys eigene Sammlung ueber alles, was im
+ * Online-Shop veroeffentlicht ist (108 Produkte). Die gepflegte Sammlung
+ * "alle-produkte" hat 107, ihr fehlt also eines; fuer eine Vororder soll
+ * nichts fehlen. Achtung: "all" taucht in der Sammlungsauswahl des
+ * Theme-Editors nicht auf - wer die Einstellung dort anfasst, verliert sie.
  */
 {
   "sections": {
@@ -25,7 +31,7 @@
         "b2b_vororder": true,
         "b2b_titel": "Vororder abgeben",
         "b2b_mindestmenge": 500,
-        "collection": "",
+        "collection": "all",
         "products_per_page": 20,
         "show_sku": true,
         "color_scheme": "scheme-1",
