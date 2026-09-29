@@ -51,6 +51,12 @@
       {%- endif -%}
     </div>
 
+    {%- comment -%}
+      Vororder-Hinweis. Steht ueber den Positionen, weil er fuer alle gilt:
+      ein Warenkorb ist entweder eine Vororder oder eine normale Bestellung.
+    {%- endcomment -%}
+    {% render 'b2b-vororder-hinweis' %}
+
     <form action="{{ routes.cart_url }}" class="cart__contents critical-hidden" method="post" id="cart" novalidate>
       <div class="cart__items" id="main-cart-items" data-id="{{ section.id }}">
         <div class="js-contents">

@@ -35,15 +35,25 @@
   assign quantity_step = pack_step
   assign input_min = min | default: pack_step
 
+  comment
+    ohne_lagergrenze: die Vororder bestellt Ware, die es noch gar nicht gibt.
+    Der heutige Bestand ist dafuer bedeutungslos, also faellt hier der Deckel
+    weg. Die harte Grenze liegt aber nicht hier, sondern bei Shopify selbst:
+    solange eine Variante auf "Verkauf beenden, wenn nicht vorraetig" steht,
+    lehnt /cart/update.js jede Menge ueber dem Bestand ab, egal was im
+    Eingabefeld steht.
+  endcomment
   assign quantity_max = null
-  if variant.inventory_management == 'shopify' and variant.inventory_policy != 'continue'
-    assign quantity_max = variant.inventory_quantity | at_least: 0
-  endif
-  if variant.quantity_rule.max != null
-    if quantity_max == null or variant.quantity_rule.max < quantity_max
-      assign quantity_max = variant.quantity_rule.max
+  unless ohne_lagergrenze
+    if variant.inventory_management == 'shopify' and variant.inventory_policy != 'continue'
+      assign quantity_max = variant.inventory_quantity | at_least: 0
     endif
-  endif
+    if variant.quantity_rule.max != null
+      if quantity_max == null or variant.quantity_rule.max < quantity_max
+        assign quantity_max = variant.quantity_rule.max
+      endif
+    endif
+  endunless
 -%}
 
 <quantity-input class="quantity cart-quantity">

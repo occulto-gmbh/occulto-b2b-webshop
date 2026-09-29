@@ -197,7 +197,8 @@
                       show_image: false,
                       show_sku: section.settings.show_sku,
                       is_modal: false,
-                      mindestmenge: zeilen_mindestmenge
+                      mindestmenge: zeilen_mindestmenge,
+                      ohne_lagergrenze: section.settings.b2b_vororder
                     -%}
                   {%- endfor -%}
                 {%- else -%}
@@ -365,6 +366,32 @@
         }
       }
 
+      /* ---- Rueckfrage, wenn schon eine normale Bestellung im Korb liegt ---- */
+      .b2b-vororder-frage {
+        margin-bottom: 20px;
+        padding: 16px 20px;
+        border: 1px solid rgb(var(--b2b-akzent, 199 42 9) / 0.35);
+        border-left: 5px solid rgb(var(--b2b-akzent, 199 42 9));
+        border-radius: 8px;
+        background: rgb(var(--b2b-akzent, 199 42 9) / 0.06);
+      }
+      .b2b-vororder-frage p {
+        margin: 0 0 12px;
+        font-size: 15px;
+        line-height: 1.5;
+      }
+      .b2b-vororder-frage__knopf {
+        padding: 11px 22px;
+        border: 1px solid rgb(var(--b2b-akzent, 199 42 9));
+        border-radius: 6px;
+        background: rgb(var(--b2b-akzent, 199 42 9));
+        color: rgb(255 255 255);
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .b2b-vororder-frage__knopf[disabled] { opacity: 0.5; }
+
       /* Der Hinweis unter der Tabelle, solange eine Position zu klein ist. */
       .b2b-vororder-sperre {
         margin: 0 0 12px;
@@ -388,17 +415,55 @@
         var wurzel = document.getElementById({{ section.id | json }});
         if (!wurzel) return;
 
-        /* Das Warenkorb-Merkmal ist das einzige, was der Rabatt-Function
-           spaeter sagt, dass dies eine Vororder ist. Es wird beim Betreten
-           der Maske gesetzt und steht danach im Warenkorb sichtbar drin. */
-        fetch('{{ routes.cart_update_url }}', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-          body: JSON.stringify({ attributes: { Vororder: TERMIN } })
-        }).catch(function () {
-          /* Schlaegt das fehl, ist die Bestellung eine normale - unschoen,
-             aber besser als eine Maske, die nicht mehr reagiert. */
-        });
+        /* Das Warenkorb-Merkmal ist das einzige, was der Rabatt-Function und
+           der Checkout-Pruefung sagt, dass dies eine Vororder ist. Es haengt
+           am ganzen Warenkorb, nicht an einzelnen Positionen - /cart/update.js
+           mit updates[] kann keine Positions-Merkmale setzen.
+
+           Deshalb wird hier nicht blind gesetzt: liegt schon Ware im
+           Warenkorb, die keine Vororder ist, wuerde sie stillschweigend zur
+           Vororder und damit in eine ganz andere Lieferzeit rutschen. In dem
+           Fall erst fragen. */
+        var LAEUFT_SCHON = {{ cart.attributes.Vororder | json }};
+        var IM_KORB = {{ cart.item_count | json }};
+
+        function merkmalSetzen() {
+          return fetch('{{ routes.cart_update_url }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({ attributes: { Vororder: TERMIN } })
+          });
+        }
+
+        if (!LAEUFT_SCHON && IM_KORB > 0) {
+          var frage = document.createElement('div');
+          frage.className = 'b2b-vororder-frage';
+          frage.innerHTML =
+            '<p><strong>In deinem Warenkorb liegt schon eine normale Bestellung.</strong> ' +
+            'Eine Vororder wird Wochen spaeter geliefert, beides zusammen laesst sich ' +
+            'nicht in einer Lieferung ausgeben.</p>';
+
+          var knopf = document.createElement('button');
+          knopf.type = 'button';
+          knopf.className = 'b2b-vororder-frage__knopf';
+          knopf.textContent = 'Warenkorb leeren und Vororder beginnen';
+          knopf.addEventListener('click', function () {
+            knopf.disabled = true;
+            fetch('{{ routes.cart_clear_url }}.js', { method: 'POST' })
+              .then(merkmalSetzen)
+              .then(function () { window.location.reload(); });
+          });
+          frage.appendChild(knopf);
+
+          var ziel = wurzel.querySelector('.b2b-vororder-leiste') || wurzel.firstChild;
+          wurzel.insertBefore(frage, ziel);
+        } else if (!LAEUFT_SCHON) {
+          merkmalSetzen().catch(function () {
+            /* Schlaegt das fehl, ist die Bestellung eine normale - unschoen,
+               aber besser als eine Maske, die nicht mehr reagiert. */
+          });
+        }
+
 
         var hinweis = document.createElement('p');
         hinweis.className = 'b2b-vororder-sperre';

@@ -1,0 +1,76 @@
+{%- comment -%}
+  Der Vororder-Hinweis im Warenkorb.
+
+  Warum er den ganzen Warenkorb betrifft und nicht einzelne Positionen: die
+  Vororder-Maske fuellt den Warenkorb ueber /cart/update.js mit updates[].
+  Dieser Weg kann keine Merkmale an einzelne Positionen haengen - nur an den
+  Warenkorb als Ganzes. Das passt aber zur Sache: eine Bestellung hat eine
+  Lieferung, und Vororder und Lagerware kommen Wochen auseinander. Ein
+  gemischter Warenkorb waere also ohnehin keine Bestellung, die sich
+  ausliefern laesst.
+
+  Deshalb ist die Regel: ein Warenkorb ist entweder eine Vororder oder eine
+  normale Bestellung. Die Maske fragt nach, bevor sie einen vorhandenen
+  Warenkorb umwidmet.
+
+  @param kompakt  true fuer die Warenkorb-Schublade (weniger Text)
+{%- endcomment -%}
+
+{%- if cart.attributes.Vororder != blank -%}
+  <div class="b2b-vororder-warenkorb{% if kompakt %} b2b-vororder-warenkorb--kompakt{% endif %}">
+    <p class="b2b-vororder-warenkorb__kopf">
+      Vororder zum {{ cart.attributes.Vororder | escape }}
+    </p>
+    {%- unless kompakt -%}
+      <p class="b2b-vororder-warenkorb__text">
+        <strong>Alle Positionen in diesem Warenkorb sind eine Vororder.</strong>
+        Sie kommen nicht aus dem Lager, sondern aus der Produktion nach dem
+        Annahmeschluss – die Lieferzeit ist deshalb deutlich länger als bei
+        einer normalen Bestellung. Dafür gilt der Vororder-Rabatt von 10 %.
+      </p>
+      <p class="b2b-vororder-warenkorb__text">
+        Brauchst du Ware aus dem Lager, gib sie bitte als eigene Bestellung
+        auf – eine Bestellung kann nur einmal geliefert werden.
+      </p>
+    {%- endunless -%}
+  </div>
+
+  {%- comment -%}
+    Das Aussehen gilt fuer beide Fassungen - die Schublade braucht es genauso.
+    Der Block steht nur einmal je Seite, weil das Snippet nur einmal je Seite
+    gerendert wird.
+  {%- endcomment -%}
+  <style>
+      .b2b-vororder-warenkorb {
+        margin-bottom: 24px;
+        padding: 18px 22px;
+        border: 1px solid rgb(var(--b2b-akzent, 199 42 9) / 0.35);
+        border-left: 5px solid rgb(var(--b2b-akzent, 199 42 9));
+        border-radius: 8px;
+        background: rgb(var(--b2b-akzent, 199 42 9) / 0.06);
+      }
+      .b2b-vororder-warenkorb__kopf {
+        margin: 0 0 8px;
+        color: rgb(var(--b2b-akzent, 199 42 9));
+        font-size: 17px;
+        font-weight: 700;
+        line-height: 1.3;
+      }
+      .b2b-vororder-warenkorb__text {
+        margin: 0 0 8px;
+        font-size: 15px;
+        line-height: 1.5;
+      }
+      .b2b-vororder-warenkorb__text:last-child {
+        margin-bottom: 0;
+      }
+      .b2b-vororder-warenkorb--kompakt {
+        margin-bottom: 12px;
+        padding: 10px 14px;
+      }
+      .b2b-vororder-warenkorb--kompakt .b2b-vororder-warenkorb__kopf {
+        margin: 0;
+        font-size: 15px;
+      }
+  </style>
+{%- endif -%}

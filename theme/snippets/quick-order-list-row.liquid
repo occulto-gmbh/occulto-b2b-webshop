@@ -169,8 +169,13 @@
 
   <td class="variant-item__quantity">
     {%- liquid
+      comment
+        In der Vororder-Maske zaehlt der heutige Bestand nicht: bestellt wird
+        Ware aus der naechsten Produktion. Eine Variante, die gerade leer ist,
+        bleibt hier also bestellbar.
+      endcomment
       assign check_against_inventory = true
-      if variant.inventory_management != 'shopify' or variant.inventory_policy == 'continue'
+      if variant.inventory_management != 'shopify' or variant.inventory_policy == 'continue' or ohne_lagergrenze
         assign check_against_inventory = false
       endif
       if variant.quantity_rule.min > variant.inventory_quantity and check_against_inventory
@@ -189,9 +194,11 @@
 
       assign is_available = false
       assign has_popover = false
-      unless variant.available == false or quantity_rule_soldout
+      if ohne_lagergrenze
         assign is_available = true
-      endunless
+      elsif variant.available and quantity_rule_soldout != true
+        assign is_available = true
+      endif
       if has_qty_rules or has_vol_pricing
         assign has_popover = true
       endif
@@ -287,7 +294,7 @@
               5er-Gebinde. min bleibt bei 0, damit Minus die Position wieder
               leeren kann - siehe Erklaerung in quantity-input.
             {%- endcomment -%}
-            {% render 'quantity-input', variant: variant, min: 0, mindestmenge: mindestmenge %}
+            {% render 'quantity-input', variant: variant, min: 0, mindestmenge: mindestmenge, ohne_lagergrenze: ohne_lagergrenze %}
           {%- endif -%}
         </div>
         {% if cart_qty > 0 %}

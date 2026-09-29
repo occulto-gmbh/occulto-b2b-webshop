@@ -39,6 +39,29 @@ export function cartValidationsGenerateRun(
   input.cart.lines.forEach((line) => {
     const { quantity, merchandise } = line;
 
+    /* Bestandspruefung fuer normale Bestellungen.
+
+       Hintergrund: damit eine Vororder ueberhaupt mehr bestellen kann als
+       heute im Lager liegt, muessen die Varianten in Shopify auf
+       "Weiterverkaufen, wenn nicht vorraetig" stehen. Damit faellt aber auch
+       der Schutz fuer normale Bestellungen weg - jeder koennte dann Lagerware
+       ueberbuchen. Diese Pruefung holt ihn genau dort zurueck. */
+    if (!istVororder && merchandise.__typename === "ProductVariant") {
+      const bestandRoh = merchandise.availableQuantityMetafield?.value;
+      const bestand = bestandRoh != null ? Number(bestandRoh) : null;
+
+      if (bestand != null && Number.isFinite(bestand) && quantity > bestand) {
+        const name = [merchandise.product.title, merchandise.title]
+          .filter(Boolean)
+          .join(" – ");
+
+        errors.push({
+          message: `${name}: Nur noch ${bestand} auf Lager. Groessere Mengen gehen ueber die Vororder.`,
+          target: "$.cart",
+        });
+      }
+    }
+
     if (istVororder && quantity < VORORDER_MINDESTMENGE) {
       const name =
         merchandise.__typename === "ProductVariant"
