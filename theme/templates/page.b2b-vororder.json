@@ -1,0 +1,41 @@
+/*
+ * Vororder-Maske.
+ *
+ * Dieselbe Sammelbestellung wie die Massenbestellung, aber im
+ * Vororder-Betrieb: Mindestmenge je Artikel, Regeln und Stichtag im Kopf,
+ * und der Warenkorb wird als Vororder markiert. Der Rabatt selbst kommt
+ * nicht von hier, sondern aus der Shopify Function order-value-discount.
+ *
+ * main-page ist abgeschaltet: der Kopf der Section bringt Titel und Regeln
+ * schon mit, ein zweiter Seitentitel darueber waere doppelt.
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "disabled": true,
+      "settings": {
+        "padding_top": 36,
+        "padding_bottom": 0
+      }
+    },
+    "vororder": {
+      "type": "catalog-order-list",
+      "settings": {
+        "b2b_vororder": true,
+        "b2b_titel": "Vororder abgeben",
+        "b2b_mindestmenge": 500,
+        "collection": "",
+        "products_per_page": 20,
+        "show_sku": true,
+        "color_scheme": "scheme-1",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    }
+  },
+  "order": [
+    "main",
+    "vororder"
+  ]
+}

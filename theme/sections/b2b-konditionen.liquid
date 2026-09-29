@@ -8,8 +8,10 @@
   WICHTIG - was dieser Abschnitt NICHT tut: er rechnet nichts ab. Er sagt nur,
   was gilt. Der Versandkostenfrei-Schwellenwert ist eine Versandeinstellung des
   Shops, der Vororder-Rabatt braucht - wie der bestehende Mengenrabatt - eine
-  Shopify Function in der App (b2b-webshop/extensions/order-value-discount
-  macht heute die 5 % ab 500 Packs). Beides liegt ausserhalb des Themes.
+  Shopify Function in der App. Zur Klarstellung, weil hier frueher etwas
+  Falsches stand: order-value-discount rechnet nach BESTELLWERT (ab 2.500 EUR
+  5 %, ab 5.000 EUR 10 %), nicht nach Packs. Beides liegt ausserhalb des
+  Themes.
 
   Der naechste Vororder-Termin wird gerechnet, nicht gepflegt: zwei feste
   Stichtage im Jahr, und je nach heutigem Datum ist der naechste der im Juni,
@@ -323,8 +325,9 @@
     {
       "type": "url",
       "id": "vororder_link",
+      "default": "/pages/vororder",
       "label": "Ziel der Knöpfe",
-      "info": "Noch nicht gesetzt: Es gibt bisher keinen eigenen Vororder-Ablauf. Bis dahin bietet sich die Kontaktseite an."
+      "info": "Zeigt auf die Vororder-Maske. Die Seite muss in der Shopify-Verwaltung mit dem Handle vororder und dem Template page.b2b-vororder angelegt sein."
     },
     {
       "type": "text",
