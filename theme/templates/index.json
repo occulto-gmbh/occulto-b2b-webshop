@@ -229,7 +229,7 @@
     "konditionen": {
       "type": "b2b-konditionen",
       "settings": {
-        "vororder_link": "/pages/contact"
+        "vororder_link": "/pages/vororder"
       }
     }
   },

@@ -81,14 +81,14 @@
         {%- endcomment -%}
         <a
           class="b2b-kond__knopf{% if naechster_monat == 'Juni' %} b2b-kond__knopf--naechster{% endif %}"
-          href="{{ section.settings.vororder_link | default: '#' }}"
+          href="{{ section.settings.vororder_link | default: '/pages/vororder' }}"
         >
           {{ section.settings.knopf_text | escape }}
           <span class="b2b-kond__knopfdatum">bis 15. Juni</span>
         </a>
         <a
           class="b2b-kond__knopf{% if naechster_monat == 'Dezember' %} b2b-kond__knopf--naechster{% endif %}"
-          href="{{ section.settings.vororder_link | default: '#' }}"
+          href="{{ section.settings.vororder_link | default: '/pages/vororder' }}"
         >
           {{ section.settings.knopf_text | escape }}
           <span class="b2b-kond__knopfdatum">bis 15. Dezember</span>
@@ -325,7 +325,6 @@
     {
       "type": "url",
       "id": "vororder_link",
-      "default": "/pages/vororder",
       "label": "Ziel der Knöpfe",
       "info": "Zeigt auf die Vororder-Maske. Die Seite muss in der Shopify-Verwaltung mit dem Handle vororder und dem Template page.b2b-vororder angelegt sein."
     },
