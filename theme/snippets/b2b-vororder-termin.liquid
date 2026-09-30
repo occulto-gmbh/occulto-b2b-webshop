@@ -1,0 +1,47 @@
+{%- comment -%}
+  Der naechste Vororder-Termin, als Text.
+
+  Zwei feste Stichtage im Jahr, die Auslieferung liegt drei Monate dahinter -
+  am 30.09.2026 so festgelegt:
+    Annahmeschluss 15. Juni      -> Auslieferung ab 15. September
+    Annahmeschluss 15. Dezember  -> Auslieferung ab 15. Maerz des Folgejahres
+
+  Gerechnet, nicht gepflegt: so steht nirgends ein abgelaufenes Datum.
+  Und an genau einer Stelle, weil Maske, Warenkorb und Startseite dasselbe
+  Datum zeigen muessen.
+
+  Das Snippet GIBT den Text AUS, statt Variablen zu setzen - render hat einen
+  eigenen Gueltigkeitsbereich, gesetzte Variablen saehe der Aufrufer nicht.
+
+  @param teil  'termin' (Standard) oder 'lieferung'
+
+  @example
+  Annahmeschluss {% render 'b2b-vororder-termin' %},
+  Auslieferung ab {% render 'b2b-vororder-termin', teil: 'lieferung' %}
+{%- endcomment -%}
+
+{%- liquid
+  assign heute = 'now' | date: '%Y%m%d' | plus: 0
+  assign jahr = 'now' | date: '%Y' | plus: 0
+  assign termin_juni = jahr | times: 10000 | plus: 615
+  assign termin_dezember = jahr | times: 10000 | plus: 1215
+
+  if heute <= termin_juni
+    assign t = '15. Juni ' | append: jahr
+    assign l = '15. September ' | append: jahr
+  elsif heute <= termin_dezember
+    assign folgejahr = jahr | plus: 1
+    assign t = '15. Dezember ' | append: jahr
+    assign l = '15. März ' | append: folgejahr
+  else
+    assign folgejahr = jahr | plus: 1
+    assign t = '15. Juni ' | append: folgejahr
+    assign l = '15. September ' | append: folgejahr
+  endif
+
+  if teil == 'lieferung'
+    echo l
+  else
+    echo t
+  endif
+-%}

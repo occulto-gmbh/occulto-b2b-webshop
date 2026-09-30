@@ -282,14 +282,12 @@
                                 # immer die native {min:1, increment:1} ohne B2B-Preislisten-Katalog, deshalb hart auf 5.
                                 assign pack_step = 5
 
-                                # In einer Vororder zaehlt der heutige Bestand nicht: bestellt wird
-                                # Ware aus der naechsten Produktion. Ohne diese Ausnahme stand das
-                                # Plus bei 500 Packs still, weil der Deckel beim Lagerbestand lag.
+                                # Der Shopify-Warenkorb enthaelt nur Nachbestellungen, und die
+                                # kommen aus dem Lager - also gilt der Bestand als Obergrenze.
+                                # Vorordern haben ihren eigenen Korb ohne diese Grenze.
                                 assign cart_quantity_max = null
-                                if cart.attributes.Vororder == blank
-                                  if item.variant.inventory_management == 'shopify' and item.variant.inventory_policy != 'continue'
-                                    assign cart_quantity_max = item.variant.inventory_quantity | at_least: 0
-                                  endif
+                                if item.variant.inventory_management == 'shopify' and item.variant.inventory_policy != 'continue'
+                                  assign cart_quantity_max = item.variant.inventory_quantity | at_least: 0
                                 endif
                               -%}
                               <input

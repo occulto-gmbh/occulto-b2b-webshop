@@ -58,7 +58,12 @@
                   {%- endif -%}
                 </div>
 
-                {% render 'dealer-discount-hint' %}
+                {%- comment -%}
+                  Hier stand dealer-discount-hint ("Noch X Packs bis 5 %
+                  Mengenrabatt"). Dieselbe Aussage steht schon oben im Kopf
+                  der Nachbestellung (snippets/b2b-korb-art.liquid) - der
+                  Rabatt soll an genau einer Stelle stehen, und zwar oben.
+                {%- endcomment -%}
 
                 <div class="totals">
                   <h2 class="totals__total">{{ 'sections.cart.estimated_total' | t }}</h2>

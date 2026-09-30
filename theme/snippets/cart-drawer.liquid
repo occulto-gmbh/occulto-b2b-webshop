@@ -540,7 +540,7 @@
             {%- endif -%}
           </div>
 
-          {% render 'dealer-discount-hint' %}
+          {%- comment -%} Rabatt steht nur oben, im Kopf der Nachbestellung. {%- endcomment -%}
 
           <div class="totals" role="status">
             <h2 class="totals__total">{{ 'sections.cart.estimated_total' | t }}</h2>

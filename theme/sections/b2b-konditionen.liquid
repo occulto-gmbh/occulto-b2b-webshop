@@ -27,35 +27,19 @@
   assign termin_dezember = jahr | times: 10000 | plus: 1215
 
   if heute <= termin_juni
-    assign naechster_tag = 15
     assign naechster_monat = 'Juni'
-    assign naechstes_jahr = jahr
   elsif heute <= termin_dezember
-    assign naechster_tag = 15
     assign naechster_monat = 'Dezember'
-    assign naechstes_jahr = jahr
   else
-    assign naechster_tag = 15
     assign naechster_monat = 'Juni'
-    assign naechstes_jahr = jahr | plus: 1
   endif
-
-  assign naechster_termin = naechster_tag | append: '. ' | append: naechster_monat | append: ' ' | append: naechstes_jahr
 
   comment
-    Die Auslieferung liegt drei Monate hinter dem Annahmeschluss - am
-    30.09.2026 so festgelegt. Juni liefert im September, Dezember im Maerz
-    des Folgejahres. Bewusst gerechnet und nicht gepflegt, damit nirgends ein
-    abgelaufenes Datum steht.
+    Die Texte fuer Annahmeschluss und Auslieferung kommen aus
+    snippets/b2b-vororder-termin.liquid - dieselbe Quelle wie Maske und
+    Warenkorb. Hier wird nur noch gebraucht, welcher der beiden Knoepfe der
+    naechste ist.
   endcomment
-  if naechster_monat == 'Juni'
-    assign liefer_monat = 'September'
-    assign liefer_jahr = naechstes_jahr
-  else
-    assign liefer_monat = 'März'
-    assign liefer_jahr = naechstes_jahr | plus: 1
-  endif
-  assign liefer_termin = '15. ' | append: liefer_monat | append: ' ' | append: liefer_jahr
 -%}
 
 <div class="b2b-kond">
@@ -85,8 +69,8 @@
     <div class="b2b-kond__termine">
       <p class="b2b-kond__terminkopf">
         {{ section.settings.termin_kopf | escape }}
-        <strong>{{ naechster_termin }}</strong>
-        &middot; Auslieferung ab <strong>{{ liefer_termin }}</strong>
+        <strong>{% render 'b2b-vororder-termin' %}</strong>
+        &middot; Auslieferung ab <strong>{% render 'b2b-vororder-termin', teil: 'lieferung' %}</strong>
       </p>
 
       <div class="b2b-kond__knoepfe">

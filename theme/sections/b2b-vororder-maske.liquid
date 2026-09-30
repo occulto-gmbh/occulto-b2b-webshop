@@ -1,25 +1,17 @@
 {%- comment -%}
-  Vororder-Maske.
+  Vororder – die Auswahl.
 
-  Eine Vororder ist KEINE Shopify-Bestellung. Sie geht als E-Mail-Anfrage an
-  Occulto, wird dort von Hand bearbeitet und mit einer Rechnung beantwortet.
-  Deshalb fasst dieser Abschnitt den Warenkorb nicht an: er sammelt die Mengen
-  im Browser und schickt sie am Ende als Text ueber das Kontaktformular.
+  Eine Vororder ist KEINE Shopify-Bestellung. Sie hat einen eigenen Korb im
+  Browser (assets/b2b-vororder.js), die Übersicht dazu steht im Warenkorb
+  unter /cart (sections/b2b-vororder-korb.liquid), und von dort geht sie als
+  E-Mail-Anfrage an Occulto. Occulto schreibt dann von Hand eine Rechnung.
 
-  Warum ueberhaupt so (entschieden am 30.09.2026): bestellt wird Ware aus der
-  naechsten Produktion, die es heute noch gar nicht gibt. Shopify kuerzt jede
-  Menge auf den Lagerbestand, sobald eine Variante auf "Verkauf beenden, wenn
-  nicht vorraetig" steht - und das laesst sich weder im Theme noch in einer
-  Function abstellen. Ohne Warenkorb stellt sich die Frage nicht mehr, und die
-  Vororder landet auch nicht als Auftrag in der Wawi.
+  Warum nicht der Shopify-Warenkorb: Shopify kürzt dort jede Menge auf den
+  Lagerbestand, und eine Vororder bestellt Ware aus der nächsten Produktion,
+  die es heute noch gar nicht gibt.
 
-  Fuer den Haendler aendert sich am Weg nichts: dieselbe Tabelle, dieselben
-  Mengenfelder. Nur der Knopf am Ende fuehrt nicht zur Kasse.
-
-  Die Mengen stehen im localStorage, nicht in den Formularfeldern. Grund:
-  Shopify gibt Liquid hoechstens 50 Produkte je Seite, der Katalog hat 108.
-  Wer auf Seite 2 blaettert, wuerde sonst verlieren, was er auf Seite 1
-  eingetragen hat.
+  Diese Seite sammelt nur. Absenden geht erst in der Übersicht – der
+  Händler soll sehen, was er anfragt, bevor es rausgeht.
 {%- endcomment -%}
 
 {%- liquid
@@ -31,36 +23,6 @@
   assign collection = collections[section.settings.collection]
   assign mindestmenge = section.settings.mindestmenge
   assign satz = section.settings.rabatt_prozent
-
-  comment
-    Zwei feste Stichtage im Jahr. Die Auslieferung liegt einen festen Abstand
-    dahinter - am 30.09.2026 auf drei Monate gesetzt: Annahmeschluss 15.06
-    liefert ab 15.09, Annahmeschluss 15.12 liefert ab 15.03 des Folgejahres.
-  endcomment
-  assign heute = 'now' | date: '%Y%m%d' | plus: 0
-  assign jahr = 'now' | date: '%Y' | plus: 0
-  assign termin_juni = jahr | times: 10000 | plus: 615
-  assign termin_dezember = jahr | times: 10000 | plus: 1215
-
-  if heute <= termin_juni
-    assign termin_text = '15. Juni'
-    assign termin_jahr = jahr
-    assign liefer_text = '15. September'
-    assign liefer_jahr = jahr
-  elsif heute <= termin_dezember
-    assign termin_text = '15. Dezember'
-    assign termin_jahr = jahr
-    assign liefer_text = '15. März'
-    assign liefer_jahr = jahr | plus: 1
-  else
-    assign termin_text = '15. Juni'
-    assign termin_jahr = jahr | plus: 1
-    assign liefer_text = '15. September'
-    assign liefer_jahr = jahr | plus: 1
-  endif
-
-  assign termin_voll = termin_text | append: ' ' | append: termin_jahr
-  assign liefer_voll = liefer_text | append: ' ' | append: liefer_jahr
 -%}
 
 {{ 'b2b-vororder.css' | asset_url | stylesheet_tag }}
@@ -83,175 +45,143 @@
   {%- unless b2b_sichtbar -%}
     {% render 'b2b-freigabe-link', klasse: 'button button--primary' %}
   {%- else -%}
-    {%- comment -%}
-      Die Bestaetigung nach dem Absenden.
-
-      form.posted_successfully? gaebe es nur INNERHALB des form-Blocks, und
-      dort steht schon der Absendeknopf. Shopify haengt nach einem
-      erfolgreichen Kontaktformular aber ?contact_posted=true an die URL -
-      Liquid kann Abfrageparameter nicht lesen, das Skript schon. Deshalb
-      liegt die Bestaetigung hier bereit und wird im Browser aufgedeckt.
-    {%- endcomment -%}
-    <div class="b2b-vo-fertig" data-fertig hidden>
-      <h1>Deine Vororder ist angekommen.</h1>
-      <p>
-        Wir prüfen sie und melden uns mit einer Rechnung. Die Ware wird nach
-        dem Annahmeschluss {{ termin_voll }} produziert und voraussichtlich ab
-        dem {{ liefer_voll }} ausgeliefert.
+    <header class="b2b-vo-kopf">
+      <p class="b2b-vo-kopf__marke">Vororder</p>
+      <h1 class="b2b-vo-kopf__titel">{{ section.settings.titel | escape }}</h1>
+      <dl class="b2b-vo-kopf__regeln">
+        <div>
+          <dt>Rabatt</dt>
+          <dd>{{ satz }} % auf die ganze Vororder</dd>
+        </div>
+        <div>
+          <dt>Mindestmenge</dt>
+          <dd>{{ mindestmenge }} Packs je Artikel, dann in 5er-Schritten</dd>
+        </div>
+        <div>
+          <dt>Annahmeschluss</dt>
+          <dd>{% render 'b2b-vororder-termin' %}</dd>
+        </div>
+        <div>
+          <dt>Auslieferung</dt>
+          <dd>ab {% render 'b2b-vororder-termin', teil: 'lieferung' %}</dd>
+        </div>
+      </dl>
+      <p class="b2b-vo-kopf__hinweis">
+        Wähle hier aus, im Warenkorb siehst du die Übersicht und schickst die
+        Vororder ab. Sie ist eine Anfrage, keine Bestellung: du wirst nicht zur
+        Kasse geleitet, wir schicken dir eine Rechnung.
       </p>
-      <a class="button" href="{{ routes.root_url }}">Zurück zur Startseite</a>
+    </header>
+
+    <div class="b2b-vo-leiste">
+      <label class="b2b-vo-leiste__label" for="b2b-sort-{{ section.id }}">Sortieren nach</label>
+      <select class="b2b-vo-leiste__wahl" id="b2b-sort-{{ section.id }}">
+        <option value="standard">Reihenfolge des Katalogs</option>
+        <option value="name">Name A–Z</option>
+        <option value="preis-auf">Preis aufsteigend</option>
+        <option value="preis-ab">Preis absteigend</option>
+        <option value="art">Produktart</option>
+      </select>
     </div>
 
-    <div data-maske>
-      <header class="b2b-vo-kopf">
-        <p class="b2b-vo-kopf__marke">Vororder</p>
-        <h1 class="b2b-vo-kopf__titel">{{ section.settings.titel | escape }}</h1>
-        <dl class="b2b-vo-kopf__regeln">
-          <div>
-            <dt>Rabatt</dt>
-            <dd>{{ satz }} % auf die ganze Vororder</dd>
-          </div>
-          <div>
-            <dt>Mindestmenge</dt>
-            <dd>{{ mindestmenge }} Packs je Artikel</dd>
-          </div>
-          <div>
-            <dt>Annahmeschluss</dt>
-            <dd>{{ termin_voll }}</dd>
-          </div>
-          <div>
-            <dt>Auslieferung</dt>
-            <dd>ab {{ liefer_voll }}</dd>
-          </div>
-        </dl>
-        <p class="b2b-vo-kopf__hinweis">
-          Eine Vororder ist eine Anfrage, keine Bestellung: du wirst nicht zur
-          Kasse geleitet. Wir prüfen sie und schicken dir eine Rechnung.
-        </p>
-      </header>
-
-      <div class="b2b-vo-leiste">
-        <label class="b2b-vo-leiste__label" for="b2b-sort-{{ section.id }}">Sortieren nach</label>
-        <select class="b2b-vo-leiste__wahl" id="b2b-sort-{{ section.id }}">
-          <option value="standard">Reihenfolge des Katalogs</option>
-          <option value="name">Name A–Z</option>
-          <option value="preis-auf">Preis aufsteigend</option>
-          <option value="preis-ab">Preis absteigend</option>
-          <option value="art">Produktart</option>
-        </select>
-      </div>
-
-      <div
-        class="b2b-vo"
-        id="b2b-vo-{{ section.id }}"
-        data-mindestmenge="{{ mindestmenge }}"
-        data-satz="{{ satz }}"
-      >
-        {% paginate collection.products by section.settings.products_per_page %}
-          <div class="b2b-vo-liste">
-            {%- for product in collection.products -%}
-              <article
-                class="b2b-vo-produkt"
-                data-name="{{ product.title | escape }}"
-                data-preis="{{ product.price_min }}"
-                data-art="{{ product.type | escape }}"
-              >
-                <div class="b2b-vo-produkt__kopf">
-                  {%- if product.featured_media -%}
-                    {{
-                      product.featured_media
-                      | image_url: width: 144
-                      | image_tag:
-                        loading: 'lazy',
-                        class: 'b2b-vo-produkt__bild',
-                        width: 72,
-                        height: 72
-                    }}
-                  {%- else -%}
-                    <span class="b2b-vo-produkt__bild b2b-vo-produkt__bild--leer"></span>
-                  {%- endif -%}
-                  <div>
-                    <h2 class="b2b-vo-produkt__titel">{{ product.title | escape }}</h2>
-                    <p class="b2b-vo-produkt__preis">
-                      {%- render 'b2b-preis', preis: product.price_min, vororder: true, je_pack: true -%}
-                    </p>
-                  </div>
+    <div
+      class="b2b-vo"
+      data-mindestmenge="{{ mindestmenge }}"
+      data-satz="{{ satz }}"
+    >
+      {% paginate collection.products by section.settings.products_per_page %}
+        <div class="b2b-vo-liste">
+          {%- for product in collection.products -%}
+            {%- liquid
+              assign bild_url = ''
+              if product.featured_media
+                assign bild_url = product.featured_media | image_url: width: 128
+              endif
+            -%}
+            <article
+              class="b2b-vo-produkt"
+              data-name="{{ product.title | escape }}"
+              data-preis="{{ product.price_min }}"
+              data-art="{{ product.type | escape }}"
+            >
+              <div class="b2b-vo-produkt__kopf">
+                {%- if product.featured_media -%}
+                  {{
+                    product.featured_media
+                    | image_url: width: 144
+                    | image_tag:
+                      loading: 'lazy',
+                      class: 'b2b-vo-produkt__bild',
+                      width: 72,
+                      height: 72
+                  }}
+                {%- else -%}
+                  <span class="b2b-vo-produkt__bild"></span>
+                {%- endif -%}
+                <div>
+                  <h2 class="b2b-vo-produkt__titel">{{ product.title | escape }}</h2>
+                  <p class="b2b-vo-produkt__preis">
+                    {%- render 'b2b-preis', preis: product.price_min, vororder: true, je_pack: true -%}
+                  </p>
                 </div>
+              </div>
 
-                <ul class="b2b-vo-varianten">
-                  {%- for variant in product.variants -%}
-                    <li class="b2b-vo-variante">
-                      <span class="b2b-vo-variante__name">
-                        {{ variant.title | escape }}
-                        {%- if variant.sku != blank -%}
-                          <span class="b2b-vo-variante__sku">{{ variant.sku | escape }}</span>
-                        {%- endif -%}
-                      </span>
+              <ul class="b2b-vo-varianten">
+                {%- for variant in product.variants -%}
+                  <li class="b2b-vo-variante">
+                    <span class="b2b-vo-variante__name">
+                      {{ variant.title | escape }}
+                      {%- if variant.sku != blank -%}
+                        <span class="b2b-vo-variante__sku">{{ variant.sku | escape }}</span>
+                      {%- endif -%}
+                    </span>
+                    {%- comment -%}
+                      Kein Lagerdeckel, kein "Ausverkauft": bestellt wird Ware
+                      aus der naechsten Produktion.
+                    {%- endcomment -%}
+                    <div
+                      class="b2b-vo-zahl"
+                      data-vo-zahl
+                      data-variante="{{ variant.id }}"
+                      data-bezeichnung="{{ product.title | escape }} / {{ variant.title | escape }}"
+                      data-sku="{{ variant.sku | escape }}"
+                      data-preis="{{ variant.price }}"
+                      data-bild="{{ bild_url }}"
+                    >
+                      <button type="button" class="b2b-vo-zahl__knopf" data-minus aria-label="Weniger">&minus;</button>
                       <input
-                        class="b2b-vo-menge"
                         type="number"
                         inputmode="numeric"
                         min="0"
                         step="5"
                         value=""
                         placeholder="0"
-                        data-variante="{{ variant.id }}"
-                        data-bezeichnung="{{ product.title | escape }} / {{ variant.title | escape }}"
-                        data-sku="{{ variant.sku | escape }}"
-                        data-preis="{{ variant.price }}"
                         aria-label="Menge in Packs für {{ product.title | escape }} {{ variant.title | escape }}"
                       >
-                    </li>
-                  {%- endfor -%}
-                </ul>
-              </article>
-            {%- else -%}
-              <p>Aktuell sind keine Produkte für die Vororder verfügbar.</p>
-            {%- endfor -%}
-          </div>
-          {% render 'pagination', paginate: paginate %}
-        {%- endpaginate -%}
-      </div>
+                      <button type="button" class="b2b-vo-zahl__knopf" data-plus aria-label="Mehr">+</button>
+                    </div>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            </article>
+          {%- else -%}
+            <p>Aktuell sind keine Produkte für die Vororder verfügbar.</p>
+          {%- endfor -%}
+        </div>
+        {% render 'pagination', paginate: paginate %}
+      {%- endpaginate -%}
+    </div>
 
-      <div class="b2b-vo-fuss">
-        <p class="b2b-vo-fuss__stand" data-stand>Noch nichts ausgewählt.</p>
-        <p class="b2b-vo-fuss__fehler" data-fehler hidden></p>
-
-        {%- form 'contact', id: 'B2bVororder', class: 'b2b-vo-form' -%}
-          {%- comment -%}
-            Die Anfrage geht ueber Shopifys Kontaktformular an die
-            Kundensupport-Adresse des Shops. Kein eigener Versandweg, keine
-            App - und der Haendler bekommt die uebliche Bestaetigungsseite.
-          {%- endcomment -%}
-          <input type="hidden" name="contact[Art der Anfrage]" value="Vororder">
-          <input type="hidden" name="contact[Annahmeschluss]" value="{{ termin_voll }}">
-          <input type="hidden" name="contact[Auslieferung ab]" value="{{ liefer_voll }}">
-          <input type="hidden" name="contact[Kundennummer]" value="{{ customer.id }}">
-          <input
-            type="hidden"
-            name="contact[Firma]"
-            value="{{ customer.default_address.company | escape }}"
-          >
-          <input type="hidden" name="contact[name]" value="{{ customer.name | escape }}">
-          <input type="hidden" name="contact[email]" value="{{ customer.email }}">
-          <input type="hidden" name="contact[Positionen]" value="" data-positionen>
-          <input type="hidden" name="contact[Summe]" value="" data-summe>
-
-          <label class="b2b-vo-form__notiz" for="b2b-vo-notiz">
-            Anmerkung (optional)
-            <textarea
-              id="b2b-vo-notiz"
-              name="contact[body]"
-              rows="3"
-              placeholder="Wunschtermin, abweichende Lieferadresse, Rückfragen …"
-            ></textarea>
-          </label>
-
-          <button type="submit" class="button b2b-vo-form__knopf" data-absenden>
-            Vororder unverbindlich anfragen
-          </button>
-        {%- endform -%}
-      </div>
+    {%- comment -%}
+      Die Leiste unten. Bewusst nur eine Zeile: vorher stand hier das ganze
+      Absendeformular mit Notizfeld, und die klebende Leiste war so hoch, dass
+      sie unten abgeschnitten wurde. Absenden gehoert in die Uebersicht.
+    {%- endcomment -%}
+    <div class="b2b-vo-fuss" data-vo-leiste>
+      <p class="b2b-vo-fuss__stand" data-stand>Noch nichts ausgewählt.</p>
+      <a class="button b2b-vo-fuss__weiter ist-gesperrt" href="{{ routes.cart_url }}" data-weiter aria-disabled="true">
+        Zum Warenkorb
+      </a>
     </div>
   {%- endunless -%}
 </div>
@@ -261,17 +191,8 @@
   "name": "B2B-Vororder-Maske",
   "limit": 1,
   "settings": [
-    {
-      "type": "text",
-      "id": "titel",
-      "default": "Vororder abgeben",
-      "label": "Überschrift"
-    },
-    {
-      "type": "collection",
-      "id": "collection",
-      "label": "Sortiment"
-    },
+    { "type": "text", "id": "titel", "default": "Vororder abgeben", "label": "Überschrift" },
+    { "type": "collection", "id": "collection", "label": "Sortiment" },
     {
       "type": "range",
       "id": "products_per_page",
@@ -281,22 +202,9 @@
       "default": 50,
       "label": "Produkte je Seite"
     },
-    {
-      "type": "number",
-      "id": "mindestmenge",
-      "default": 500,
-      "label": "Mindestmenge je Artikel (Packs)"
-    },
-    {
-      "type": "number",
-      "id": "rabatt_prozent",
-      "default": 10,
-      "label": "Rabatt in Prozent"
-    },
-    {
-      "type": "header",
-      "content": "Abstand"
-    },
+    { "type": "number", "id": "mindestmenge", "default": 500, "label": "Mindestmenge je Artikel (Packs)" },
+    { "type": "number", "id": "rabatt_prozent", "default": 10, "label": "Rabatt in Prozent" },
+    { "type": "header", "content": "Abstand" },
     {
       "type": "range",
       "id": "padding_top",

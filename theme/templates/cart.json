@@ -31,13 +31,11 @@
       "blocks": {
         "subtotal": {
           "type": "subtotal",
-          "settings": {
-          }
+          "settings": {}
         },
         "buttons": {
           "type": "buttons",
-          "settings": {
-          }
+          "settings": {}
         }
       },
       "block_order": [
@@ -49,9 +47,17 @@
         "padding_top": 40,
         "padding_bottom": 40
       }
+    },
+    "vororder": {
+      "type": "b2b-vororder-korb",
+      "settings": {
+        "mindestmenge": 500,
+        "rabatt_prozent": 10
+      }
     }
   },
   "order": [
+    "vororder",
     "cart-items",
     "cart-branch-split",
     "cart-footer"
