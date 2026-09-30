@@ -106,12 +106,6 @@
   opacity: 0.6;
 }
 
-/* Am Rand oeffnet ein Klick nicht die Produktseite, sondern holt die Kachel
-   nach vorn. "Details" waere dort also ein falsches Versprechen. */
-.b2b-karussell.ist-rad .b2b-karussell__element:not(.ist-mitte) .b2b-karussell__mehr {
-  opacity: 0;
-}
-
 /* Der Zeiger sagt, dass etwas passiert - nur eben etwas anderes. */
 .b2b-karussell.ist-rad .b2b-karussell__element:not(.ist-mitte) .b2b-karussell__bild {
   cursor: pointer;

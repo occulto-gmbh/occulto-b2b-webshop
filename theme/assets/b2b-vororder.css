@@ -208,9 +208,8 @@
 }
 
 /* ------------------------------------------------------- Leiste unten
-   Eine Zeile, klebt am Fensterrand. Vorher stand hier das ganze
-   Absendeformular, und die Leiste war so hoch, dass sie unten
-   abgeschnitten wurde. */
+   Eine Zeile, klebt am Fensterrand. Mehr Inhalt machte die Leiste so hoch,
+   dass sie unten abgeschnitten wurde. */
 
 .b2b-vo-fuss {
   position: sticky;

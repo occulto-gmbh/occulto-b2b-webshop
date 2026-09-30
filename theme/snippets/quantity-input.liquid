@@ -19,41 +19,19 @@
 
 {%- liquid
   assign pack_step = 5
-
-  comment
-    quantity_min landet in data-min, nicht in min. Der Unterschied ist
-    wichtig: global.js springt beim Klick auf Plus von 0 direkt auf data-min,
-    wenn data-min groesser als der Schritt ist, und prueft die Eingabe gegen
-    data-min. Das min-Attribut ist dagegen der Boden, auf den Minus
-    zurueckfaellt - steht dort 500, kommt man nie wieder auf 0 und damit nie
-    wieder aus der Position heraus.
-
-    Die Vororder-Maske gibt deshalb mindestmenge: 500 herein und laesst min
-    bei 0. Plus springt dann auf 500 und danach in 5er-Schritten weiter.
-  endcomment
-  assign quantity_min = mindestmenge | default: pack_step
+  assign quantity_min = pack_step
   assign quantity_step = pack_step
-  assign input_min = min | default: pack_step
+  assign input_min = min | default: quantity_min
 
-  comment
-    ohne_lagergrenze: die Vororder bestellt Ware, die es noch gar nicht gibt.
-    Der heutige Bestand ist dafuer bedeutungslos, also faellt hier der Deckel
-    weg. Die harte Grenze liegt aber nicht hier, sondern bei Shopify selbst:
-    solange eine Variante auf "Verkauf beenden, wenn nicht vorraetig" steht,
-    lehnt /cart/update.js jede Menge ueber dem Bestand ab, egal was im
-    Eingabefeld steht.
-  endcomment
   assign quantity_max = null
-  unless ohne_lagergrenze
-    if variant.inventory_management == 'shopify' and variant.inventory_policy != 'continue'
-      assign quantity_max = variant.inventory_quantity | at_least: 0
+  if variant.inventory_management == 'shopify' and variant.inventory_policy != 'continue'
+    assign quantity_max = variant.inventory_quantity | at_least: 0
+  endif
+  if variant.quantity_rule.max != null
+    if quantity_max == null or variant.quantity_rule.max < quantity_max
+      assign quantity_max = variant.quantity_rule.max
     endif
-    if variant.quantity_rule.max != null
-      if quantity_max == null or variant.quantity_rule.max < quantity_max
-        assign quantity_max = variant.quantity_rule.max
-      endif
-    endif
-  endunless
+  endif
 -%}
 
 <quantity-input class="quantity cart-quantity">

@@ -2,21 +2,17 @@
   Preis mit Haendlerrabatt.
 
   Gezeigt wird immer der Preis, den der Checkout fuer den AKTUELLEN Warenkorb
-  berechnen wuerde - nicht der bestmoegliche. Vorher stand hier auf jeder
-  Kachel ein Preis mit -5 %, auch bei einem einzigen Pack, und die Bedingung
-  nur klein daneben. Das war ein Preisversprechen, das der Checkout nicht
-  eingeloest haette.
+  berechnen wuerde - nicht der bestmoegliche. Ein Preis mit -5 % auf jeder
+  Kachel waere ein Preisversprechen, das der Checkout nicht einloest.
 
   Die Regeln stehen HIER und sonst nirgends im Theme. Sie muessen mit
   b2b-webshop/extensions/order-value-discount/src/run.ts uebereinstimmen -
   dort wird gerechnet, hier wird nur angezeigt. Weichen sie voneinander ab,
   steht im Shop ein anderer Preis als an der Kasse.
 
-  Am 29.09.2026 mit Occulto festgelegt:
+  Die Saetze:
     Nachbestellung   5 %  ab 500 Packs im Warenkorb
     Vororder        10 %  ohne weitere Bedingung
-  Die fruehere Staffel nach Bestellsumme (ab 2.500 EUR 5 %, ab 5.000 EUR
-  10 %) ist damit abgeloest.
 
   Die Schwelle laesst sich beim Anzeigen pruefen, weil Liquid den laufenden
   Warenkorb kennt: cart.item_count zaehlt die Packs. Unter der Schwelle steht
@@ -36,12 +32,9 @@
 
   comment
     Der Vororder-Satz kommt ausschliesslich von der Maske, die ihn
-    hereingibt - nie aus dem Warenkorb.
-
-    Vorher stand hier: traegt der Warenkorb das Vororder-Merkmal, gilt 10 %
-    auf jeder Seite. Das war zu schlau. Das Merkmal ueberlebt einen geleerten
-    Warenkorb, und so standen auf jeder Kachel unter Produkte -10 % - ein
-    Rabatt, den es dort gar nicht gibt, und dazu schon ab dem ersten Pack.
+    hereingibt - nie aus dem Warenkorb: ein Warenkorb-Merkmal ueberlebt das
+    Leeren und wuerde auf jeder Kachel -10 % zeigen, schon ab dem ersten
+    Pack.
   endcomment
   assign greift = false
   if vororder

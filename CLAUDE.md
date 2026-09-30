@@ -18,7 +18,11 @@ für diesen Shop vom Nutzer ausdrücklich erlaubt. Nie `shopify theme publish`.
      Agent – ein Haiku-Probelauf brauchte 84.000 Tokens und fand einen von vier Befunden.
    - Subagent `texter` (Sonnet), wenn sichtbarer Kundentext geändert wurde.
    - Subagent `gegenleser` (Sonnet) bei Logik (Warenkorb, Preise, Rabatt, Vororder) oder Diffs über ~100 Zeilen.
+   - Lässt man einen Agenten Kommentare umschreiben: `node werkzeuge/nur-kommentare.mjs <dateien>` belegt,
+     dass außerhalb der Kommentare kein Zeichen geändert wurde.
    Befunde von Agenten selbst nachprüfen, bevor sie umgesetzt oder weitergegeben werden.
+   Im Bericht nennen, welche Prüfungen liefen und was die Agenten gekostet haben (Tokens aus der Rückmeldung).
+   Das gilt für jeden größeren Auftrag – vom Nutzer am 30.09.2026 so verlangt.
 5. **Messen, nicht schätzen.** Im Browser per JS bei 1440 und 375 px: Maße, Querüberlauf, berechnete
    Stile, echte Serverantworten. Screenshot nur als Beleg am Ende.
 6. **Commit** mit dem Warum im Text. Kein Push – keine Schreibrechte auf GitHub (Stand 30.09.2026).
@@ -74,6 +78,11 @@ Nie im Live-Theme aufheben.
   `frontend-design` laden – aber die Marke steht fest, keine neue Bildsprache erfinden.
 
 ## Offen (Stand 30.09.2026)
+
+- Gestaltung, noch nicht umgesetzt: Versal-Etiketten in Vororder und Warenkorb (`text-transform: uppercase`
+  an `dt` und `__marke`) und rote Transparenzflächen (`rgb(akzent / 0.06)`) – beides widerspricht den
+  Regeln oben bzw. in `snippets/b2b-marke.liquid` („Rot nur deckend").
+- `layout/password.liquid` und `templates/gift_card.liquid` laden noch die Shopify-Schriften und nicht basic-sans.
 
 - `main` liegt lokal mehrere Commits vor `origin`, Push erst mit Schreibrechten.
 - Functions gebaut und getestet, **nicht ausgerollt**: `shopify app deploy` wirkt sofort live, nur auf Zuruf.

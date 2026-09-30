@@ -11,7 +11,7 @@
  *   /pages/vororder   die Auswahl       (.b2b-vo)
  *   /cart             die Übersicht     (.b2b-vk)
  *
- * Mengenregel, am 30.09.2026 festgelegt: 0 oder mindestens 500 Packs je
+ * Mengenregel: 0 oder mindestens 500 Packs je
  * Artikel, darüber in 5er-Schritten. Plus springt von 0 auf 500, Minus von
  * 500 auf 0. Getippte Werte werden auf den nächsten gültigen gerundet – so
  * kann im Korb nie eine ungültige Menge stehen, und es braucht keine

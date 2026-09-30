@@ -1,15 +1,11 @@
 /* ====================================================================
    Markenstil fuer den ganzen Shop.
 
-   Bis hierher lebten die Markenwerte in b2b-marke.liquid, und das wird nur
-   von der B2B-Landingpage gerendert. Auf allen anderen Seiten war
-   --b2b-akzent schlicht nicht definiert - gemessen am 29.09.2026 auf der
-   Startseite: "(nicht gesetzt)". Jeder Abschnitt, der die Farbe brauchte,
-   fiel auf einen fest eingetragenen Ersatzwert zurueck.
-
-   Diese Datei zieht die Werte heraus und legt sie ins Layout, damit sie
-   ueberall gelten. b2b-marke bleibt unveraendert - dort stehen weiterhin
-   dieselben Werte, und da beide identisch sind, ist die Doppelung folgenlos.
+   b2b-marke.liquid wird nur von der B2B-Landingpage gerendert. Damit die
+   Markenwerte auch auf allen anderen Seiten definiert sind (sonst faellt
+   jeder Abschnitt, der --b2b-akzent braucht, auf einen fest eingetragenen
+   Ersatzwert zurueck), liegen sie hier und werden im Layout geladen.
+   b2b-marke traegt dieselben Werte, die Doppelung ist folgenlos.
 
    Was hier NICHT drinsteht: Ueberschriftengroessen. Die kommen im Theme aus
    den Einstellungen und aus heading_size je Abschnitt; sie global zu
@@ -308,9 +304,8 @@ main .container {
 
    Der Verweis, den Gaeste anstelle von Preis und Kaufknopf sehen.
 
-   Vorher standen hier zwei blaue Textlinks untereinander - auf einer
-   Sammlungsseite 85 Mal. Jetzt ist es ein Element, das wie ein Knopf
-   aussieht und die Markenfarbe traegt statt des Browser-Blaus.
+   Ein einzelnes Element, das wie ein Knopf aussieht und die Markenfarbe
+   traegt statt des Browser-Blaus.
 
    Wo der Aufrufer schon eine Knopfklasse mitgibt (Produktseite,
    Bestelllisten, Downloads), gilt dessen Aussehen - die Regeln hier

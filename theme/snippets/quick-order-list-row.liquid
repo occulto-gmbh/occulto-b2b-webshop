@@ -111,7 +111,7 @@
               </div>
             </price-per-item>
           {%- else -%}
-            {% render 'b2b-preis', preis: item.price, vororder: vororder, je_pack: true %}
+            {% render 'b2b-preis', preis: item.price, je_pack: true %}
           {%- endif -%}
         </dd>
       </dl>
@@ -145,7 +145,7 @@
           </div>
         </price-per-item>
       {%- else -%}
-        {% render 'b2b-preis', preis: item.price, vororder: vororder, je_pack: true %}
+        {% render 'b2b-preis', preis: item.price, je_pack: true %}
       {%- endif -%}
     {%- endif -%}
 
@@ -163,19 +163,14 @@
       zusammen und wundert sich im Checkout ueber eine andere Zahl.
     {%- endcomment -%}
     {%- assign zeilensumme = cart | line_items_for: item | sum: 'original_line_price' -%}
-    {% render 'b2b-preis', preis: zeilensumme, vororder: vororder, klasse: 'b2b-preis--summe' %}
+    {% render 'b2b-preis', preis: zeilensumme, klasse: 'b2b-preis--summe' %}
     {% # theme-check-enable %}
   </td>
 
   <td class="variant-item__quantity">
     {%- liquid
-      comment
-        In der Vororder-Maske zaehlt der heutige Bestand nicht: bestellt wird
-        Ware aus der naechsten Produktion. Eine Variante, die gerade leer ist,
-        bleibt hier also bestellbar.
-      endcomment
       assign check_against_inventory = true
-      if variant.inventory_management != 'shopify' or variant.inventory_policy == 'continue' or ohne_lagergrenze
+      if variant.inventory_management != 'shopify' or variant.inventory_policy == 'continue'
         assign check_against_inventory = false
       endif
       if variant.quantity_rule.min > variant.inventory_quantity and check_against_inventory
@@ -194,11 +189,9 @@
 
       assign is_available = false
       assign has_popover = false
-      if ohne_lagergrenze
+      unless variant.available == false or quantity_rule_soldout
         assign is_available = true
-      elsif variant.available and quantity_rule_soldout != true
-        assign is_available = true
-      endif
+      endunless
       if has_qty_rules or has_vol_pricing
         assign has_popover = true
       endif
@@ -288,13 +281,7 @@
             {% # theme-check-disable %}
             {% assign cart_qty = cart | item_count_for_variant: variant.id %}
             {% # theme-check-enable %}
-            {%- comment -%}
-              mindestmenge kommt von aussen: die Vororder-Maske verlangt 500
-              Packs je Artikel, ueberall sonst ist es leer und es bleibt beim
-              5er-Gebinde. min bleibt bei 0, damit Minus die Position wieder
-              leeren kann - siehe Erklaerung in quantity-input.
-            {%- endcomment -%}
-            {% render 'quantity-input', variant: variant, min: 0, mindestmenge: mindestmenge, ohne_lagergrenze: ohne_lagergrenze %}
+            {% render 'quantity-input', variant: variant, min: 0 %}
           {%- endif -%}
         </div>
         {% if cart_qty > 0 %}
@@ -388,7 +375,7 @@
               </div>
             </price-per-item>
           {%- else -%}
-            {% render 'b2b-preis', preis: item.price, vororder: vororder, je_pack: true %}
+            {% render 'b2b-preis', preis: item.price, je_pack: true %}
           {%- endif -%}
         </dd>
       </dl>
@@ -422,7 +409,7 @@
           </div>
         </price-per-item>
       {%- else -%}
-        {% render 'b2b-preis', preis: item.price, vororder: vororder, je_pack: true %}
+        {% render 'b2b-preis', preis: item.price, je_pack: true %}
       {%- endif -%}
     {%- endif -%}
 
@@ -439,7 +426,7 @@
       zusammen und wundert sich im Checkout ueber eine andere Zahl.
     {%- endcomment -%}
     {%- assign zeilensumme = cart | line_items_for: item | sum: 'original_line_price' -%}
-    {% render 'b2b-preis', preis: zeilensumme, vororder: vororder, klasse: 'b2b-preis--summe' %}
+    {% render 'b2b-preis', preis: zeilensumme, klasse: 'b2b-preis--summe' %}
     {% # theme-check-enable %}
   </td>
 </tr>

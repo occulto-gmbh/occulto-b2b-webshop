@@ -142,7 +142,37 @@ for (const datei of theme.filter((d) => d.startsWith('snippets/'))) {
   if (!genutzt) melde(datei, 0, 'Snippet wird nirgends gerendert');
 }
 
-/* ---------------------------------------------------- 5. Theme Check */
+// Verwaiste b2b-Assets: eine eigene CSS- oder JS-Datei, deren Name nirgends sonst im Theme steht,
+// wird nie geladen. So blieb b2b-reiter.js liegen, nachdem die Reiter aus dem Theme verschwunden waren.
+for (const datei of theme.filter((d) => /^assets\/b2b-.*\.(css|js)$/.test(d))) {
+  const name = path.basename(datei);
+  const geladen = bereinigt.some(([d, t]) => d !== datei && t.includes(name));
+  if (!geladen) melde(datei, 0, 'Asset wird nirgends eingebunden');
+}
+
+/* ------------------------------------------ 5. Ungenutzte b2b-Klassen
+   Nur Klassen mit Präfix b2b-, die in eigenem CSS definiert sind (assets/b2b-*.css und <style> in
+   b2b-Dateien). Gilt als benutzt, wenn der Name irgendwo sonst im Theme vorkommt – in Markup, JS oder
+   JSON-Templates. Aus Präfix plus Variable zusammengesetzte Namen erkennt das nicht; die gibt es hier nicht. */
+
+const eigenesCss = theme.filter((d) => /^assets\/b2b-.*\.css$/.test(d) || /\/b2b-[^/]*\.liquid$/.test(d));
+const definiert = new Map();
+for (const datei of eigenesCss) {
+  let css = lies(datei);
+  if (datei.endsWith('.liquid')) css = [...css.matchAll(/<style[^>]*>([\s\S]*?)<\/style>|\{%-?\s*style\s*-?%\}([\s\S]*?)\{%-?\s*endstyle/g)].map((m) => m[1] || m[2]).join('\n');
+  css = css.replace(/\/\*[\s\S]*?\*\//g, '');
+  for (const m of css.matchAll(/\.(b2b-[a-z0-9_-]+)/g)) if (!definiert.has(m[1])) definiert.set(m[1], datei);
+}
+const ohneDefinitionen = bereinigt
+  .map(([d, t]) => (d.endsWith('.css') ? '' : t.replace(/<style[^>]*>[\s\S]*?<\/style>|\{%-?\s*style\s*-?%\}[\s\S]*?\{%-?\s*endstyle\s*-?%\}/g, '')))
+  .join('\n');
+for (const [klasse, datei] of definiert) {
+  if (!new RegExp(`(^|[^a-z0-9_-])${klasse}($|[^a-z0-9_-])`).test(ohneDefinitionen)) {
+    melde(datei, 0, `CSS-Klasse .${klasse} wird nirgends verwendet`);
+  }
+}
+
+/* ---------------------------------------------------- 6. Theme Check */
 
 if (schnell) {
   hinweise.push('Theme Check übersprungen (--schnell).');
@@ -162,7 +192,12 @@ if (schnell) {
     for (const eintrag of JSON.parse(lauf.stdout.slice(start))) {
       if (!ziel.has(path.resolve(eintrag.path).toLowerCase())) continue;
       const rel = path.relative(THEME, eintrag.path).replace(/\\/g, '/');
-      for (const o of eintrag.offenses) melde(rel, o.start_row + 1, `${o.check}: ${o.message}`);
+      for (const o of eintrag.offenses) {
+        // Der Theme Check sieht kein Liquid in JSON-Templates und meldet deshalb Snippets als
+        // verwaist, die die Landingpage rendert. Punkt 4 oben prüft das richtig.
+        if (o.check === 'OrphanedSnippet') continue;
+        melde(rel, o.start_row + 1, `${o.check}: ${o.message}`);
+      }
     }
   }
 }

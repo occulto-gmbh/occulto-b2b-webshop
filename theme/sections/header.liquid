@@ -21,8 +21,8 @@
   Siehe scratchpad/p18-navbar-mitte.js fuer die Eichung der Faktoren.
 
   Der Faktor je Zeichen haengt an der Schrift. Geeicht war er auf League
-  Spartan (7.7). Seit dem 30.09.2026 ist die Schrift basic-sans, gemessen
-  8.14 px je Zeichen bei 15px fett. Nachgerechnet am 30.09.2026 bei 1500px:
+  Spartan (7.7). Die Schrift ist basic-sans, gemessen
+  8.14 px je Zeichen bei 15px fett. Nachgerechnet bei 1500px:
   Rand 40 + Logo 208 + 20 + Menue 813 + 20 + Symbole 306 + Rand 40 +
   Scrollleiste 15 = 1462px Bedarf; die Formel ergibt damit 1469. Wer die
   Schrift wieder wechselt, muss hier nachmessen, sonst wird das Menue knapp
@@ -191,9 +191,9 @@
   /* ---------------------------------------------------------------
      Die Kopfzeile ueber die volle Breite, das Menue in einer Zeile.
 
-     Vorher: die Kopfzeile trug .page-width und war damit auf
-     --page-width begrenzt, waehrend das Menue mit flex-wrap: wrap in die
-     zweite Zeile umbrach. Bei acht Eintraegen sah das aus wie ein Fehler.
+     Die Kopfzeile traegt .page-width und waere sonst auf --page-width
+     begrenzt, sodass das Menue mit flex-wrap: wrap in die zweite Zeile
+     umbricht.
 
      Erst ab 990 Bildpunkten: darunter zeigt das Theme das Schubladenmenue,
      dort gibt es nichts umzubrechen - und nowrap wuerde die Eintraege dort
@@ -211,17 +211,8 @@
 
     /* Logo links, Menue mittig, Symbole rechts - wie im Hauptshop.
 
-       Das Theme hatte hier auto auto 1fr: Logo und Menue klebten
-       zusammen am linken Rand, und rechts stand die ganze Leere. Mit
-       1fr auto 1fr bekommen Logo und Symbole gleich viel Platz, und das
-       Menue sitzt genau in der Mitte dazwischen. */
-    /* Logo und Symbole so breit wie ihr Inhalt, das Menue bekommt den Rest
-       und zentriert sich darin.
-
-       Vorher stand hier 1fr auto 1fr. Das sah richtig aus, solange das Menue
-       kurz war - mit einem Eintrag mehr fiel die Logospalte auf 7,5
-       Bildpunkte zusammen und das Logo wurde auf null gequetscht (es traegt
-       max-width: 100%, hat also keine eigene Mindestbreite). */
+       1fr auto 1fr gibt Logo und Symbolen gleich viel Platz und setzt das
+       Menue in die Mitte. */
     .header--middle-left {
       grid-template-columns: 1fr auto 1fr;
     }
@@ -245,8 +236,7 @@
        Menuepunkten oder schmalen Fenstern duerfen die Eintraege enger
        zusammenruecken, statt Logo und Warenkorb zu verdraengen. */
     /* Die Kopfzeilenlinks heissen header__menu-item. list-menu__item--link
-       gibt es nur in der Fusszeile - der alte Selektor lief ins Leere und
-       das Menue blieb bei 783 Bildpunkten. */
+       gibt es nur in der Fusszeile. */
     .header__inline-menu .header__menu-item {
       white-space: nowrap;
       padding-inline: 0.8rem;
@@ -254,8 +244,7 @@
     }
 
     /* Flex-Elemente schrumpfen von sich aus. Ohne diese Zeile quetscht die
-       Zeile die Eintraege zusammen, statt zu zeigen, dass sie nicht passen -
-       genau so sah die Navigation vorher aus. */
+       Zeile die Eintraege zusammen, statt zu zeigen, dass sie nicht passen. */
     .header__inline-menu .list-menu--inline > li {
       flex: 0 0 auto;
     }

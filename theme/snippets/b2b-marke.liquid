@@ -25,14 +25,12 @@
      Versalien, ruhige Subline. Wer scrollt, weiss nach einer halben Sekunde,
      worum es geht.
 
-  2. Genau zwei Knopfstile - dunkel gefuellt und hell umrandet. Beide gehen im
-     Hover auf Rot. Vorher trugen Hero, Ablauf, Karussell und Kontaktband vier
-     verschiedene Knoepfe.
+  2. Ein Knopfstil fuer Handlungen: dunkel gefuellt, im Hover rot. Verschiedene
+     Knoepfe je Abschnitt lassen die Seite zusammengestueckelt wirken.
 
   3. Rot nur deckend. Transparente Abstufungen von #c72a09 wirken orange und
-     nicht wie die Marke - genau das ist vorher in Anlaessen, Team und FAQ
-     passiert. Flaechen sind deshalb neutral grau, Rot bleibt Linie, Punkt,
-     Symbol oder Knopf.
+     nicht wie die Marke. Flaechen sind deshalb neutral grau, Rot bleibt Linie,
+     Punkt, Symbol oder Knopf.
 
   Eingebunden vom Abschnitt `punktnav`, dem letzten der Seite: die Abschnitte
   bringen ihr CSS selbst mit, und bei gleicher Spezifitaet gewinnt das
@@ -106,25 +104,16 @@
     line-height: 1.25;
   }
 
-  /* Subline: eine ruhige Zeile unter der Headline. Begrenzte Breite, damit
-     die Zeilen nicht quer ueber den Schirm laufen. */
-  .b2b-geschichten__unter,
-  .b2b-team__unter {
-    max-width: 58ch;
-    font-weight: 500;
-  }
-
   .b2b-karussell__bildtext {
     font-weight: 500;
   }
 
   /* ====================================================================
-     2. KNOEPFE - genau zwei Stile
+     2. KNOEPFE
      ================================================================== */
 
   main .b2b-ablauf__cta,
   main .b2b-teamband__cta,
-  main .b2b-karussell__mehr,
   main .button {
     border-radius: var(--button-border-radius, 6px);
     font-weight: 700;
@@ -148,20 +137,6 @@
     border-color: rgb(var(--b2b-akzent));
     background: rgb(var(--b2b-akzent));
     color: rgb(var(--b2b-weiss));
-  }
-
-  /* Hell umrandet: die zweite Wahl daneben. */
-  main .b2b-karussell__mehr {
-    border: 1px solid rgb(var(--b2b-tinte));
-    background: rgb(var(--b2b-weiss));
-    color: rgb(var(--b2b-tinte));
-  }
-
-  main .b2b-karussell__mehr:hover,
-  main .b2b-karussell__element:hover .b2b-karussell__mehr {
-    border-color: rgb(var(--b2b-akzent));
-    background: rgb(var(--b2b-weiss));
-    color: rgb(var(--b2b-akzent));
   }
 
   /* ====================================================================
@@ -404,15 +379,10 @@
   }
 
   /* ====================================================================
-     6. WAAGRECHTE BAHN
-     Veredelung, Qualitaet und Nachhaltigkeit stecken seit dem Umbau in
-     einem eigenen Abschnitt mit eigenem Markup und eigenem CSS. Die Regeln,
-     die hier auf .b2b-serie und die Theme-Section .multiple-media-with-text
-     gezielt haben, sind damit gegenstandslos und entfernt - rund hundert
-     Zeilen, die auf Klassen zeigten, die es auf keiner B2B-Seite mehr gibt.
+     6. HERO-KNOEPFE
      ================================================================== */
 
-  /* Die Hero-Knoepfe waren Pillen mit 999px, alle anderen haben 6px. */
+  /* Derselbe Radius wie alle anderen Knoepfe statt der Pillenform des Themes. */
   main .slideshow .button,
   main .slideshow-carousel .button {
     border-radius: var(--button-border-radius, 6px);
