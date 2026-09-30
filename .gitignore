@@ -31,3 +31,7 @@ b2b-webshop/extensions/*/.shopify.lock
 # theme check scratch output (if regenerated)
 theme/theme_check_output.json
 theme/check_filter.js
+
+# Vorschau (shopify theme dev) und lokale Claude-Einstellungen
+theme/.shopify/
+.claude/settings.local.json
