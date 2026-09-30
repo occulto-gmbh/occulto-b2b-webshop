@@ -4,19 +4,26 @@
     "target": "cart.validations.generate.run",
     "input": {
       "cart": {
+        "vororder": null,
         "lines": [
           {
             "quantity": 3,
             "merchandise": {
               "__typename": "ProductVariant",
               "title": "39-42",
-              "availableQuantityMetafield": { "value": "3" },
-              "product": { "title": "Occulto Tennissocke SUMMER" }
+              "availableQuantityMetafield": {
+                "value": "3"
+              },
+              "product": {
+                "title": "Occulto Tennissocke SUMMER"
+              }
             }
           }
         ]
       },
-      "buyerJourney": { "step": "CHECKOUT_INTERACTION" }
+      "buyerJourney": {
+        "step": "CHECKOUT_INTERACTION"
+      }
     },
     "output": {
       "operations": [

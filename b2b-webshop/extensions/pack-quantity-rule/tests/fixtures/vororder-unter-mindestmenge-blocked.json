@@ -1,0 +1,43 @@
+{
+  "payload": {
+    "export": "cart-validations-generate-run",
+    "target": "cart.validations.generate.run",
+    "input": {
+      "cart": {
+        "vororder": {
+          "value": "15. Dezember 2026"
+        },
+        "lines": [
+          {
+            "quantity": 100,
+            "merchandise": {
+              "__typename": "ProductVariant",
+              "title": "39-42",
+              "availableQuantityMetafield": null,
+              "product": {
+                "title": "Occulto Tennissocke SUMMER"
+              }
+            }
+          }
+        ]
+      },
+      "buyerJourney": {
+        "step": "CHECKOUT_INTERACTION"
+      }
+    },
+    "output": {
+      "operations": [
+        {
+          "validationAdd": {
+            "errors": [
+              {
+                "message": "Occulto Tennissocke SUMMER – 39-42: Eine Vororder braucht mindestens 500 Packs je Artikel. Aktuelle Menge: 100.",
+                "target": "$.cart"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

@@ -4,11 +4,15 @@
     "target": "purchase.order-discount.run",
     "input": {
       "cart": {
-        "cost": {
-          "subtotalAmount": {
-            "amount": "2000.00"
+        "vororder": null,
+        "lines": [
+          {
+            "quantity": 250
+          },
+          {
+            "quantity": 245
           }
-        }
+        ]
       }
     },
     "output": {
