@@ -13,6 +13,34 @@
   @param kompakt  true fuer die Warenkorb-Schublade
 {%- endcomment -%}
 
+{%- comment -%}
+  Ein leerer Warenkorb ist keine Vororder mehr.
+
+  Shopify behaelt Warenkorb-Merkmale, auch wenn die letzte Position entfernt
+  wird. Ohne diese Aufraeumung bliebe der naechste, voellig normale Einkauf
+  als Vororder markiert - mit 10 % an der Kasse und einer Mindestmenge von
+  500 Packs je Position, die niemand erwartet. Genau das ist passiert: nach
+  einem Testlauf stand das Merkmal noch im leeren Warenkorb.
+
+  Heute laeuft der Shop auf cart_type "notification", die Schublade wird also
+  gar nicht gerendert und das Aufraeumen greift nur auf /cart. Das genuegt:
+  der Schaden entstuende erst an der Kasse, und dorthin fuehrt der Weg ueber
+  den Warenkorb.
+
+  Die Ausnahme fuer die Vororder-Seite ist Vorsorge fuer den Tag, an dem
+  jemand die Schublade einschaltet: dort setzt die Maske das Merkmal gerade
+  erst, ein gleichzeitiges Loeschen waere ein Wettlauf.
+{%- endcomment -%}
+{%- if cart == empty and cart.attributes.Vororder != blank and page.template_suffix != 'b2b-vororder' -%}
+  <script>
+    fetch('{{ routes.cart_update_url }}', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ attributes: { Vororder: '' } })
+    }).catch(function () {});
+  </script>
+{%- endif -%}
+
 {%- if cart != empty -%}
   {%- liquid
     assign ist_vororder = false

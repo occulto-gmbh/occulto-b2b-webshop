@@ -35,17 +35,16 @@
   assign b2b_ab_packs = 500
 
   comment
-    Ist der laufende Warenkorb eine Vororder, gilt der Vororder-Satz auf jeder
-    Seite - auch auf einer Kachel ausserhalb der Maske. Sonst stuende dort
-    -5 %, waehrend die Kasse 10 % abzieht.
-  endcomment
-  assign ist_vororder = vororder
-  if cart.attributes.Vororder != blank
-    assign ist_vororder = true
-  endif
+    Der Vororder-Satz kommt ausschliesslich von der Maske, die ihn
+    hereingibt - nie aus dem Warenkorb.
 
+    Vorher stand hier: traegt der Warenkorb das Vororder-Merkmal, gilt 10 %
+    auf jeder Seite. Das war zu schlau. Das Merkmal ueberlebt einen geleerten
+    Warenkorb, und so standen auf jeder Kachel unter Produkte -10 % - ein
+    Rabatt, den es dort gar nicht gibt, und dazu schon ab dem ersten Pack.
+  endcomment
   assign greift = false
-  if ist_vororder
+  if vororder
     assign satz = b2b_satz_vororder
     assign greift = true
   else
