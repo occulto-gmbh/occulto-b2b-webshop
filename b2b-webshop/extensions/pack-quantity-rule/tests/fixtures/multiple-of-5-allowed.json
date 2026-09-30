@@ -4,7 +4,6 @@
     "target": "cart.validations.generate.run",
     "input": {
       "cart": {
-        "vororder": null,
         "lines": [
           {
             "quantity": 10,

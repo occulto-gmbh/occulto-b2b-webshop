@@ -1,0 +1,277 @@
+/* ======================================================================
+   VORORDER-MASKE
+
+   Eigener Abschnitt statt der Bestellliste: eine Vororder geht nicht in
+   den Warenkorb, sondern als E-Mail-Anfrage. Deshalb kein Tabellen-
+   Layout mit Zeilensummen, sondern Karten je Produkt mit einem
+   Mengenfeld je Groesse.
+   ====================================================================== */
+
+.b2b-vo-kopf {
+  margin-bottom: 28px;
+}
+
+.b2b-vo-kopf__marke {
+  margin: 0 0 6px;
+  color: rgb(var(--b2b-akzent, 199 42 9));
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.b2b-vo-kopf__titel {
+  margin: 0 0 18px;
+}
+
+.b2b-vo-kopf__regeln {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px 24px;
+  margin: 0 0 14px;
+  padding: 18px 22px;
+  border: 1px solid rgb(var(--b2b-akzent, 199 42 9) / 0.3);
+  border-left: 5px solid rgb(var(--b2b-akzent, 199 42 9));
+  border-radius: 8px;
+  background: rgb(var(--b2b-akzent, 199 42 9) / 0.06);
+}
+
+.b2b-vo-kopf__regeln dt {
+  color: rgb(var(--b2b-tinte, 46 46 45) / 0.6);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.b2b-vo-kopf__regeln dd {
+  margin: 2px 0 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.b2b-vo-kopf__hinweis {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  opacity: 0.8;
+}
+
+/* ---- Sortierleiste ---- */
+
+.b2b-vo-leiste {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin-bottom: 20px;
+}
+
+.b2b-vo-leiste__label {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.b2b-vo-leiste__wahl {
+  min-height: 44px;
+  padding: 0 40px 0 14px;
+  border: 1px solid rgb(var(--b2b-linie, 226 226 225));
+  border-radius: 6px;
+  background: rgb(255 255 255);
+  font-size: 15px;
+}
+
+/* ---- Die Produkte ---- */
+
+.b2b-vo-liste {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.b2b-vo-produkt {
+  padding: 16px 18px;
+  border: 1px solid rgb(var(--b2b-linie, 226 226 225));
+  border-radius: 10px;
+  background: rgb(255 255 255);
+}
+
+.b2b-vo-produkt__kopf {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.b2b-vo-produkt__bild {
+  flex: 0 0 auto;
+  width: 72px;
+  height: 72px;
+  border-radius: 6px;
+  background: rgb(var(--b2b-hell, 246 246 246));
+  object-fit: contain;
+}
+
+.b2b-vo-produkt__titel {
+  margin: 0 0 4px;
+  font-size: 16px;
+  line-height: 1.3;
+  word-break: normal;
+}
+
+.b2b-vo-produkt__preis {
+  margin: 0;
+}
+
+.b2b-vo-varianten {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.b2b-vo-variante {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.b2b-vo-variante__name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  font-size: 15px;
+}
+
+.b2b-vo-variante__sku {
+  color: rgb(var(--b2b-tinte, 46 46 45) / 0.55);
+  font-size: 12px;
+}
+
+.b2b-vo-menge {
+  flex: 0 0 auto;
+  width: 104px;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1px solid rgb(var(--b2b-linie, 226 226 225));
+  border-radius: 6px;
+  font-size: 16px;
+  text-align: right;
+}
+
+.b2b-vo-menge:focus {
+  border-color: rgb(var(--b2b-akzent, 199 42 9));
+  outline: 2px solid rgb(var(--b2b-akzent, 199 42 9) / 0.25);
+  outline-offset: 1px;
+}
+
+/* ---- Der Abschluss ----
+   Klebt unten am Fenster: bei 108 Artikeln steht der Stand sonst so weit
+   unten, dass niemand ihn beim Eintragen sieht. */
+
+.b2b-vo-fuss {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  margin-top: 28px;
+  padding: 16px 20px;
+  border: 1px solid rgb(var(--b2b-linie, 226 226 225));
+  border-radius: 10px;
+  background: rgb(255 255 255);
+  box-shadow: 0 -6px 18px rgb(0 0 0 / 0.06);
+}
+
+.b2b-vo-fuss__stand {
+  margin: 0 0 8px;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.b2b-vo-fuss__sparen {
+  color: rgb(var(--b2b-akzent, 199 42 9));
+  font-weight: 700;
+}
+
+.b2b-vo-fuss__fehler {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border-left: 4px solid rgb(var(--b2b-akzent, 199 42 9));
+  border-radius: 4px;
+  background: rgb(var(--b2b-akzent, 199 42 9) / 0.08);
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.b2b-vo-fuss__fehler[hidden] {
+  display: none;
+}
+
+.b2b-vo-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px 20px;
+}
+
+.b2b-vo-form__notiz {
+  flex: 1 1 320px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.b2b-vo-form__notiz textarea {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  padding: 10px 12px;
+  border: 1px solid rgb(var(--b2b-linie, 226 226 225));
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 400;
+  resize: vertical;
+}
+
+.b2b-vo-form__knopf {
+  flex: 0 0 auto;
+  min-height: 52px;
+  padding-inline: 32px;
+  font-size: 16px;
+}
+
+.b2b-vo-form__knopf[disabled] {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.b2b-vo-fertig {
+  max-width: 62rem;
+  padding: 32px 0;
+}
+
+.b2b-vo-fertig p {
+  margin-bottom: 20px;
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+@media screen and (max-width: 989px) {
+  .b2b-vo-kopf__regeln {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media screen and (max-width: 599px) {
+  .b2b-vo-kopf__regeln {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .b2b-vo-liste {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .b2b-vo-form__knopf {
+    flex: 1 1 100%;
+  }
+}

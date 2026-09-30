@@ -7,52 +7,41 @@ const KEIN_RABATT: FunctionRunResult = {
 };
 
 /*
- * Zwei Bestellarten, zwei feste Sätze — am 29.09.2026 mit Occulto festgelegt:
+ * Händlerrabatt auf Nachbestellungen: 5 % ab 500 Packs im Warenkorb.
+ * Am 29.09.2026 mit Occulto festgelegt; er löst die frühere Staffel nach
+ * Bestellsumme ab (ab 2.500 € 5 %, ab 5.000 € 10 %, abgestimmt am 2026-09-02).
  *
- *   Nachbestellung   5 %   ab 500 Packs im Warenkorb, Ware aus dem Lager
- *   Vororder        10 %   ohne weitere Bedingung, Ware aus der Produktion
+ * Die 500 Packs zählen über den ganzen Warenkorb: eine Schwelle für die
+ * Bestellung, kein Mindestposten.
  *
- * Die 500 Packs zählen bei der Nachbestellung über den ganzen Warenkorb: es
- * ist eine Schwelle für die Bestellung, kein Mindestposten. Bei der Vororder
- * dagegen gilt die Mindestmenge je Artikel, und die prüft
- * pack-quantity-rule — hier wäre sie doppelt.
+ * Hier steht bewusst NICHTS über Vorordern. Seit dem 30.09.2026 laufen die
+ * nicht mehr über den Warenkorb, sondern als E-Mail-Anfrage aus der Maske im
+ * Theme; ihre 10 % stehen auf der Rechnung, die Occulto von Hand schreibt.
+ * Ein Zweig, der das Warenkorb-Merkmal "Vororder" auswertet, hätte hier nur
+ * noch auf Altbestände anspringen können — und dann den falschen Satz
+ * gegeben.
  *
- * Damit ist die frühere Staffel nach Bestellsumme (ab 2.500 € 5 %, ab
- * 5.000 € 10 %, abgestimmt am 2026-09-02) abgelöst.
- *
- * Dieselben Zahlen stehen im Theme in snippets/b2b-preis.liquid, das den
- * Preis schon in der Liste durchgestrichen anzeigt. Weichen sie voneinander
- * ab, steht im Shop ein anderer Preis als im Checkout.
+ * Die 5 % stehen auch in theme/snippets/b2b-preis.liquid, das den Preis schon
+ * in den Übersichten durchgestrichen anzeigt. Weichen sie voneinander ab,
+ * steht im Shop ein anderer Preis als an der Kasse.
  */
-const SATZ_NACHBESTELLUNG = 5;
-const SATZ_VORORDER = 10;
-const NACHBESTELLUNG_AB_PACKS = 500;
+const SATZ = 5;
+const AB_PACKS = 500;
 
 export function run(input: RunInput): FunctionRunResult {
-  const istVororder = Boolean(input.cart.vororder?.value);
+  const packs = input.cart.lines.reduce((summe, zeile) => summe + zeile.quantity, 0);
 
-  let satz: number;
-  let text: string;
-
-  if (istVororder) {
-    satz = SATZ_VORORDER;
-    text = "Vororder-Rabatt";
-  } else {
-    const packs = input.cart.lines.reduce((summe, zeile) => summe + zeile.quantity, 0);
-    if (packs < NACHBESTELLUNG_AB_PACKS) {
-      return KEIN_RABATT;
-    }
-    satz = SATZ_NACHBESTELLUNG;
-    text = "Händlerrabatt";
+  if (packs < AB_PACKS) {
+    return KEIN_RABATT;
   }
 
   return {
     discountApplicationStrategy: DiscountApplicationStrategy.First,
     discounts: [
       {
-        message: `${satz}% ${text}`,
+        message: `${SATZ}% Händlerrabatt`,
         targets: [{ orderSubtotal: { excludedVariantIds: [] } }],
-        value: { percentage: { value: satz.toString() } },
+        value: { percentage: { value: SATZ.toString() } },
       },
     ],
   };

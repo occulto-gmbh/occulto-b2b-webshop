@@ -4,7 +4,6 @@
     "target": "purchase.order-discount.run",
     "input": {
       "cart": {
-        "vororder": null,
         "lines": [
           {
             "quantity": 250

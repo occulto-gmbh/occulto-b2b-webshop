@@ -1,19 +1,20 @@
 /*
  * Vororder-Maske.
  *
- * Dieselbe Sammelbestellung wie die Massenbestellung, aber im
- * Vororder-Betrieb: Mindestmenge je Artikel, Regeln und Stichtag im Kopf,
- * und der Warenkorb wird als Vororder markiert. Der Rabatt selbst kommt
- * nicht von hier, sondern aus der Shopify Function order-value-discount.
+ * Seit dem 30.09.2026 keine Shopify-Bestellung mehr: der Abschnitt
+ * b2b-vororder-maske sammelt die Mengen im Browser und schickt sie als
+ * E-Mail-Anfrage ueber Shopifys Kontaktformular. Occulto bearbeitet sie von
+ * Hand und schreibt eine Rechnung.
  *
- * main-page ist abgeschaltet: der Kopf der Section bringt Titel und Regeln
- * schon mit, ein zweiter Seitentitel darueber waere doppelt.
+ * Damit entfaellt das Bestandsproblem: Shopify kuerzt nur, was durch den
+ * Warenkorb geht, und da geht hier nichts mehr durch.
  *
- * collection steht auf "all" - Shopifys eigene Sammlung ueber alles, was im
- * Online-Shop veroeffentlicht ist (108 Produkte). Die gepflegte Sammlung
- * "alle-produkte" hat 107, ihr fehlt also eines; fuer eine Vororder soll
- * nichts fehlen. Achtung: "all" taucht in der Sammlungsauswahl des
- * Theme-Editors nicht auf - wer die Einstellung dort anfasst, verliert sie.
+ * main-page ist abgeschaltet - der Abschnitt bringt Titel und Regeln mit.
+ *
+ * collection "all" ist Shopifys eigene Sammlung ueber alles, was im
+ * Online-Shop veroeffentlicht ist (108 Produkte). Achtung: "all" taucht in
+ * der Sammlungsauswahl des Theme-Editors nicht auf - wer die Einstellung
+ * dort anfasst, verliert sie.
  */
 {
   "sections": {
@@ -26,15 +27,13 @@
       }
     },
     "vororder": {
-      "type": "catalog-order-list",
+      "type": "b2b-vororder-maske",
       "settings": {
-        "b2b_vororder": true,
-        "b2b_titel": "Vororder abgeben",
-        "b2b_mindestmenge": 500,
+        "titel": "Vororder abgeben",
         "collection": "all",
         "products_per_page": 50,
-        "show_sku": true,
-        "color_scheme": "scheme-1",
+        "mindestmenge": 500,
+        "rabatt_prozent": 10,
         "padding_top": 36,
         "padding_bottom": 36
       }

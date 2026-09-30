@@ -497,12 +497,6 @@ main .container {
   background: rgb(var(--b2b-hell, 246 246 246));
 }
 
-.b2b-art--vororder {
-  border-color: rgb(var(--b2b-akzent, 199 42 9) / 0.3);
-  border-left-color: rgb(var(--b2b-akzent, 199 42 9));
-  background: rgb(var(--b2b-akzent, 199 42 9) / 0.06);
-}
-
 .b2b-art__zeile {
   display: flex;
   flex-wrap: wrap;
@@ -524,10 +518,6 @@ main .container {
   font-size: 14px;
   font-weight: 700;
   white-space: nowrap;
-}
-
-.b2b-art--vororder .b2b-art__satz {
-  background: rgb(var(--b2b-akzent, 199 42 9));
 }
 
 .b2b-art__satz--offen {
@@ -594,14 +584,18 @@ main .container {
   border-radius: 0 0 8px 8px;
 }
 
-.b2b-korb--vororder .cart-items {
-  border-color: rgb(var(--b2b-akzent, 199 42 9) / 0.3);
-  border-left-color: rgb(var(--b2b-akzent, 199 42 9));
-}
 
 .b2b-preis__sparen {
   color: rgb(var(--b2b-akzent, 199 42 9));
   font-size: 13px;
   font-weight: 700;
   white-space: nowrap;
+}
+
+/* Der Verweis auf die Vororder unter den Regeln der Nachbestellung. */
+.b2b-art__fussnote {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  opacity: 0.8;
 }

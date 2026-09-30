@@ -1,0 +1,86 @@
+{%- comment -%}
+  Der Kopf über den Warenkorbpositionen: was diese Bestellung ist und was für
+  sie gilt.
+
+  Seit dem 30.09.2026 gibt es im Warenkorb nur noch eine Art: die
+  Nachbestellung. Eine Vororder geht gar nicht mehr durch den Warenkorb – sie
+  ist eine E-Mail-Anfrage aus der Maske unter /pages/vororder, wird von Hand
+  bearbeitet und mit einer Rechnung beantwortet.
+
+  Die 5 % müssen zu theme/snippets/b2b-preis.liquid und zu
+  extensions/order-value-discount/src/run.ts passen.
+
+  @param kompakt  true für die Warenkorb-Schublade
+{%- endcomment -%}
+
+{%- comment -%}
+  Altlast aufräumen.
+
+  Bis zum 30.09.2026 markierte die Vororder-Maske den Warenkorb mit dem
+  Merkmal "Vororder", und Shopify behält solche Merkmale auch dann, wenn die
+  letzte Position entfernt wird. Ein Warenkorb, der das Merkmal noch trägt,
+  ist heute schlicht falsch beschriftet – deshalb wird es entfernt, sobald es
+  auftaucht, und nicht nur beim leeren Warenkorb.
+{%- endcomment -%}
+{%- if cart.attributes.Vororder != blank -%}
+  <script>
+    fetch('{{ routes.cart_update_url }}', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ attributes: { Vororder: '' } })
+    }).catch(function () {});
+  </script>
+{%- endif -%}
+
+{%- if cart != empty -%}
+  {%- liquid
+    assign satz = 5
+    assign ab_packs = 500
+
+    assign greift = false
+    if cart.item_count >= ab_packs
+      assign greift = true
+    endif
+
+    assign ersparnis = cart.total_price | times: satz | divided_by: 100
+    assign fehlende_packs = ab_packs | minus: cart.item_count
+  -%}
+
+  <div class="b2b-art{% if kompakt %} b2b-art--kompakt{% endif %}">
+    <p class="b2b-art__zeile">
+      <span class="b2b-art__name">Nachbestellung</span>
+
+      {%- if greift -%}
+        <span class="b2b-art__satz">&minus;{{ satz }}&nbsp;%</span>
+        <span class="b2b-art__sparen">Du sparst {{ ersparnis | money }}</span>
+      {%- else -%}
+        <span class="b2b-art__satz b2b-art__satz--offen">
+          noch {{ fehlende_packs }} Packs bis &minus;{{ satz }}&nbsp;%
+        </span>
+      {%- endif -%}
+    </p>
+
+    {%- unless kompakt -%}
+      <dl class="b2b-art__regeln">
+        <div>
+          <dt>Lieferung</dt>
+          <dd>aus dem Lager</dd>
+        </div>
+        <div>
+          <dt>Rabatt</dt>
+          <dd>{{ satz }} % ab {{ ab_packs }} Packs im Warenkorb</dd>
+        </div>
+        <div>
+          <dt>Mindestmenge</dt>
+          <dd>keine</dd>
+        </div>
+      </dl>
+
+      <p class="b2b-art__fussnote">
+        Ware aus der nächsten Produktion bestellst du über die
+        <a href="/pages/vororder">Vororder</a> – eigene Lieferzeit, eigener
+        Rabatt, und sie läuft nicht über die Kasse.
+      </p>
+    {%- endunless -%}
+  </div>
+{%- endif -%}

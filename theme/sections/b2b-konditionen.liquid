@@ -41,6 +41,21 @@
   endif
 
   assign naechster_termin = naechster_tag | append: '. ' | append: naechster_monat | append: ' ' | append: naechstes_jahr
+
+  comment
+    Die Auslieferung liegt drei Monate hinter dem Annahmeschluss - am
+    30.09.2026 so festgelegt. Juni liefert im September, Dezember im Maerz
+    des Folgejahres. Bewusst gerechnet und nicht gepflegt, damit nirgends ein
+    abgelaufenes Datum steht.
+  endcomment
+  if naechster_monat == 'Juni'
+    assign liefer_monat = 'September'
+    assign liefer_jahr = naechstes_jahr
+  else
+    assign liefer_monat = 'März'
+    assign liefer_jahr = naechstes_jahr | plus: 1
+  endif
+  assign liefer_termin = '15. ' | append: liefer_monat | append: ' ' | append: liefer_jahr
 -%}
 
 <div class="b2b-kond">
@@ -71,6 +86,7 @@
       <p class="b2b-kond__terminkopf">
         {{ section.settings.termin_kopf | escape }}
         <strong>{{ naechster_termin }}</strong>
+        &middot; Auslieferung ab <strong>{{ liefer_termin }}</strong>
       </p>
 
       <div class="b2b-kond__knoepfe">
@@ -84,14 +100,14 @@
           href="{{ section.settings.vororder_link | default: '/pages/vororder' }}"
         >
           {{ section.settings.knopf_text | escape }}
-          <span class="b2b-kond__knopfdatum">bis 15. Juni</span>
+          <span class="b2b-kond__knopfdatum">bis 15. Juni &middot; Lieferung ab 15. September</span>
         </a>
         <a
           class="b2b-kond__knopf{% if naechster_monat == 'Dezember' %} b2b-kond__knopf--naechster{% endif %}"
           href="{{ section.settings.vororder_link | default: '/pages/vororder' }}"
         >
           {{ section.settings.knopf_text | escape }}
-          <span class="b2b-kond__knopfdatum">bis 15. Dezember</span>
+          <span class="b2b-kond__knopfdatum">bis 15. Dezember &middot; Lieferung ab 15. März</span>
         </a>
       </div>
 
@@ -215,6 +231,11 @@
   .b2b-kond__knopfdatum {
     font-size: 15px;
     font-weight: 500;
+    /* Der Knopf selbst steht auf nowrap, damit die Beschriftung nicht
+       umbricht. Die Datumszeile ist laenger und darf es sehr wohl - sonst
+       ragt sie auf dem Handy aus dem Knopf heraus. */
+    white-space: normal;
+    text-align: center;
   }
 
   @media (hover: hover) and (pointer: fine) {

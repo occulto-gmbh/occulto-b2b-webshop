@@ -15,12 +15,11 @@ import type {
 // (see app/routes/webhooks.inventory_levels.update.tsx).
 const PACK_STEP = 5;
 
-// Vororder: mindestens 500 Packs je Position. Am 2026-09-29 mit Occulto so
-// entschieden - "je" heisst pro Artikel, nicht in Summe. Die Maske im Theme
-// setzt min=500 auf die Eingabefelder und sperrt den Warenkorbknopf; das hier
-// ist die Absicherung dahinter, weil ein Eingabefeld niemand daran hindert,
-// direkt an /cart/add zu posten.
-const VORORDER_MINDESTMENGE = 500;
+// Hier stand bis zum 30.09.2026 eine Sonderregel fuer Vorordern: 500 Packs je
+// Position, und keine Bestandspruefung. Beides ist entfallen, weil eine
+// Vororder seit diesem Tag gar nicht mehr durch den Warenkorb geht - sie ist
+// eine E-Mail-Anfrage aus der Maske im Theme. Damit bleibt hier nur noch die
+// 5er-Gebinde-Regel, und den Bestand setzt Shopify selbst durch.
 
 export function cartValidationsGenerateRun(
   input: CartValidationsGenerateRunInput,
@@ -34,45 +33,8 @@ export function cartValidationsGenerateRun(
     return { operations: [{ validationAdd: { errors } }] };
   }
 
-  const istVororder = Boolean(input.cart.vororder?.value);
-
   input.cart.lines.forEach((line) => {
     const { quantity, merchandise } = line;
-
-    /* Bestandspruefung fuer normale Bestellungen.
-
-       Hintergrund: damit eine Vororder ueberhaupt mehr bestellen kann als
-       heute im Lager liegt, muessen die Varianten in Shopify auf
-       "Weiterverkaufen, wenn nicht vorraetig" stehen. Damit faellt aber auch
-       der Schutz fuer normale Bestellungen weg - jeder koennte dann Lagerware
-       ueberbuchen. Diese Pruefung holt ihn genau dort zurueck. */
-    if (!istVororder && merchandise.__typename === "ProductVariant") {
-      const bestandRoh = merchandise.availableQuantityMetafield?.value;
-      const bestand = bestandRoh != null ? Number(bestandRoh) : null;
-
-      if (bestand != null && Number.isFinite(bestand) && quantity > bestand) {
-        const name = [merchandise.product.title, merchandise.title]
-          .filter(Boolean)
-          .join(" – ");
-
-        errors.push({
-          message: `${name}: Nur noch ${bestand} auf Lager. Groessere Mengen gehen ueber die Vororder.`,
-          target: "$.cart",
-        });
-      }
-    }
-
-    if (istVororder && quantity < VORORDER_MINDESTMENGE) {
-      const name =
-        merchandise.__typename === "ProductVariant"
-          ? [merchandise.product.title, merchandise.title].filter(Boolean).join(" – ")
-          : "Ein Artikel";
-
-      errors.push({
-        message: `${name}: Eine Vororder braucht mindestens ${VORORDER_MINDESTMENGE} Packs je Artikel. Aktuelle Menge: ${quantity}.`,
-        target: "$.cart",
-      });
-    }
 
     if (quantity % PACK_STEP === 0) {
       return;

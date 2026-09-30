@@ -30,7 +30,7 @@
   Kopf darueber - so gehoert beides sichtbar zusammen.
 {%- endcomment -%}
 <cart-items
-  class="gradient color-{{ section.settings.color_scheme }} isolate b2b-korb{% if cart.attributes.Vororder != blank %} b2b-korb--vororder{% endif %}{% if cart == empty %} is-empty{% else %} section-{{ section.id }}-padding{% endif %}"
+  class="gradient color-{{ section.settings.color_scheme }} isolate b2b-korb{% if cart == empty %} is-empty{% else %} section-{{ section.id }}-padding{% endif %}"
   view-event-payload="{{ cart | standard_event_data: 'view', context: 'page' | escape }}"
 >
   <div class="page-width">
@@ -59,7 +59,7 @@
       Vororder-Hinweis. Steht ueber den Positionen, weil er fuer alle gilt:
       ein Warenkorb ist entweder eine Vororder oder eine normale Bestellung.
     {%- endcomment -%}
-    {% render 'b2b-vororder-hinweis' %}
+    {% render 'b2b-korb-art' %}
 
     <form action="{{ routes.cart_url }}" class="cart__contents critical-hidden" method="post" id="cart" novalidate>
       <div class="cart__items" id="main-cart-items" data-id="{{ section.id }}">
@@ -281,9 +281,15 @@
                                 # für dieselbe PACK_STEP=5-Begründung) — item.variant.quantity_rule ist hier ebenso
                                 # immer die native {min:1, increment:1} ohne B2B-Preislisten-Katalog, deshalb hart auf 5.
                                 assign pack_step = 5
+
+                                # In einer Vororder zaehlt der heutige Bestand nicht: bestellt wird
+                                # Ware aus der naechsten Produktion. Ohne diese Ausnahme stand das
+                                # Plus bei 500 Packs still, weil der Deckel beim Lagerbestand lag.
                                 assign cart_quantity_max = null
-                                if item.variant.inventory_management == 'shopify' and item.variant.inventory_policy != 'continue'
-                                  assign cart_quantity_max = item.variant.inventory_quantity | at_least: 0
+                                if cart.attributes.Vororder == blank
+                                  if item.variant.inventory_management == 'shopify' and item.variant.inventory_policy != 'continue'
+                                    assign cart_quantity_max = item.variant.inventory_quantity | at_least: 0
+                                  endif
                                 endif
                               -%}
                               <input
