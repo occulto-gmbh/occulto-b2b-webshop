@@ -217,6 +217,28 @@ class CartItems extends window.StandardEvents.createViewEventElement(HTMLElement
           const items = document.querySelectorAll('.cart-item');
 
           if (parsedState.errors) {
+            /* Occulto: nicht blind auf die alte Menge zurückfallen.
+
+               Liegt eine Zeile schon über dem, was Shopify verkaufen kann
+               (etwa weil der Bestand gesunken ist, seit sie im Korb liegt),
+               lehnt Shopify jeden 5er-Schritt ab, der noch darüber liegt -
+               und dieser Zweig setzte das Feld jedes Mal auf die alte Menge
+               zurück. Mit 100 im Korb und 50 verfügbar ergab Minus 95,
+               abgelehnt, zurück auf 100: man kam nie wieder herunter.
+
+               Shopify nennt die erlaubte Menge in der Meldung ("nur 50
+               Artikel"). Liegt sie unter der gewünschten, wird die Zeile
+               direkt darauf gesetzt. Tausenderpunkte werden mitgelesen,
+               sonst würde aus "1.000" eine 1. */
+            const treffer = String(parsedState.errors).match(/\d[\d.\s]*/);
+            const erlaubt = treffer ? parseInt(treffer[0].replace(/\D/g, ''), 10) : NaN;
+            const gerendert = parseInt(quantityElement.getAttribute('value'), 10);
+
+            if (Number.isFinite(erlaubt) && erlaubt < quantity && erlaubt !== gerendert) {
+              this.updateQuantity(line, erlaubt, event, name, variantId);
+              return;
+            }
+
             quantityElement.value = quantityElement.getAttribute('value');
             this.updateLiveRegions(line, parsedState.errors);
             return;
