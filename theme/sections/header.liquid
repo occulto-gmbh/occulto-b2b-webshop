@@ -19,12 +19,20 @@
 {%- comment -%}
   Ab welcher Fensterbreite die Menuezeile passt - gerechnet, nicht geraten.
   Siehe scratchpad/p18-navbar-mitte.js fuer die Eichung der Faktoren.
+
+  Der Faktor je Zeichen haengt an der Schrift. Geeicht war er auf League
+  Spartan (7.7). Seit dem 30.09.2026 ist die Schrift basic-sans, gemessen
+  8.14 px je Zeichen bei 15px fett. Nachgerechnet am 30.09.2026 bei 1500px:
+  Rand 40 + Logo 208 + 20 + Menue 813 + 20 + Symbole 306 + Rand 40 +
+  Scrollleiste 15 = 1462px Bedarf; die Formel ergibt damit 1469. Wer die
+  Schrift wieder wechselt, muss hier nachmessen, sonst wird das Menue knapp
+  oberhalb des Umbruchs wieder abgeschnitten.
 {%- endcomment -%}
 {%- liquid
   assign b2b_menue = 0
   for link in section.settings.menu.links
     assign zeichen = link.title | size
-    assign eintrag = zeichen | times: 7.7 | plus: 16
+    assign eintrag = zeichen | times: 8.14 | plus: 16
     if link.links != blank
       assign eintrag = eintrag | plus: 10
     endif
@@ -33,7 +41,7 @@
 
   if section.settings.b2b_link_label != blank
     assign zeichen = section.settings.b2b_link_label | size
-    assign eintrag = zeichen | times: 7.7 | plus: 16
+    assign eintrag = zeichen | times: 8.14 | plus: 16
     assign b2b_menue = b2b_menue | plus: eintrag
   endif
 
