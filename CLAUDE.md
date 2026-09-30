@@ -74,15 +74,12 @@ Nie im Live-Theme aufheben.
 - Du-Form, kurze konkrete Sätze. Vorbild: Hauptshop-Landingpage `/pages/personalisierte-socken-mit-logo`.
 - Begriffe: Packs (nicht Stück/Paar), Nachbestellung, Vororder, Annahmeschluss, Auslieferung, Händlerpreis.
 - Hausschrift basic-sans (Adobe-Kit `wdu6knh`, Snippet `brand-schrift`), nur 400 und 700.
-- Keine Versal-Etiketten und Zierelemente ohne Information; Bewegung sparsam. Für Gestaltung den Skill
+- Keine Versal-Etiketten, keine Etiketten über Überschriften, Rot nur deckend (Linie, Knopf, Abzeichen) – Flächen
+  neutral grau oder weiß. Zierelemente nur mit Information; Bewegung sparsam. Für Gestaltung den Skill
   `frontend-design` laden – aber die Marke steht fest, keine neue Bildsprache erfinden.
 
 ## Offen (Stand 30.09.2026)
 
-- Gestaltung, noch nicht umgesetzt: Versal-Etiketten in Vororder und Warenkorb (`text-transform: uppercase`
-  an `dt` und `__marke`) und rote Transparenzflächen (`rgb(akzent / 0.06)`) – beides widerspricht den
-  Regeln oben bzw. in `snippets/b2b-marke.liquid` („Rot nur deckend").
-- `layout/password.liquid` und `templates/gift_card.liquid` laden noch die Shopify-Schriften und nicht basic-sans.
 
 - `main` liegt lokal mehrere Commits vor `origin`, Push erst mit Schreibrechten.
 - Functions gebaut und getestet, **nicht ausgerollt**: `shopify app deploy` wirkt sofort live, nur auf Zuruf.
