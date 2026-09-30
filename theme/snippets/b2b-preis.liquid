@@ -70,6 +70,10 @@
   endif
 
   assign fehlende_packs = b2b_ab_packs | minus: cart.item_count
+  assign ersparnis_text = abzug | money
+  if je_pack
+    assign ersparnis_text = 'sections.quick_order_list.each' | t: money: ersparnis_text
+  endif
 -%}
 
 <span class="b2b-preis {{ klasse }}">
@@ -79,6 +83,7 @@
     <s class="b2b-preis__alt">{{ alt_text }}</s>
     <span class="b2b-preis__neu price">{{ neu_text }}</span>
     <span class="b2b-preis__satz">&minus;{{ satz }}&nbsp;%</span>
+    <span class="b2b-preis__sparen">Du sparst {{ ersparnis_text }}</span>
   {%- else -%}
     {%- comment -%}
       Kein Streichpreis, solange der Rabatt nicht greift. Stattdessen der

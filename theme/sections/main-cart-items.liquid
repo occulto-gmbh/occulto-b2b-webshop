@@ -25,8 +25,12 @@
 
 <script src="{{ 'quantity-popover.js' | asset_url }}" defer="defer"></script>
 
+{%- comment -%}
+  b2b-korb faerbt den Rahmen um die Positionen in derselben Farbe wie der
+  Kopf darueber - so gehoert beides sichtbar zusammen.
+{%- endcomment -%}
 <cart-items
-  class="gradient color-{{ section.settings.color_scheme }} isolate{% if cart == empty %} is-empty{% else %} section-{{ section.id }}-padding{% endif %}"
+  class="gradient color-{{ section.settings.color_scheme }} isolate b2b-korb{% if cart.attributes.Vororder != blank %} b2b-korb--vororder{% endif %}{% if cart == empty %} is-empty{% else %} section-{{ section.id }}-padding{% endif %}"
   view-event-payload="{{ cart | standard_event_data: 'view', context: 'page' | escape }}"
 >
   <div class="page-width">
