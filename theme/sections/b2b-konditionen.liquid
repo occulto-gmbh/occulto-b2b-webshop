@@ -1,14 +1,12 @@
 {%- comment -%}
-  Konditionen und Vororder.
+  Vororder-Konditionen: Rabatt, Mindestmenge, Versand und die beiden Termine.
 
-  Deckt zwei Punkte der Liste ab:
-    7. Versandkostenfrei ab 500 Euro Bestellwert
-    8. Vororder-Rabatt 10 %, ab 500 Packs, zwei Termine im Jahr
+  Nur die Vororder. Die Versandgrenze von 500 € gilt fuer Nachbestellungen
+  und steht deshalb im Haendler-Banner und in den Vorteilen, nicht hier -
+  neben den Vororder-Regeln las sie sich wie eine Vororder-Bedingung.
 
-  WICHTIG - was dieser Abschnitt NICHT tut: er rechnet nichts ab. Er sagt nur,
-  was gilt. Der Versandkostenfrei-Schwellenwert ist eine Versandeinstellung des
-  Shops, der Vororder-Rabatt braucht - wie der bestehende Mengenrabatt - eine
-  Shopify Function in der App. Beides liegt ausserhalb des Themes.
+  Rechnet nichts ab, sagt nur, was gilt. Die Mengenregeln selbst stehen in
+  den Einstellungen von Vororder-Maske und Vororder-Warenkorb.
 
   Der naechste Vororder-Termin wird gerechnet, nicht gepflegt: zwei feste
   Stichtage im Jahr, und je nach heutigem Datum ist der naechste der im Juni,
@@ -50,16 +48,16 @@
 
     <ul class="b2b-kond__liste">
       <li class="b2b-kond__punkt">
-        <span class="b2b-kond__wert">{{ section.settings.versandfrei_ab | escape }}</span>
-        <span class="b2b-kond__text">{{ section.settings.versandfrei_text | escape }}</span>
-      </li>
-      <li class="b2b-kond__punkt">
         <span class="b2b-kond__wert">{{ section.settings.vororder_rabatt | escape }}</span>
         <span class="b2b-kond__text">{{ section.settings.vororder_text | escape }}</span>
       </li>
       <li class="b2b-kond__punkt">
         <span class="b2b-kond__wert">{{ section.settings.mindestmenge | escape }}</span>
         <span class="b2b-kond__text">{{ section.settings.mindestmenge_text | escape }}</span>
+      </li>
+      <li class="b2b-kond__punkt">
+        <span class="b2b-kond__wert">{{ section.settings.versand | escape }}</span>
+        <span class="b2b-kond__text">{{ section.settings.versand_text | escape }}</span>
       </li>
     </ul>
 
@@ -81,14 +79,14 @@
           href="{{ section.settings.vororder_link | default: '/pages/vororder' }}"
         >
           {{ section.settings.knopf_text | escape }}
-          <span class="b2b-kond__knopfdatum">bis 15. Juni &middot; Lieferung ab 15. September</span>
+          <span class="b2b-kond__knopfdatum">bis 15. Juni &middot; Auslieferung ab 15. September</span>
         </a>
         <a
           class="b2b-kond__knopf{% if naechster_monat == 'Dezember' %} b2b-kond__knopf--naechster{% endif %}"
           href="{{ section.settings.vororder_link | default: '/pages/vororder' }}"
         >
           {{ section.settings.knopf_text | escape }}
-          <span class="b2b-kond__knopfdatum">bis 15. Dezember &middot; Lieferung ab 15. März</span>
+          <span class="b2b-kond__knopfdatum">bis 15. Dezember &middot; Auslieferung ab 15. März</span>
         </a>
       </div>
 
@@ -267,27 +265,11 @@
       "type": "text",
       "id": "heading",
       "label": "Überschrift",
-      "default": "Vororder und Versand"
+      "default": "Vororder"
     },
     {
       "type": "header",
-      "content": "Versand"
-    },
-    {
-      "type": "text",
-      "id": "versandfrei_ab",
-      "label": "Wert",
-      "default": "ab 500 €"
-    },
-    {
-      "type": "text",
-      "id": "versandfrei_text",
-      "label": "Text",
-      "default": "Versandkostenfrei innerhalb Deutschlands ab 500 € Bestellwert netto."
-    },
-    {
-      "type": "header",
-      "content": "Vororder"
+      "content": "Rabatt"
     },
     {
       "type": "text",
@@ -299,19 +281,39 @@
       "type": "text",
       "id": "vororder_text",
       "label": "Text",
-      "default": "Auf jede Vororder – und du bekommst die Ware exklusiv zuerst."
+      "default": "Auf jede Vororder."
+    },
+    {
+      "type": "header",
+      "content": "Mindestmenge"
     },
     {
       "type": "text",
       "id": "mindestmenge",
-      "label": "Mindestmenge",
-      "default": "ab 500 Packs"
+      "label": "Wert",
+      "default": "ab 100 Packs"
     },
     {
       "type": "text",
       "id": "mindestmenge_text",
-      "label": "Text zur Mindestmenge",
-      "default": "Mindestbestellmenge für eine Vororder."
+      "label": "Text",
+      "default": "Je Artikel, alle Größen zusammen – je Größe ab 5. Mindestbestellwert 1.500 €."
+    },
+    {
+      "type": "header",
+      "content": "Versand"
+    },
+    {
+      "type": "text",
+      "id": "versand",
+      "label": "Wert",
+      "default": "versandkostenfrei"
+    },
+    {
+      "type": "text",
+      "id": "versand_text",
+      "label": "Text",
+      "default": "Jede Vororder liefern wir ohne Versandkosten."
     },
     {
       "type": "text",
@@ -335,7 +337,7 @@
       "type": "text",
       "id": "hinweis",
       "label": "Kleingedrucktes",
-      "default": "Vororder-Rabatt nur ab 500 Packs und nur bis zum jeweiligen Stichtag."
+      "default": "Vororder-Rabatt ab 100 Packs je Artikel und 1.500 € Bestellwert, nur bis zum jeweiligen Stichtag."
     },
     {
       "type": "color_scheme",

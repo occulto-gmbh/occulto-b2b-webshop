@@ -51,7 +51,9 @@
     "vororder": {
       "type": "b2b-vororder-korb",
       "settings": {
-        "mindestmenge": 500,
+        "mindestmenge": 100,
+        "mindestmenge_groesse": 5,
+        "mindestwert": 1500,
         "rabatt_prozent": 10
       }
     }

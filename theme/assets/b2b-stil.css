@@ -527,10 +527,12 @@ main .container {
   font-weight: 700;
 }
 
-/* Die drei Regeln, die diese Bestellart von der anderen unterscheiden. */
+/* Die Regeln, die diese Bestellart von der anderen unterscheiden. Vier bei
+   der Nachbestellung, fünf bei der Vororder - deshalb so viele Spalten, wie
+   Platz haben, statt einer festen Zahl. */
 .b2b-art__regeln {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 12px 24px;
   margin: 14px 0 0;
   padding-top: 14px;

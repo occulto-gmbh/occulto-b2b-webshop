@@ -8,6 +8,31 @@
 
 {{ 'section-hero-split.css' | asset_url | stylesheet_tag }}
 
+{%- liquid
+  assign haendler = false
+  if customer and customer.tags contains 'dealer-approved'
+    assign haendler = true
+  endif
+  assign vororder_link = section.settings.vororder_link | default: '/pages/vororder'
+-%}
+
+{%- comment -%}
+  Das Band ueber dem Hero: der naechste Vororder-Termin auf einen Blick.
+  Darueber, nicht darunter: der Hero ist genau fensterhoch, ein Band darunter
+  saehe man erst nach dem Scrollen. Das Messskript unten zieht es mit ab.
+  Termin und Lieferung kommen aus b2b-vororder-termin, wie ueberall sonst.
+{%- endcomment -%}
+{%- if haendler and section.settings.vororder_band -%}
+  <a class="hero-split__band" href="{{ vororder_link }}">
+    <span class="hero-split__band-satz">&minus;10&nbsp;%</span>
+    <span class="hero-split__band-text">
+      Vororder bis <strong>{% render 'b2b-vororder-termin' %}</strong>: 10&nbsp;% Rabatt, versandkostenfrei.
+      Auslieferung ab {% render 'b2b-vororder-termin', teil: 'lieferung' %}.
+    </span>
+    <span class="hero-split__band-pfeil" aria-hidden="true">&rarr;</span>
+  </a>
+{%- endif -%}
+
 <div class="hero-split color-{{ section.settings.color_scheme }}">
   <div class="hero-split__text{% if section.settings.text_image != blank %} hero-split__text--has-image{% endif %}">
     {%- if section.settings.text_image != blank -%}
@@ -36,7 +61,22 @@
         zweite zur Haendlerregistrierung. Die Reihe bricht auf schmalen
         Schirmen um, statt die Knoepfe zu stauchen.
       {%- endcomment -%}
-      {%- if section.settings.button_label != blank or section.settings.button_2_label != blank -%}
+      {%- liquid
+        comment
+          Freigeschaltete Haendler sehen statt "Haendler werden" den
+          Vororder-Knopf: registrieren muessen sie sich nicht mehr, und Gaeste
+          koennen keine Vororder abgeben.
+        endcomment
+        assign knopf_2 = section.settings.button_2_label
+        if haendler and section.settings.button_2_link contains 'haendler-werden'
+          assign knopf_2 = blank
+        endif
+        assign knopf_vororder = blank
+        if haendler
+          assign knopf_vororder = section.settings.vororder_label
+        endif
+      -%}
+      {%- if section.settings.button_label != blank or knopf_2 != blank or knopf_vororder != blank -%}
         <div class="hero-split__buttons">
           {%- if section.settings.button_label != blank -%}
             <a
@@ -46,12 +86,17 @@
               {{ section.settings.button_label }}
             </a>
           {%- endif -%}
-          {%- if section.settings.button_2_label != blank -%}
+          {%- if knopf_2 != blank -%}
             <a
               href="{{ section.settings.button_2_link | default: '#' }}"
               class="button{% if section.settings.button_2_style_secondary %} button--secondary{% else %} button--primary{% endif %}"
             >
-              {{ section.settings.button_2_label }}
+              {{ knopf_2 }}
+            </a>
+          {%- endif -%}
+          {%- if knopf_vororder != blank -%}
+            <a href="{{ vororder_link }}" class="button button--primary">
+              {{ knopf_vororder | escape }}
             </a>
           {%- endif -%}
         </div>
@@ -156,6 +201,29 @@
       "type": "checkbox",
       "id": "button_2_style_secondary",
       "label": "Zweiter Knopf zurückhaltend",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Vororder (nur für freigeschaltete Händler)"
+    },
+    {
+      "type": "text",
+      "id": "vororder_label",
+      "label": "Beschriftung Vororder-Knopf",
+      "default": "Vororder −10 %",
+      "info": "Leer lassen, um den Knopf auszublenden."
+    },
+    {
+      "type": "url",
+      "id": "vororder_link",
+      "label": "Ziel Vororder",
+      "info": "Leer = /pages/vororder"
+    },
+    {
+      "type": "checkbox",
+      "id": "vororder_band",
+      "label": "Band mit Vororder-Termin über dem Hero",
       "default": true
     },
     {

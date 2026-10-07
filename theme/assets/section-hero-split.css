@@ -80,6 +80,54 @@
   font-size: 1.7rem;
 }
 
+/* Band mit dem naechsten Vororder-Termin, ueber dem Hero. Dunkel wie die
+   Textflaeche darunter, Rot nur deckend im Abzeichen. */
+.hero-split__band {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  padding: 1.1rem 2rem;
+  background: rgb(var(--b2b-tinte, 46 46 45));
+  color: rgb(255 255 255);
+  font-size: 1.5rem;
+  line-height: 1.4;
+  text-decoration: none;
+}
+
+.hero-split__band-satz {
+  flex: 0 0 auto;
+  padding: 0.2rem 1rem;
+  border-radius: 999px;
+  background: rgb(var(--b2b-akzent, 199 42 9));
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.hero-split__band-pfeil {
+  flex: 0 0 auto;
+  transition: transform 0.18s ease;
+}
+
+.hero-split__band:hover .hero-split__band-pfeil {
+  transform: translateX(3px);
+}
+
+/* Auf dem Handy kleiner und linksbuendig - zentriert ueber drei Zeilen war
+   es 106 Bildpunkte hoch. */
+@media screen and (max-width: 749px) {
+  .hero-split__band {
+    justify-content: flex-start;
+    gap: 1rem;
+    padding: 0.9rem 1.6rem;
+    font-size: 1.3rem;
+  }
+
+  .hero-split__band-pfeil {
+    display: none;
+  }
+}
+
 .hero-split__media {
   aspect-ratio: 4 / 3;
   overflow: hidden;

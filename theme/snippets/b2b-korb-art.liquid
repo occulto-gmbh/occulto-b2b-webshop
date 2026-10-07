@@ -8,7 +8,12 @@
   beantwortet.
 
   Die 5 % müssen zu theme/snippets/b2b-preis.liquid und zu
-  extensions/order-value-discount/src/run.ts passen.
+  extensions/order-value-discount/src/run.ts passen. Die Versandgrenze von
+  500 € ist eine Versandeinstellung des Shops - hier steht nur der Hinweis.
+
+  Zwei Stufen, immer nur die nächste offene wird genannt: erst "noch X € bis
+  versandkostenfrei", dann "noch N Packs bis −5 %". Erreichtes steht als
+  Abzeichen davor.
 
   @param kompakt  true für die Warenkorb-Schublade
 {%- endcomment -%}
@@ -33,28 +38,45 @@
   {%- liquid
     assign satz = 5
     assign ab_packs = 500
+    assign versandfrei_ab = 50000
 
     assign greift = false
     if cart.item_count >= ab_packs
       assign greift = true
     endif
+    assign versandfrei = false
+    if cart.total_price >= versandfrei_ab
+      assign versandfrei = true
+    endif
 
     assign ersparnis = cart.total_price | times: satz | divided_by: 100
     assign fehlende_packs = ab_packs | minus: cart.item_count
+    assign fehlender_wert = versandfrei_ab | minus: cart.total_price
   -%}
 
   <div class="b2b-art{% if kompakt %} b2b-art--kompakt{% endif %}">
     <p class="b2b-art__zeile">
       <span class="b2b-art__name">Nachbestellung</span>
 
+      {%- if versandfrei -%}
+        <span class="b2b-art__satz">versandkostenfrei</span>
+      {%- endif -%}
       {%- if greift -%}
         <span class="b2b-art__satz">&minus;{{ satz }}&nbsp;%</span>
         <span class="b2b-art__sparen">Du sparst {{ ersparnis | money }}</span>
-      {%- else -%}
-        <span class="b2b-art__satz b2b-art__satz--offen">
-          noch {{ fehlende_packs }} Packs bis &minus;{{ satz }}&nbsp;%
-        </span>
       {%- endif -%}
+
+      {%- unless versandfrei -%}
+        <span class="b2b-art__satz b2b-art__satz--offen">
+          noch {{ fehlender_wert | money }} bis versandkostenfrei
+        </span>
+      {%- else -%}
+        {%- unless greift -%}
+          <span class="b2b-art__satz b2b-art__satz--offen">
+            noch {{ fehlende_packs }} Packs bis &minus;{{ satz }}&nbsp;%
+          </span>
+        {%- endunless -%}
+      {%- endunless -%}
     </p>
 
     {%- unless kompakt -%}
@@ -62,6 +84,10 @@
         <div>
           <dt>Lieferung</dt>
           <dd>aus dem Lager</dd>
+        </div>
+        <div>
+          <dt>Versand</dt>
+          <dd>kostenlos ab {{ versandfrei_ab | money_without_trailing_zeros }} netto</dd>
         </div>
         <div>
           <dt>Rabatt</dt>

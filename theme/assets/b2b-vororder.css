@@ -20,7 +20,7 @@
    deckende Linie links, nie als getönte Fläche (siehe snippets/b2b-marke.liquid). */
 .b2b-vo-kopf__regeln {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px 24px;
   margin: 0 0 14px;
   padding: 18px 22px;
@@ -49,7 +49,7 @@
   opacity: 0.8;
 }
 
-/* ------------------------------------------------------------ Sortierung */
+/* ---------------------------------------------------- Suche und Sortierung */
 
 .b2b-vo-leiste {
   display: flex;
@@ -57,6 +57,32 @@
   align-items: center;
   gap: 10px 14px;
   margin-bottom: 20px;
+}
+
+/* Die Suche nimmt den freien Platz, die Sortierung bleibt rechts daneben. */
+.b2b-vo-leiste__suche {
+  flex: 1 1 280px;
+}
+
+.b2b-vo-leiste__feld {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid rgb(var(--b2b-linie, 226 226 225));
+  border-radius: 6px;
+  background: rgb(255 255 255);
+  font-size: 15px;
+}
+
+.b2b-vo-leiste__feld:focus {
+  border-color: rgb(var(--b2b-akzent, 199 42 9));
+  outline: none;
+}
+
+.b2b-vo-keine {
+  margin: 8px 0 0;
+  font-size: 15px;
+  opacity: 0.8;
 }
 
 .b2b-vo-leiste__label {
@@ -88,6 +114,12 @@
   background: rgb(255 255 255);
 }
 
+/* Die Produktkarte ist ein Rasterelement; ohne diese Zeile bliebe sie bei
+   einer Suche ohne Treffer trotz hidden sichtbar. */
+.b2b-vo-produkt[hidden] {
+  display: none;
+}
+
 .b2b-vo-produkt__kopf {
   display: flex;
   align-items: flex-start;
@@ -113,6 +145,22 @@
 
 .b2b-vo-produkt__preis {
   margin: 0;
+}
+
+/* Wie weit der Artikel bis zur Mindestmenge ist. Erreicht: dunkel mit Haken. */
+.b2b-vo-produkt__stand {
+  margin: 6px 0 0;
+  color: rgb(var(--b2b-akzent, 199 42 9));
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.b2b-vo-produkt__stand.ist-erreicht {
+  color: rgb(var(--b2b-tinte, 46 46 45));
+}
+
+.b2b-vo-produkt__stand.ist-erreicht::before {
+  content: '✓ ';
 }
 
 .b2b-vo-varianten {
@@ -144,8 +192,8 @@
 }
 
 /* --------------------------------------------------------- Mengenfeld
-   Minus – Zahl – Plus. Plus springt von 0 auf 500, danach in 5er-Schritten;
-   die Regel steht in b2b-vororder.js. */
+   Minus – Zahl – Plus. Je Größe ab 5 Packs, in 5er-Schritten; die Regeln
+   stehen in b2b-vororder.js. */
 
 .b2b-vo-zahl {
   display: inline-flex;
@@ -228,6 +276,17 @@
   color: rgb(var(--b2b-akzent, 199 42 9));
   font-weight: 700;
   white-space: nowrap;
+}
+
+/* Was zum Absenden noch fehlt. Text, keine Fläche. */
+.b2b-vo-offen {
+  color: rgb(var(--b2b-tinte, 46 46 45) / 0.75);
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.b2b-vo-offen::before {
+  content: '· ';
 }
 
 .b2b-vo-fuss__weiter {
@@ -363,6 +422,27 @@
   font-weight: 700;
 }
 
+/* Warum die Vororder noch nicht abgeschickt werden kann. */
+.b2b-vk-offen {
+  margin: 0 0 18px;
+  padding: 14px 18px;
+  border: 1px solid rgb(var(--b2b-linie, 226 226 225));
+  border-left: 3px solid rgb(var(--b2b-akzent, 199 42 9));
+  border-radius: 6px;
+  background: rgb(255 255 255);
+  font-size: 15px;
+}
+
+.b2b-vk-offen__titel {
+  margin: 0 0 6px;
+  font-weight: 700;
+}
+
+.b2b-vk-offen ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
 .b2b-vk-form {
   display: grid;
   gap: 14px;
@@ -409,6 +489,11 @@
   background: rgb(var(--b2b-akzent, 199 42 9));
   color: rgb(255 255 255);
   font-size: 16px;
+}
+
+.b2b-vk-form__knopf:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
 }
 
 .b2b-vk-fertig {

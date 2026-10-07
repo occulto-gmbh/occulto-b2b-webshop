@@ -12,6 +12,9 @@
 
   Diese Seite sammelt nur. Absenden geht erst in der Übersicht – der
   Händler soll sehen, was er anfragt, bevor es rausgeht.
+
+  Die Mengenregeln stehen hier in den Einstellungen und müssen zu denen in
+  sections/b2b-vororder-korb.liquid passen.
 {%- endcomment -%}
 
 {%- liquid
@@ -22,6 +25,8 @@
 
   assign collection = collections[section.settings.collection]
   assign mindestmenge = section.settings.mindestmenge
+  assign groesse = section.settings.mindestmenge_groesse
+  assign mindestwert = section.settings.mindestwert
   assign satz = section.settings.rabatt_prozent
 -%}
 
@@ -54,7 +59,15 @@
         </div>
         <div>
           <dt>Mindestmenge</dt>
-          <dd>{{ mindestmenge }} Packs je Artikel, dann in 5er-Schritten</dd>
+          <dd>{{ mindestmenge }} Packs je Artikel, alle Größen zusammen – je Größe ab {{ groesse }}</dd>
+        </div>
+        <div>
+          <dt>Mindestbestellwert</dt>
+          <dd>{{ mindestwert | times: 100 | money_without_trailing_zeros }} nach Rabatt</dd>
+        </div>
+        <div>
+          <dt>Versand</dt>
+          <dd>versandkostenfrei</dd>
         </div>
         <div>
           <dt>Annahmeschluss</dt>
@@ -73,6 +86,16 @@
     </header>
 
     <div class="b2b-vo-leiste">
+      <label class="b2b-vo-leiste__suche">
+        <span class="visually-hidden">Produkte durchsuchen</span>
+        <input
+          type="search"
+          class="b2b-vo-leiste__feld"
+          placeholder="Suchen: Name oder Art.-Nr."
+          autocomplete="off"
+          data-vo-suche
+        >
+      </label>
       <label class="b2b-vo-leiste__label" for="b2b-sort-{{ section.id }}">Sortieren nach</label>
       <select class="b2b-vo-leiste__wahl" id="b2b-sort-{{ section.id }}">
         <option value="standard">Reihenfolge des Katalogs</option>
@@ -83,12 +106,21 @@
       </select>
     </div>
 
-    <div
-      class="b2b-vo"
-      data-mindestmenge="{{ mindestmenge }}"
-      data-satz="{{ satz }}"
-    >
-      {% paginate collection.products by section.settings.products_per_page %}
+    {%- comment -%}
+      data-seiten und data-abschnitt: das Skript holt die übrigen Seiten nach,
+      damit Suche und Sortierung über das ganze Sortiment gehen.
+    {%- endcomment -%}
+    {% paginate collection.products by section.settings.products_per_page %}
+      <div
+        class="b2b-vo"
+        data-mindestmenge="{{ mindestmenge }}"
+        data-groesse="{{ groesse }}"
+        data-mindestwert="{{ mindestwert }}"
+        data-satz="{{ satz }}"
+        data-abschnitt="{{ section.id }}"
+        data-seiten="{{ paginate.pages }}"
+        data-seite="{{ paginate.current_page }}"
+      >
         <div class="b2b-vo-liste">
           {%- for product in collection.products -%}
             {%- liquid
@@ -96,12 +128,14 @@
               if product.featured_media
                 assign bild_url = product.featured_media | image_url: width: 128
               endif
+              assign skus = product.variants | map: 'sku' | join: ' '
             -%}
             <article
               class="b2b-vo-produkt"
               data-name="{{ product.title | escape }}"
               data-preis="{{ product.price_min }}"
               data-art="{{ product.type | escape }}"
+              data-suche="{{ product.title | append: ' ' | append: product.type | append: ' ' | append: skus | downcase | escape }}"
             >
               <div class="b2b-vo-produkt__kopf">
                 {%- if product.featured_media -%}
@@ -122,6 +156,7 @@
                   <p class="b2b-vo-produkt__preis">
                     {%- render 'b2b-preis', preis: product.price_min, vororder: true, je_pack: true -%}
                   </p>
+                  <p class="b2b-vo-produkt__stand" data-artikel-stand hidden></p>
                 </div>
               </div>
 
@@ -142,6 +177,8 @@
                       class="b2b-vo-zahl"
                       data-vo-zahl
                       data-variante="{{ variant.id }}"
+                      data-artikel="{{ product.id }}"
+                      data-artikel-name="{{ product.title | escape }}"
                       data-bezeichnung="{{ product.title | escape }} / {{ variant.title | escape }}"
                       data-sku="{{ variant.sku | escape }}"
                       data-preis="{{ variant.price }}"
@@ -167,9 +204,10 @@
             <p>Aktuell sind keine Produkte für die Vororder verfügbar.</p>
           {%- endfor -%}
         </div>
+        <p class="b2b-vo-keine" data-vo-keine hidden>Kein Produkt passt zur Suche.</p>
         {% render 'pagination', paginate: paginate %}
-      {%- endpaginate -%}
-    </div>
+      </div>
+    {%- endpaginate -%}
 
     {%- comment -%}
       Die Leiste unten. Bewusst nur eine Zeile: eine hoehere klebende Leiste
@@ -200,7 +238,9 @@
       "default": 50,
       "label": "Produkte je Seite"
     },
-    { "type": "number", "id": "mindestmenge", "default": 500, "label": "Mindestmenge je Artikel (Packs)" },
+    { "type": "number", "id": "mindestmenge", "default": 100, "label": "Mindestmenge je Artikel (Packs, alle Größen zusammen)" },
+    { "type": "number", "id": "mindestmenge_groesse", "default": 5, "label": "Mindestmenge je Größe (Packs)" },
+    { "type": "number", "id": "mindestwert", "default": 1500, "label": "Mindestbestellwert in Euro (nach Rabatt)" },
     { "type": "number", "id": "rabatt_prozent", "default": 10, "label": "Rabatt in Prozent" },
     { "type": "header", "content": "Abstand" },
     {

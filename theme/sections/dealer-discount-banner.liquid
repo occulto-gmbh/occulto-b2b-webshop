@@ -63,6 +63,18 @@
       opacity: 0.8;
     }
 
+    .dealer-discount-banner__versand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin: 1.2rem 0 0;
+      padding: 0.6rem 1.4rem;
+      border: 0.1rem solid rgb(var(--color-foreground) / 0.35);
+      border-radius: 999px;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
     @media screen and (max-width: 749px) {
       .dealer-discount-banner__badge {
         width: 7.2rem;
@@ -95,6 +107,16 @@
               <span class="dealer-discount-banner__note">{{ section.settings.note | escape }}</span>
             {%- endif -%}
           </p>
+          {%- comment -%}
+            Die zweite Bedingung fuer Nachbestellungen. Eigene Zeile mit
+            Symbol, damit sie nicht im Fliesstext untergeht.
+          {%- endcomment -%}
+          {%- if section.settings.versand != blank -%}
+            <p class="dealer-discount-banner__versand">
+              <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.6"/><circle cx="17.5" cy="18" r="1.6"/></svg>
+              {{ section.settings.versand | escape }}
+            </p>
+          {%- endif -%}
         </div>
       </div>
       {%- if section.settings.button_label != blank -%}
@@ -146,6 +168,13 @@
       "id": "note",
       "label": "Hinweis",
       "default": "Vororderware ausgeschlossen."
+    },
+    {
+      "type": "text",
+      "id": "versand",
+      "label": "Versand",
+      "default": "Versandkostenfrei ab 500 € Bestellwert netto",
+      "info": "Gilt für Nachbestellungen. Leer lassen, um die Zeile auszublenden."
     },
     {
       "type": "text",

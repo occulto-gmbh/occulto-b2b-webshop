@@ -60,12 +60,16 @@ Nie im Live-Theme aufheben.
 |              | Nachbestellung                       | Vororder                                            |
 |--------------|--------------------------------------|-----------------------------------------------------|
 | Korb         | Shopify-Warenkorb                    | eigener Korb im Browser (`localStorage` `b2b-vororder`) |
-| Menge        | 5er-Schritte, Lagerbestand als Grenze | 0 oder ab 500 je Artikel, dann 5er, **keine** Lagergrenze |
+| Menge        | 5er-Schritte, Lagerbestand als Grenze | je Größe 0 oder ab 5, in 5er; je Artikel (alle Größen) ab 100; gesamt ab 1.500 € nach Rabatt; **keine** Lagergrenze |
 | Rabatt       | 5 % ab 500 Packs im Korb             | immer 10 %                                          |
+| Versand      | kostenlos ab 500 € netto (Versandeinstellung des Shops) | immer kostenlos                    |
 | Abschluss    | Shopify-Kasse                        | E-Mail über Kontaktformular, Rechnung von Hand      |
 
 - Stichtage 15.06 und 15.12, Auslieferung drei Monate später. Einzige Quelle: `snippets/b2b-vororder-termin.liquid`.
 - 5 % stehen in `snippets/b2b-preis.liquid` **und** `b2b-webshop/extensions/order-value-discount/src/run.ts` – gleich halten.
+- Vororder-Mengen stehen als Einstellungen in **zwei** Abschnitten (Maske und Warenkorb-Übersicht) und in deren
+  Vorlagen (`page.b2b-vororder.json`, `cart.json`) – gleich halten. Texte dazu in `b2b-konditionen.liquid`.
+- Warenkorb-Kopf der Nachbestellung (`b2b-korb-art`) nennt immer nur die nächste offene Stufe: erst Versand (500 €), dann −5 %.
 - Vororder: `sections/b2b-vororder-maske.liquid` (Auswahl), `sections/b2b-vororder-korb.liquid` (Übersicht auf /cart),
   Logik in `assets/b2b-vororder.js`. Nachbestellung-Kopf: `snippets/b2b-korb-art.liquid`.
 
