@@ -469,6 +469,16 @@ main .container {
   white-space: nowrap;
 }
 
+/* UVP klein in eigener Zeile unter dem Preis - die ganze Breite, damit sie
+   nicht zwischen Preis und Rabatthinweis rutscht. */
+.b2b-preis__uvp {
+  flex-basis: 100%;
+  color: rgb(var(--b2b-tinte, 46 46 45) / 0.6);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
 .b2b-preis__vorsatz {
   color: rgb(var(--b2b-tinte, 46 46 45) / 0.7);
   font-size: 0.9em;

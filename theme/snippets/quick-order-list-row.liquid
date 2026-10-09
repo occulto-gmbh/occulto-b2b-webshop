@@ -111,7 +111,7 @@
               </div>
             </price-per-item>
           {%- else -%}
-            {% render 'b2b-preis', preis: item.price, je_pack: true %}
+            {% render 'b2b-preis', preis: item.price, je_pack: true, uvp: item.compare_at_price %}
           {%- endif -%}
         </dd>
       </dl>
@@ -145,7 +145,7 @@
           </div>
         </price-per-item>
       {%- else -%}
-        {% render 'b2b-preis', preis: item.price, je_pack: true %}
+        {% render 'b2b-preis', preis: item.price, je_pack: true, uvp: item.compare_at_price %}
       {%- endif -%}
     {%- endif -%}
 
@@ -375,7 +375,7 @@
               </div>
             </price-per-item>
           {%- else -%}
-            {% render 'b2b-preis', preis: item.price, je_pack: true %}
+            {% render 'b2b-preis', preis: item.price, je_pack: true, uvp: item.compare_at_price %}
           {%- endif -%}
         </dd>
       </dl>
@@ -409,7 +409,7 @@
           </div>
         </price-per-item>
       {%- else -%}
-        {% render 'b2b-preis', preis: item.price, je_pack: true %}
+        {% render 'b2b-preis', preis: item.price, je_pack: true, uvp: item.compare_at_price %}
       {%- endif -%}
     {%- endif -%}
 

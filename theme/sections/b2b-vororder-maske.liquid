@@ -154,7 +154,7 @@
                 <div>
                   <h2 class="b2b-vo-produkt__titel">{{ product.title | escape }}</h2>
                   <p class="b2b-vo-produkt__preis">
-                    {%- render 'b2b-preis', preis: product.price_min, vororder: true, je_pack: true -%}
+                    {%- render 'b2b-preis', preis: product.price_min, vororder: true, je_pack: true, uvp: product.compare_at_price_min, uvp_ab: product.compare_at_price_varies -%}
                   </p>
                   <p class="b2b-vo-produkt__stand" data-artikel-stand hidden></p>
                 </div>
