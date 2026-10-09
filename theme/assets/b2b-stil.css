@@ -604,13 +604,126 @@ main .container {
   line-height: 1.5;
 }
 
-.b2b-pdp-groessen {
-  margin: 0;
+/* Lange Produktnamen liefen in der schmalen Kaufbox ueber vier Zeilen und
+   schoben die Bestellung unter den Bildschirmrand. */
+.product__info-container .product__title h1 {
+  font-size: clamp(2.4rem, 1rem + 1.4vw, 3.2rem);
+  line-height: 1.2;
+}
+
+/* Alle Groessen in der Kaufbox (snippets/b2b-groessen-bestellen.liquid). */
+.b2b-gb__kopf {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 0 0 8px;
   font-size: 15px;
   font-weight: 700;
 }
 
-.b2b-pdp-groessen a {
+.b2b-gb__kopf span {
+  color: rgb(var(--b2b-tinte, 46 46 45) / 0.6);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+/* Viele Varianten scrollen in sich, damit der Knopf im Bild bleibt. */
+.b2b-gb__liste {
+  max-height: 42vh;
+  margin: 0 0 12px;
+  padding: 0;
+  overflow-y: auto;
+  border-top: 1px solid rgb(var(--b2b-linie, 226 226 225));
+  list-style: none;
+}
+
+.b2b-gb__zeile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 2px;
+  border-bottom: 1px solid rgb(var(--b2b-linie, 226 226 225));
+}
+
+.b2b-gb__name {
+  display: flex;
+  flex-direction: column;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.b2b-gb__lager {
+  color: rgb(var(--b2b-tinte, 46 46 45) / 0.6);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.b2b-gb__zeile.ist-aus .b2b-gb__name {
+  opacity: 0.5;
+}
+
+.b2b-gb__zahl {
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 40px;
+  border: 1px solid rgb(var(--b2b-linie, 226 226 225));
+  border-radius: 6px;
+  background: rgb(255 255 255);
+}
+
+.b2b-gb__zahl:focus-within {
+  border-color: rgb(var(--b2b-akzent, 199 42 9));
+}
+
+.b2b-gb__zahl button {
+  width: 36px;
+  border: 0;
+  background: transparent;
   color: rgb(var(--b2b-tinte, 46 46 45));
-  text-underline-offset: 3px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.b2b-gb__zahl button:disabled {
+  cursor: default;
+  opacity: 0.3;
+}
+
+.b2b-gb__zahl input {
+  width: 56px;
+  border: 0;
+  background: transparent;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.b2b-gb__zahl input::-webkit-outer-spin-button,
+.b2b-gb__zahl input::-webkit-inner-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+.b2b-gb__zahl input:focus {
+  outline: none;
+}
+
+.b2b-gb__summe {
+  margin: 0 0 10px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.b2b-gb__meldung {
+  margin: 8px 0 0;
+  font-size: 14px;
+}
+
+.b2b-gb__meldung.ist-fehler {
+  color: rgb(var(--b2b-akzent, 199 42 9));
+  font-weight: 700;
 }

@@ -8,12 +8,13 @@
   beantwortet.
 
   Die 5 % müssen zu theme/snippets/b2b-preis.liquid und zu
-  extensions/order-value-discount/src/run.ts passen. Die Versandgrenze von
-  500 € ist eine Versandeinstellung des Shops - hier steht nur der Hinweis.
+  extensions/order-value-discount/src/run.ts passen. Versandkostenfrei ab
+  300 Packs ist ein Rabatt "Kostenloser Versand" in der Shopify-Verwaltung -
+  hier steht nur der Hinweis.
 
-  Zwei Stufen, immer nur die nächste offene wird genannt: erst "noch X € bis
-  versandkostenfrei", dann "noch N Packs bis −5 %". Erreichtes steht als
-  Abzeichen davor.
+  Zwei Stufen, immer nur die nächste offene wird genannt: erst "noch N Packs
+  bis versandkostenfrei" (300), dann "noch N Packs bis −5 %" (500).
+  Erreichtes steht als Abzeichen davor.
 
   @param kompakt  true für die Warenkorb-Schublade
 {%- endcomment -%}
@@ -38,20 +39,20 @@
   {%- liquid
     assign satz = 5
     assign ab_packs = 500
-    assign versandfrei_ab = 50000
+    assign versandfrei_ab = 300
 
     assign greift = false
     if cart.item_count >= ab_packs
       assign greift = true
     endif
     assign versandfrei = false
-    if cart.total_price >= versandfrei_ab
+    if cart.item_count >= versandfrei_ab
       assign versandfrei = true
     endif
 
     assign ersparnis = cart.total_price | times: satz | divided_by: 100
     assign fehlende_packs = ab_packs | minus: cart.item_count
-    assign fehlender_wert = versandfrei_ab | minus: cart.total_price
+    assign fehlende_versand = versandfrei_ab | minus: cart.item_count
   -%}
 
   <div class="b2b-art{% if kompakt %} b2b-art--kompakt{% endif %}">
@@ -68,7 +69,7 @@
 
       {%- unless versandfrei -%}
         <span class="b2b-art__satz b2b-art__satz--offen">
-          noch {{ fehlender_wert | money }} bis versandkostenfrei
+          noch {{ fehlende_versand }} Packs bis versandkostenfrei
         </span>
       {%- else -%}
         {%- unless greift -%}
@@ -87,7 +88,7 @@
         </div>
         <div>
           <dt>Versand</dt>
-          <dd>kostenlos ab {{ versandfrei_ab | money_without_trailing_zeros }} netto</dd>
+          <dd>kostenlos ab {{ versandfrei_ab }} Packs</dd>
         </div>
         <div>
           <dt>Rabatt</dt>

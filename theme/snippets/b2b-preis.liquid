@@ -24,6 +24,8 @@
   @param je_pack   true -> "/Pack" anhaengen
   @param klasse    zusaetzliche CSS-Klassen
   @param vorsatz   Text vor dem Preis, z. B. "ab" bei mehreren Varianten
+  @param ohne_hinweis  true -> nur der Preis, ohne "-5 % ab …" und "Du sparst"
+                       (fuer Summen: der Hinweis steht schon am Einzelpreis)
 {%- endcomment -%}
 
 {%- liquid
@@ -76,8 +78,10 @@
   {%- if greift -%}
     <s class="b2b-preis__alt">{{ alt_text }}</s>
     <span class="b2b-preis__neu price">{{ neu_text }}</span>
-    <span class="b2b-preis__satz">&minus;{{ satz }}&nbsp;%</span>
-    <span class="b2b-preis__sparen">Du sparst {{ ersparnis_text }}</span>
+    {%- unless ohne_hinweis -%}
+      <span class="b2b-preis__satz">&minus;{{ satz }}&nbsp;%</span>
+      <span class="b2b-preis__sparen">Du sparst {{ ersparnis_text }}</span>
+    {%- endunless -%}
   {%- else -%}
     {%- comment -%}
       Kein Streichpreis, solange der Rabatt nicht greift. Stattdessen der
@@ -85,6 +89,7 @@
       im Warenkorb steht.
     {%- endcomment -%}
     <span class="b2b-preis__neu price">{{ alt_text }}</span>
+    {%- unless ohne_hinweis -%}
     <span class="b2b-preis__bedingung">
       {%- if cart.item_count > 0 -%}
         noch {{ fehlende_packs }} Packs bis &minus;{{ satz }}&nbsp;%
@@ -92,5 +97,6 @@
         &minus;{{ satz }}&nbsp;% ab {{ b2b_ab_packs }} Packs
       {%- endif -%}
     </span>
+    {%- endunless -%}
   {%- endif -%}
 </span>

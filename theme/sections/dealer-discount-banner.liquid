@@ -95,7 +95,9 @@
   <div class="color-{{ section.settings.color_scheme }} gradient">
     <div class="page-width dealer-discount-banner">
       <div class="dealer-discount-banner__content">
-        <span class="dealer-discount-banner__badge" aria-hidden="true">{{ section.settings.badge | escape }}</span>
+        {%- if section.settings.badge != blank -%}
+          <span class="dealer-discount-banner__badge" aria-hidden="true">{{ section.settings.badge | escape }}</span>
+        {%- endif -%}
         <div>
           {%- if section.settings.overline != blank -%}
             <p class="dealer-discount-banner__overline">{{ section.settings.overline | escape }}</p>
@@ -143,7 +145,7 @@
       "type": "text",
       "id": "badge",
       "label": "Badge",
-      "default": "-5 %"
+      "info": "Leer lassen, wenn die Überschrift den Rabatt schon nennt – sonst steht er doppelt da."
     },
     {
       "type": "text",
@@ -173,7 +175,7 @@
       "type": "text",
       "id": "versand",
       "label": "Versand",
-      "default": "Versandkostenfrei ab 500 € Bestellwert netto",
+      "default": "Versandkostenfrei ab 300 Packs",
       "info": "Gilt für Nachbestellungen. Leer lassen, um die Zeile auszublenden."
     },
     {

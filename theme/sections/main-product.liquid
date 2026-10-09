@@ -228,6 +228,10 @@
                       </div>
                     </details>
                   </div>
+                {%- when 'b2b_groessen' -%}
+                  <div {{ block.shopify_attributes }}>
+                    {% render 'b2b-groessen-bestellen', product: product %}
+                  </div>
                 {%- when 'quantity_selector' -%}
                   {%- comment -%} Menge nur fuer Haendler - Gaeste haben keinen Kaufknopf. {%- endcomment -%}
                   {%- if customer and customer.tags contains 'dealer-approved' -%}
@@ -890,6 +894,11 @@
           "default": true
         }
       ]
+    },
+    {
+      "type": "b2b_groessen",
+      "name": "Größen bestellen (B2B)",
+      "limit": 1
     },
     {
       "type": "quantity_selector",

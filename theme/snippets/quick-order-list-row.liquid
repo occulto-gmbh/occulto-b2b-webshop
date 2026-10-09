@@ -163,7 +163,7 @@
       zusammen und wundert sich im Checkout ueber eine andere Zahl.
     {%- endcomment -%}
     {%- assign zeilensumme = cart | line_items_for: item | sum: 'original_line_price' -%}
-    {% render 'b2b-preis', preis: zeilensumme, klasse: 'b2b-preis--summe' %}
+    {% render 'b2b-preis', preis: zeilensumme, klasse: 'b2b-preis--summe', ohne_hinweis: true %}
     {% # theme-check-enable %}
   </td>
 
@@ -426,7 +426,7 @@
       zusammen und wundert sich im Checkout ueber eine andere Zahl.
     {%- endcomment -%}
     {%- assign zeilensumme = cart | line_items_for: item | sum: 'original_line_price' -%}
-    {% render 'b2b-preis', preis: zeilensumme, klasse: 'b2b-preis--summe' %}
+    {% render 'b2b-preis', preis: zeilensumme, klasse: 'b2b-preis--summe', ohne_hinweis: true %}
     {% # theme-check-enable %}
   </td>
 </tr>
