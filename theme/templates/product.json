@@ -28,6 +28,7 @@
         "collapsible-row-1": {
           "type": "collapsible_tab",
           "settings": {
+            "b2b_offen": false,
             "heading": "Produktmerkmale",
             "icon": "star",
             "content": "{{ product.description }}",
@@ -40,7 +41,7 @@
             "b2b_offen": true,
             "heading": "Material und Pflege",
             "icon": "leaf",
-            "content": "<p><strong>Material: </strong>{{ product.metafields.custom.materialeigenschaft.value }}</p><p><strong>Pflege:</strong></p><ul><li>Bei maximal 30°C in der Maschine waschen</li><li>Trockner besser vermeiden</li><li>Flach an der Luft trocknen </li><li>Neue Produkte vor dem ersten Tragen waschen</li><li>Textilien farblich voneinander trennen</li><li>Weichspüler & Bleichmittel meiden</li></ul>",
+            "content": "<p><strong>Material:&nbsp;</strong>{{ product.metafields.custom.materialeigenschaft.value }}</p><p><strong>Herkunft:&nbsp;</strong>{{ product.metafields.custom.herkunftsland.value }}</p><p><strong>Pflege:</strong></p><ul><li>Bei&nbsp;maximal 30°C in der Maschine&nbsp;waschen</li><li>Trockner&nbsp;besser vermeiden</li><li>Flach an der Luft trocknen&nbsp;</li><li>Neue Produkte vor dem ersten Tragen waschen</li><li>Textilien farblich voneinander trennen</li><li>Weichspüler & Bleichmittel meiden</li></ul>",
             "page": ""
           }
         },
@@ -49,11 +50,46 @@
           "settings": {
             "share_label": "Share"
           }
+        },
+        "b2b-hinweis": {
+          "type": "custom_liquid",
+          "settings": {
+            "custom_liquid": "{%- if customer and customer.tags contains 'dealer-approved' -%}\n<p class=\"b2b-pdp-hinweis\">Händlerpreise zzgl. MwSt. · versandkostenfrei ab 500 € netto · bestellbar in 5er-Packs</p>\n{%- endif -%}"
+          }
+        },
+        "variant-picker": {
+          "type": "variant_picker",
+          "settings": {
+            "picker_type": "button",
+            "swatch_shape": "none"
+          }
+        },
+        "menge": {
+          "type": "quantity_selector",
+          "settings": {}
+        },
+        "kaufen": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_dynamic_checkout": false,
+            "show_gift_card_recipient": false
+          }
+        },
+        "alle-groessen": {
+          "type": "custom_liquid",
+          "settings": {
+            "custom_liquid": "{%- if customer and customer.tags contains 'dealer-approved' -%}\n<p class=\"b2b-pdp-groessen\"><a href=\"#\" data-b2b-groessen>Alle Größen auf einmal bestellen ↓</a></p>\n<script>\n  /* Erst nach dem Laden: die Tabelle steht weiter unten im Dokument. */\n  document.addEventListener('DOMContentLoaded', function () {\n    /* Springt zur Groessentabelle (Abschnitt quick-order-list weiter unten). */\n    var link = document.querySelector('[data-b2b-groessen]');\n    var ziel = document.querySelector('[id$=\"__quick-order-list\"]');\n    if (!link) return;\n    if (!ziel) { link.parentNode.hidden = true; return; }\n    link.addEventListener('click', function (e) { e.preventDefault(); ziel.style.scrollMarginTop = '100px'; ziel.scrollIntoView(); });\n  });\n</script>\n{%- endif -%}"
+          }
         }
       },
       "block_order": [
         "title",
         "price",
+        "b2b-hinweis",
+        "variant-picker",
+        "menge",
+        "kaufen",
+        "alle-groessen",
         "description",
         "collapsible-row-1",
         "collapsible-row-0",
@@ -62,17 +98,19 @@
       "settings": {
         "enable_sticky_info": true,
         "color_scheme": "",
-        "media_size": "small",
+        "media_size": "medium",
         "constrain_to_viewport": false,
         "media_fit": "cover",
-        "gallery_layout": "thumbnail_slider",
+        "gallery_layout": "stacked",
         "mobile_thumbnails": "hide",
-        "media_position": "right",
+        "media_position": "left",
         "image_zoom": "lightbox",
         "hide_variants": true,
         "enable_video_looping": false,
         "padding_top": 36,
-        "padding_bottom": 36
+        "padding_bottom": 36,
+        "b2b_hangtag_vorne": "shopify://shop_images/Hangtag_Vorderseite.png",
+        "b2b_hangtag_ohne": "Mütze, Adventskalender, Zusatzpaket"
       }
     },
     "disclosures": {

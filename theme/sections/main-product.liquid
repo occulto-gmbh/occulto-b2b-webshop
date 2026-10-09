@@ -229,6 +229,8 @@
                     </details>
                   </div>
                 {%- when 'quantity_selector' -%}
+                  {%- comment -%} Menge nur fuer Haendler - Gaeste haben keinen Kaufknopf. {%- endcomment -%}
+                  {%- if customer and customer.tags contains 'dealer-approved' -%}
                   <div
                     id="Quantity-Form-{{ section.id }}"
                     class="product-form__input product-form__quantity{% if settings.inputs_shadow_vertical_offset != 0 and settings.inputs_shadow_vertical_offset < 0 %} product-form__quantity-top{% endif %}"
@@ -278,14 +280,18 @@
                           name="quantity"
                           id="Quantity-{{ section.id }}"
                           data-cart-quantity="{{ cart_qty }}"
-                          data-min="{{ product.selected_or_first_available_variant.quantity_rule.min }}"
-                          min="{{ product.selected_or_first_available_variant.quantity_rule.min }}"
+                          {%- comment -%}
+                            5er-Packs wie in der Groessentabelle (snippets/quantity-input.liquid):
+                            Shopifys quantity_rule steht hier immer auf 1.
+                          {%- endcomment -%}
+                          data-min="5"
+                          min="5"
                           {% if product.selected_or_first_available_variant.quantity_rule.max != null %}
                             data-max="{{ product.selected_or_first_available_variant.quantity_rule.max }}"
                             max="{{ product.selected_or_first_available_variant.quantity_rule.max }}"
                           {% endif %}
-                          step="{{ product.selected_or_first_available_variant.quantity_rule.increment }}"
-                          value="{{ product.selected_or_first_available_variant.quantity_rule.min }}"
+                          step="5"
+                          value="5"
                           form="{{ product_form_id }}"
                         >
                         <button class="quantity__button" name="plus" type="button">
@@ -455,6 +461,7 @@
                       </volume-pricing>
                     {%- endif -%}
                   </div>
+                  {%- endif -%}
                 {%- when 'popup' -%}
                   <modal-opener
                     class="product-popup-modal__opener quick-add-hidden"
@@ -2307,6 +2314,27 @@
       "id": "hide_variants",
       "default": false,
       "label": "t:sections.main-product.settings.hide_variants.label"
+    },
+    {
+      "type": "header",
+      "content": "Hangtag (2. und 3. Bild)"
+    },
+    {
+      "type": "image_picker",
+      "id": "b2b_hangtag_vorne",
+      "label": "Hangtag Vorderseite"
+    },
+    {
+      "type": "image_picker",
+      "id": "b2b_hangtag_hinten",
+      "label": "Hangtag Rückseite"
+    },
+    {
+      "type": "text",
+      "id": "b2b_hangtag_ohne",
+      "label": "Ohne Hangtag bei",
+      "default": "Mütze, Adventskalender, Zusatzpaket",
+      "info": "Stichworte im Produkttitel, durch Komma getrennt. Alle anderen Produkte zeigen das Hangtag als 2. und 3. Bild."
     },
     {
       "type": "checkbox",

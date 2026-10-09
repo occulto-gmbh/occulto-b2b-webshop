@@ -593,3 +593,24 @@ main .container {
   line-height: 1.5;
   opacity: 0.8;
 }
+
+/* ------------------------------------------------------------- Produktseite
+   Unter dem Preis die Bedingungen in einer Zeile, unter dem Kaufknopf der
+   Sprung zur Groessentabelle (templates/product.json). */
+.b2b-pdp-hinweis {
+  margin: -0.4rem 0 0;
+  color: rgb(var(--b2b-tinte, 46 46 45) / 0.7);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.b2b-pdp-groessen {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.b2b-pdp-groessen a {
+  color: rgb(var(--b2b-tinte, 46 46 45));
+  text-underline-offset: 3px;
+}
