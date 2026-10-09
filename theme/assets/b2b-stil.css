@@ -426,11 +426,17 @@ main .container {
    stehen dort, nicht hier.
    ==================================================================== */
 
-.b2b-preis {
-  display: inline-flex;
+/* Mit .price davor: Dawns ".price .price-item { display: inline-block }"
+   hat sonst dieselbe Spezifitaet und wird spaeter geladen. Dann bricht
+   nichts um, der Hinweis laeuft ueber den Kartenrand und "UVP" steht
+   getrennt von seinem Betrag. */
+.b2b-preis,
+.price .b2b-preis.price-item {
+  display: flex;
   flex-wrap: wrap;
   align-items: baseline;
   gap: 2px 8px;
+  max-width: 100%;
 }
 
 .b2b-preis__alt {
@@ -477,6 +483,7 @@ main .container {
   font-size: 12px;
   font-weight: 400;
   line-height: 1.5;
+  white-space: nowrap;
 }
 
 .b2b-preis__vorsatz {
