@@ -6,7 +6,8 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */{
+ */
+{
   "current": {
     "logo_width": 200,
     "favicon": "shopify://shop_images/BM_creme.jpg",
