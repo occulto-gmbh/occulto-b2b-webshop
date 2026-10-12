@@ -10,6 +10,13 @@
   {% render 'quick-order-list-row' variant: variant %}
 {% endcomment %}
 
+{%- liquid
+  # Einzelstuecke (Tag einzelstueck, z. B. Ausstellungsstaender): ohne Packrabatt, siehe b2b-preis.
+  assign b2b_einzelstueck = false
+  if item.product.tags contains 'einzelstueck' or item.tags contains 'einzelstueck'
+    assign b2b_einzelstueck = true
+  endif
+-%}
 {% # theme-check-disable %}
 {% assign cart_qty = cart | item_count_for_variant: variant.id %}
 {% # theme-check-enable %}
@@ -111,7 +118,7 @@
               </div>
             </price-per-item>
           {%- else -%}
-            {% render 'b2b-preis', preis: item.price, je_pack: true, uvp: item.compare_at_price %}
+            {% render 'b2b-preis', preis: item.price, je_pack: true, uvp: item.compare_at_price, einzelstueck: b2b_einzelstueck %}
           {%- endif -%}
         </dd>
       </dl>
@@ -145,7 +152,7 @@
           </div>
         </price-per-item>
       {%- else -%}
-        {% render 'b2b-preis', preis: item.price, je_pack: true, uvp: item.compare_at_price %}
+        {% render 'b2b-preis', preis: item.price, je_pack: true, uvp: item.compare_at_price, einzelstueck: b2b_einzelstueck %}
       {%- endif -%}
     {%- endif -%}
 
@@ -375,7 +382,7 @@
               </div>
             </price-per-item>
           {%- else -%}
-            {% render 'b2b-preis', preis: item.price, je_pack: true, uvp: item.compare_at_price %}
+            {% render 'b2b-preis', preis: item.price, je_pack: true, uvp: item.compare_at_price, einzelstueck: b2b_einzelstueck %}
           {%- endif -%}
         </dd>
       </dl>
@@ -409,7 +416,7 @@
           </div>
         </price-per-item>
       {%- else -%}
-        {% render 'b2b-preis', preis: item.price, je_pack: true, uvp: item.compare_at_price %}
+        {% render 'b2b-preis', preis: item.price, je_pack: true, uvp: item.compare_at_price, einzelstueck: b2b_einzelstueck %}
       {%- endif -%}
     {%- endif -%}
 

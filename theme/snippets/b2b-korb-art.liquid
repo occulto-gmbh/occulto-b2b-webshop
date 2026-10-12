@@ -41,18 +41,35 @@
     assign ab_packs = 500
     assign versandfrei_ab = 300
 
+    comment
+      Packs ohne Einzelstuecke (Ausstellungsstaender), siehe b2b-packs.
+    endcomment
+    capture packs_text
+      render 'b2b-packs'
+    endcapture
+    assign packs = packs_text | plus: 0
+
     assign greift = false
-    if cart.item_count >= ab_packs
+    if packs >= ab_packs
       assign greift = true
     endif
     assign versandfrei = false
-    if cart.item_count >= versandfrei_ab
+    if packs >= versandfrei_ab
       assign versandfrei = true
     endif
 
-    assign ersparnis = cart.total_price | times: satz | divided_by: 100
-    assign fehlende_packs = ab_packs | minus: cart.item_count
-    assign fehlende_versand = versandfrei_ab | minus: cart.item_count
+    comment
+      Die 5 % gelten nur fuer Packs - Einzelstuecke bleiben aussen vor.
+    endcomment
+    assign rabattfaehig = cart.total_price
+    for item in cart.items
+      if item.product.tags contains 'einzelstueck'
+        assign rabattfaehig = rabattfaehig | minus: item.final_line_price
+      endif
+    endfor
+    assign ersparnis = rabattfaehig | times: satz | divided_by: 100
+    assign fehlende_packs = ab_packs | minus: packs
+    assign fehlende_versand = versandfrei_ab | minus: packs
   -%}
 
   <div class="b2b-art{% if kompakt %} b2b-art--kompakt{% endif %}">

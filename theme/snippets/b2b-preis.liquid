@@ -30,6 +30,8 @@
                    Shopify der Vergleichspreis). Steht klein darunter, nicht
                    als Streichpreis - sonst saehe sie wie ein Rabatt aus.
   @param uvp_ab    true -> "UVP ab", wenn die Varianten verschiedene UVPs haben
+  @param einzelstueck  true -> Artikel mit Tag "einzelstueck" (Ausstellungs-
+                   staender): kein Packrabatt, kein Hinweis, kein "/Pack"
 {%- endcomment -%}
 
 {%- liquid
@@ -43,15 +45,29 @@
     Leeren und wuerde auf jeder Kachel -10 % zeigen, schon ab dem ersten
     Pack.
   endcomment
+  comment
+    Packs ohne Einzelstuecke - der Staender zaehlt nicht zur Schwelle.
+  endcomment
+  capture packs_text
+    render 'b2b-packs'
+  endcapture
+  assign packs_im_korb = packs_text | plus: 0
+
   assign greift = false
   if vororder
     assign satz = b2b_satz_vororder
     assign greift = true
   else
     assign satz = b2b_satz_nachbestellung
-    if cart.item_count >= b2b_ab_packs
+    if packs_im_korb >= b2b_ab_packs
       assign greift = true
     endif
+  endif
+
+  if einzelstueck
+    assign greift = false
+    assign je_pack = false
+    assign ohne_hinweis = true
   endif
 
   comment
@@ -69,7 +85,7 @@
     assign neu_text = 'sections.quick_order_list.each' | t: money: neu_text
   endif
 
-  assign fehlende_packs = b2b_ab_packs | minus: cart.item_count
+  assign fehlende_packs = b2b_ab_packs | minus: packs_im_korb
   assign ersparnis_text = abzug | money
   if je_pack
     assign ersparnis_text = 'sections.quick_order_list.each' | t: money: ersparnis_text
@@ -95,7 +111,7 @@
     <span class="b2b-preis__neu price">{{ alt_text }}</span>
     {%- unless ohne_hinweis -%}
     <span class="b2b-preis__bedingung">
-      {%- if cart.item_count > 0 -%}
+      {%- if packs_im_korb > 0 -%}
         noch {{ fehlende_packs }} Packs bis &minus;{{ satz }}&nbsp;%
       {%- else -%}
         &minus;{{ satz }}&nbsp;% ab {{ b2b_ab_packs }} Packs

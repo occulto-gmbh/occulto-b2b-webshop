@@ -22,6 +22,13 @@
     assign zeigen = false
   endif
 
+  comment
+    Einzelstuecke (Ausstellungsstaender) haben kein Hangtag.
+  endcomment
+  if product.tags contains 'einzelstueck'
+    assign zeigen = false
+  endif
+
   assign ausnahmen = section.settings.b2b_hangtag_ohne | split: ','
   for ausnahme in ausnahmen
     assign wort = ausnahme | strip

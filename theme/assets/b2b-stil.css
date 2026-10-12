@@ -744,3 +744,18 @@ main .container {
   color: rgb(var(--b2b-akzent, 199 42 9));
   font-weight: 700;
 }
+
+/* ------------------------------------------------------- Vorschlaege
+   Der feste Artikel vorneweg (sections/b2b-vorschlaege.liquid) mit eigenem
+   Knopf unter der Karte. */
+.b2b-vorschlaege__knopf {
+  margin-top: 10px;
+  min-height: 42px;
+  font-size: 14px;
+}
+
+.b2b-vorschlaege__meldung {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.4;
+}

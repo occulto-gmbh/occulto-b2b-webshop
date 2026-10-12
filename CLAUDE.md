@@ -65,6 +65,10 @@ Nie im Live-Theme aufheben.
 | Versand      | kostenlos ab 300 Packs (Rabatt „Kostenloser Versand“ in der Verwaltung) | immer kostenlos   |
 | Abschluss    | Shopify-Kasse                        | E-Mail über Kontaktformular, Rechnung von Hand      |
 
+- **Einzelstücke** (Tag `einzelstueck`, z. B. Ausstellungsständer): Menge in 1er-Schritten, zählen nicht zu 300/500 Packs
+  (`snippets/b2b-packs.liquid` zählt die Packs ohne sie), kein −5 %-Hinweis, keine Hangtag-Bilder, nicht in der Vororder.
+  Vorgeschlagen über `sections/b2b-vorschlaege.liquid` (Einstellung „Immer vorschlagen“) auf Produktseite und Warenkorb.
+  Die Functions `order-value-discount` und `pack-quantity-rule` kennen die Ausnahme noch nicht – vor dem Ausrollen nachziehen.
 - Stichtage 15.06 und 15.12, Auslieferung drei Monate später. Einzige Quelle: `snippets/b2b-vororder-termin.liquid`.
 - 5 % stehen in `snippets/b2b-preis.liquid` **und** `b2b-webshop/extensions/order-value-discount/src/run.ts` – gleich halten.
 - Vororder-Mengen stehen als Einstellungen in **zwei** Abschnitten (Maske und Warenkorb-Übersicht) und in deren

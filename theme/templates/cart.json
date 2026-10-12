@@ -56,12 +56,27 @@
         "mindestwert": 1500,
         "rabatt_prozent": 10
       }
+    },
+    "b2b-vorschlaege": {
+      "type": "b2b-vorschlaege",
+      "settings": {
+        "heading": "Passt dazu",
+        "heading_size": "h2",
+        "products_to_show": 5,
+        "columns_desktop": 5,
+        "columns_mobile": "2",
+        "image_ratio": "adapt",
+        "color_scheme": "scheme-1",
+        "padding_top": 24,
+        "padding_bottom": 44
+      }
     }
   },
   "order": [
     "vororder",
     "cart-items",
     "cart-branch-split",
-    "cart-footer"
+    "cart-footer",
+    "b2b-vorschlaege"
   ]
 }

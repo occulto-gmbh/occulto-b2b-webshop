@@ -7,6 +7,9 @@
   Je Größe 0 oder ein Vielfaches von 5 (5er-Packs, wie snippets/quantity-input),
   höchstens der Lagerbestand. Ein Knopf legt alles zusammen in den Warenkorb.
 
+  Einzelstücke (Tag "einzelstueck", z. B. der Ausstellungsständer) gehen in
+  1er-Schritten und heißen Stück statt Packs.
+
   Nur für freigeschaltete Händler. Gäste sehen beim Preis den Verweis auf die
   Freischaltung.
 
@@ -14,10 +17,18 @@
 {%- endcomment -%}
 
 {%- if customer and customer.tags contains 'dealer-approved' -%}
+  {%- liquid
+    assign schritt = 5
+    assign einheit = 'Packs'
+    if product.tags contains 'einzelstueck'
+      assign schritt = 1
+      assign einheit = 'Stück'
+    endif
+  -%}
   <div class="b2b-gb" data-b2b-gb>
     <p class="b2b-gb__kopf">
       {%- if product.has_only_default_variant -%}Menge{%- else -%}Menge je Größe{%- endif -%}
-      <span>in 5er-Packs</span>
+      <span>{% if schritt == 1 %}einzeln bestellbar{% else %}in 5er-Packs{% endif %}</span>
     </p>
 
     <ul class="b2b-gb__liste">
@@ -29,11 +40,11 @@
           endif
 
           comment
-            Hoechstmenge in ganzen 5er-Packs: bei 7 im Lager gehen 5.
+            Hoechstmenge in ganzen Schritten: bei 7 im Lager gehen 5 Packs.
           endcomment
           assign hoechst = ''
           if lager != nil
-            assign hoechst = lager | divided_by: 5 | times: 5
+            assign hoechst = lager | divided_by: schritt | times: schritt
           endif
 
           assign aus = false
@@ -41,7 +52,9 @@
             assign aus = true
           endif
 
-          if product.has_only_default_variant
+          if product.has_only_default_variant and schritt == 1
+            assign name = product.title
+          elsif product.has_only_default_variant
             assign name = 'Einheitsgröße'
           else
             assign name = variant.title
@@ -66,13 +79,13 @@
               type="number"
               inputmode="numeric"
               min="0"
-              step="5"
+              step="{{ schritt }}"
               value=""
               placeholder="0"
               {% if hoechst != '' %}max="{{ hoechst }}"{% endif %}
               data-variante="{{ variant.id }}"
               data-preis="{{ variant.price }}"
-              aria-label="Packs {{ name | escape }}"
+              aria-label="{{ einheit }} {{ name | escape }}"
               {% if aus %}disabled{% endif %}
             >
             <button type="button" data-gb-plus aria-label="Mehr {{ name | escape }}"{% if aus %} disabled{% endif %}>+</button>
@@ -92,7 +105,8 @@
     (function () {
       var wurzel = document.currentScript.previousElementSibling;
       if (!wurzel || !wurzel.hasAttribute('data-b2b-gb')) return;
-      var SCHRITT = 5;
+      var SCHRITT = {{ schritt }};
+      var EINHEIT = '{{ einheit }}';
       var summe = wurzel.querySelector('[data-gb-summe]');
       var knopf = wurzel.querySelector('[data-gb-knopf]');
       var meldung = wurzel.querySelector('[data-gb-meldung]');
@@ -102,7 +116,7 @@
         return '€' + (cent / 100).toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       }
 
-      /* 0 oder ein Vielfaches von 5, nie über dem Lagerbestand. */
+      /* 0 oder ein Vielfaches des Schritts, nie über dem Lagerbestand. */
       function gueltig(feld, menge) {
         var max = feld.max === '' ? Infinity : parseInt(feld.max, 10);
         menge = Math.ceil((parseInt(menge, 10) || 0) / SCHRITT) * SCHRITT;
@@ -121,7 +135,7 @@
           var max = feld.max === '' ? Infinity : parseInt(feld.max, 10);
           zeile.querySelector('[data-gb-plus]').disabled = feld.disabled || m >= max;
         });
-        summe.textContent = packs ? packs.toLocaleString('de-DE') + ' Packs · ' + euro(wert) + ' netto' : 'Noch keine Größe gewählt.';
+        summe.textContent = packs ? packs.toLocaleString('de-DE') + ' ' + EINHEIT + ' · ' + euro(wert) + ' netto' : 'Noch keine Größe gewählt.';
         knopf.disabled = packs === 0;
       }
 
@@ -167,7 +181,7 @@
             }
             var packs = posten.reduce(function (s, p) { return s + p.quantity; }, 0);
             meldung.classList.remove('ist-fehler');
-            meldung.innerHTML = '✓ ' + packs.toLocaleString('de-DE') + ' Packs im Warenkorb · <a href="{{ routes.cart_url }}">Zum Warenkorb</a>';
+            meldung.innerHTML = '✓ ' + packs.toLocaleString('de-DE') + ' ' + EINHEIT + ' im Warenkorb · <a href="{{ routes.cart_url }}">Zum Warenkorb</a>';
             /* Die Zahl am Warenkorb-Symbol mitziehen. */
             var blase = document.getElementById('cart-icon-bubble');
             if (blase && r.d.sections && r.d.sections['cart-icon-bubble']) {

@@ -108,15 +108,19 @@
             endcomment
             assign b2b_uvp = target.compare_at_price
             assign b2b_uvp_ab = false
+            assign b2b_einzelstueck = false
+            if product.tags contains 'einzelstueck'
+              assign b2b_einzelstueck = true
+            endif
             if target == product
               assign b2b_uvp = product.compare_at_price_min
               assign b2b_uvp_ab = product.compare_at_price_varies
             endif
           -%}
           {%- if product.price_varies -%}
-            {% render 'b2b-preis', preis: price, vorsatz: 'ab', klasse: 'price-item price-item--regular', uvp: b2b_uvp, uvp_ab: b2b_uvp_ab %}
+            {% render 'b2b-preis', preis: price, vorsatz: 'ab', klasse: 'price-item price-item--regular', uvp: b2b_uvp, uvp_ab: b2b_uvp_ab, einzelstueck: b2b_einzelstueck %}
           {%- else -%}
-            {% render 'b2b-preis', preis: price, klasse: 'price-item price-item--regular', uvp: b2b_uvp, uvp_ab: b2b_uvp_ab %}
+            {% render 'b2b-preis', preis: price, klasse: 'price-item price-item--regular', uvp: b2b_uvp, uvp_ab: b2b_uvp_ab, einzelstueck: b2b_einzelstueck %}
           {%- endif -%}
         {%- endif -%}
       </div>

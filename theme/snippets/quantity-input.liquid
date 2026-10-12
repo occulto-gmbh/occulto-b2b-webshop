@@ -19,6 +19,10 @@
 
 {%- liquid
   assign pack_step = 5
+  # Einzelstuecke (Tag einzelstueck, z. B. Ausstellungsstaender) gehen einzeln.
+  if variant.product.tags contains 'einzelstueck'
+    assign pack_step = 1
+  endif
   assign quantity_min = pack_step
   assign quantity_step = pack_step
   assign input_min = min | default: quantity_min

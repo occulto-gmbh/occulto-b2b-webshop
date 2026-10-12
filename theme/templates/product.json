@@ -54,7 +54,7 @@
         "b2b-hinweis": {
           "type": "custom_liquid",
           "settings": {
-            "custom_liquid": "{%- if customer and customer.tags contains 'dealer-approved' -%}\n<p class=\"b2b-pdp-hinweis\">Händlerpreise zzgl. MwSt. · versandkostenfrei ab 300 Packs · bestellbar in 5er-Packs</p>\n{%- endif -%}"
+            "custom_liquid": "{%- if customer and customer.tags contains 'dealer-approved' -%}\n{%- if product.tags contains 'einzelstueck' -%}\n<p class=\"b2b-pdp-hinweis\">Händlerpreis zzgl. MwSt. · einzeln bestellbar</p>\n{%- else -%}\n<p class=\"b2b-pdp-hinweis\">Händlerpreise zzgl. MwSt. · versandkostenfrei ab 300 Packs · bestellbar in 5er-Packs</p>\n{%- endif -%}\n{%- endif -%}"
           }
         },
         "groessen": {
@@ -114,20 +114,16 @@
       },
       "disabled": true
     },
-    "related-products": {
-      "type": "related-products",
+    "b2b-vorschlaege": {
+      "type": "b2b-vorschlaege",
       "settings": {
         "heading": "Weitere beliebte Artikel",
         "heading_size": "h2",
         "products_to_show": 5,
         "columns_desktop": 5,
         "columns_mobile": "2",
-        "color_scheme": "scheme-1",
         "image_ratio": "adapt",
-        "image_shape": "default",
-        "show_secondary_image": false,
-        "show_vendor": false,
-        "show_rating": false,
+        "color_scheme": "scheme-1",
         "padding_top": 36,
         "padding_bottom": 44
       }
@@ -137,6 +133,6 @@
     "main",
     "disclosures",
     "quick-order-list",
-    "related-products"
+    "b2b-vorschlaege"
   ]
 }

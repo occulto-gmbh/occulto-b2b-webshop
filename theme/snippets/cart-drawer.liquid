@@ -322,6 +322,10 @@
                                     # snippets/quantity-input.liquid) — item.variant.quantity_rule ist immer die
                                     # native {min:1, increment:1} ohne B2B-Preislisten-Katalog, deshalb hart auf 5.
                                     assign pack_step = 5
+                                    # Einzelstuecke (Tag einzelstueck, z. B. Ausstellungsstaender) gehen einzeln.
+                                    if item.product.tags contains 'einzelstueck'
+                                      assign pack_step = 1
+                                    endif
                                     assign drawer_quantity_max = null
                                     if item.variant.inventory_management == 'shopify' and item.variant.inventory_policy != 'continue'
                                       assign drawer_quantity_max = item.variant.inventory_quantity | at_least: 0

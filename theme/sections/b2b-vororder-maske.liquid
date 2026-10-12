@@ -124,6 +124,13 @@
         <div class="b2b-vo-liste">
           {%- for product in collection.products -%}
             {%- liquid
+              comment
+                Einzelstuecke (Ausstellungsstaender) gibt es nur als
+                Nachbestellung, ohne Mindestmenge je Artikel.
+              endcomment
+              if product.tags contains 'einzelstueck'
+                continue
+              endif
               assign bild_url = ''
               if product.featured_media
                 assign bild_url = product.featured_media | image_url: width: 128

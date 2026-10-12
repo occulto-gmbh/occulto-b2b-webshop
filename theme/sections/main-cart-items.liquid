@@ -281,6 +281,10 @@
                                 # für dieselbe PACK_STEP=5-Begründung) — item.variant.quantity_rule ist hier ebenso
                                 # immer die native {min:1, increment:1} ohne B2B-Preislisten-Katalog, deshalb hart auf 5.
                                 assign pack_step = 5
+                                # Einzelstuecke (Tag einzelstueck, z. B. Ausstellungsstaender) gehen einzeln.
+                                if item.product.tags contains 'einzelstueck'
+                                  assign pack_step = 1
+                                endif
 
                                 # Der Shopify-Warenkorb enthaelt nur Nachbestellungen, und die
                                 # kommen aus dem Lager - also gilt der Bestand als Obergrenze.
