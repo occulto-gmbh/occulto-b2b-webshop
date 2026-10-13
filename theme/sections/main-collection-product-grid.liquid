@@ -157,18 +157,34 @@
                 "
               >
                 {% assign skip_card_product_styles = false %}
+                {%- liquid
+                  # Bei Standardsortierung (kein vom Händler gewähltes sort_by) stehen ausverkaufte
+                  # Artikel am Ende: Durchlauf 1 = verfügbar, Durchlauf 2 = ausverkauft.
+                  # Wirkt pro Seite (products_per_page), nicht über Seitengrenzen hinweg.
+                  assign card_passes = 2
+                  if collection.sort_by != blank
+                    assign card_passes = 1
+                  endif
+                  assign card_index = 0
+                -%}
+                {%- for card_pass in (1..card_passes) -%}
                 {%- for product in collection.products -%}
                   {%- # Technischer 0-€-Hilfsartikel für Filialversand (cart-branch-split), kein Katalogartikel -%}
                   {%- if product.tags contains 'filialversand-zuschlag' -%}{%- continue -%}{%- endif -%}
+                  {%- if card_passes == 2 -%}
+                    {%- if card_pass == 1 and product.available == false -%}{%- continue -%}{%- endif -%}
+                    {%- if card_pass == 2 and product.available -%}{%- continue -%}{%- endif -%}
+                  {%- endif -%}
+                  {%- assign card_index = card_index | plus: 1 -%}
                   {% assign lazy_load = false %}
-                  {%- if forloop.index > 2 -%}
+                  {%- if card_index > 2 -%}
                     {%- assign lazy_load = true -%}
                   {%- endif -%}
                   <li
                     class="grid__item{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
                     {% if settings.animations_reveal_on_scroll %}
                       data-cascade
-                      style="--animation-order: {{ forloop.index }};"
+                      style="--animation-order: {{ card_index }};"
                     {% endif %}
                   >
                     {% render 'card-product',
@@ -186,6 +202,7 @@
                     %}
                   </li>
                   {%- assign skip_card_product_styles = true -%}
+                {%- endfor -%}
                 {%- endfor -%}
               </ul>
 

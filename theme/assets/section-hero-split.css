@@ -33,10 +33,7 @@
 .hero-split__text-inner {
   position: relative;
   z-index: 2;
-  /* 52rem sind rund 520 Bildpunkte - genug, dass "Haendlerportal" in eine
-     Zeile passt. Bei 44rem brach es in drei Zeilen und trennte mitten im
-     Wort. */
-  max-width: 52rem;
+  max-width: 44rem;
 }
 
 .hero-split__overline {
@@ -45,93 +42,69 @@
 }
 
 .hero-split__heading {
-  /* Das Theme setzt word-break: break-word auf alle Ueberschriften. Damit
-     wird aus "Haendlerportal" ein "Haendler-portal" mitten im Wort. */
-  word-break: normal;
-  overflow-wrap: normal;
-  hyphens: none;
-  margin: 0 0 2.4rem;
-  font-size: clamp(3.6rem, 8vw, 4.8rem);
-  font-weight: 900;
-  line-height: 1.02;
-  text-wrap: balance;
+  margin: 0 0 1.6rem;
+  font-size: 4rem;
+  line-height: 1.05;
 }
 
 .hero-split__body {
-  margin-bottom: 3.2rem;
-  font-size: 1.7rem;
-  line-height: 1.55;
-  opacity: 0.92;
-}
-
-/* Die beiden Knoepfe. Umbruch statt Stauchung, damit die Beschriftungen
-   lesbar bleiben, wenn der Platz eng wird. */
-.hero-split__buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.2rem;
-  justify-content: center;
-}
-
-/* Groesser als die Knoepfe im uebrigen Shop: hier ist der Platz da, und
-   es sind die beiden wichtigsten Wege der Seite. */
-.hero-split__buttons .button {
-  padding: 1.6rem 3.4rem;
-  font-size: 1.7rem;
-}
-
-/* Band mit dem naechsten Vororder-Termin, ueber dem Hero. Dunkel wie die
-   Textflaeche darunter, Rot nur deckend im Abzeichen. */
-.hero-split__band {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1.2rem;
-  padding: 1.1rem 2rem;
-  background: rgb(var(--b2b-tinte, 46 46 45));
-  color: rgb(255 255 255);
-  font-size: 1.5rem;
-  line-height: 1.4;
-  text-decoration: none;
-}
-
-.hero-split__band-satz {
-  flex: 0 0 auto;
-  padding: 0.2rem 1rem;
-  border-radius: 999px;
-  background: rgb(var(--b2b-akzent, 199 42 9));
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.hero-split__band-pfeil {
-  flex: 0 0 auto;
-  transition: transform 0.18s ease;
-}
-
-.hero-split__band:hover .hero-split__band-pfeil {
-  transform: translateX(3px);
-}
-
-/* Auf dem Handy kleiner und linksbuendig - zentriert ueber drei Zeilen war
-   es 106 Bildpunkte hoch. */
-@media screen and (max-width: 749px) {
-  .hero-split__band {
-    justify-content: flex-start;
-    gap: 1rem;
-    padding: 0.9rem 1.6rem;
-    font-size: 1.3rem;
-  }
-
-  .hero-split__band-pfeil {
-    display: none;
-  }
+  margin-bottom: 2.4rem;
+  opacity: 0.9;
 }
 
 .hero-split__media {
+  position: relative;
+  display: block;
   aspect-ratio: 4 / 3;
   overflow: hidden;
   background-color: #f6f6f6;
+  text-decoration: none;
+}
+
+.hero-split__media-overlay {
+  position: absolute;
+  left: 50%;
+  bottom: 2rem;
+  transform: translateX(-50%);
+  width: calc(100% - 3.2rem);
+  max-width: 52rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2.4rem 2rem;
+  text-align: center;
+  background-color: rgba(var(--color-background), 0.96);
+  color: rgb(var(--color-foreground));
+  box-shadow: 0 1.2rem 3.2rem rgba(0, 0, 0, 0.25);
+}
+
+.hero-split__media-overlay .hero-split__overline {
+  margin: 0;
+}
+
+.hero-split__media-heading {
+  margin: 0;
+  font-size: 2.4rem;
+  line-height: 1.15;
+}
+
+.hero-split__media-button {
+  margin-top: 0.6rem;
+  min-width: 26rem;
+  font-size: 1.6rem;
+}
+
+.hero-split__media--has-overlay:hover .hero-split__media-button {
+  box-shadow: 0 0 0 0.2rem rgb(var(--color-foreground));
+}
+
+.hero-split__media--has-overlay .hero-split__image {
+  transition: transform var(--duration-long, 0.5s) ease;
+}
+
+.hero-split__media--has-overlay:hover .hero-split__image {
+  transform: scale(1.03);
 }
 
 .hero-split__image {
@@ -139,22 +112,13 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 65%;
+  object-position: center;
 }
 
 @media screen and (min-width: 750px) {
   .hero-split {
     grid-template-columns: 1fr 1fr;
     min-height: 60vh;
-    /* Auf einen Bildschirm. Ohne diese Zeile zieht das hochkante Foto den
-       Abschnitt auf seine natuerliche Hoehe - gemessen 881 bei 801
-       verfuegbaren Bildpunkten. --b2b-hero-oben setzt ein Skript im
-       Abschnitt auf den tatsaechlichen Abstand zum Seitenanfang; der
-       Rueckfallwert deckt Kopfzeile und Ankuendigungsband ab. */
-    height: calc(100vh - var(--b2b-hero-oben, 10rem));
-    height: calc(100svh - var(--b2b-hero-oben, 10rem));
-    /* Auf sehr hohen Schirmen soll er nicht endlos mitwachsen. */
-    max-height: 82rem;
   }
 
   .hero-split__text {
@@ -164,18 +128,22 @@
   }
 
   .hero-split__heading {
-    font-size: clamp(4.8rem, 5.4vw, 8rem);
+    font-size: 5.6rem;
   }
 
   .hero-split__media {
     aspect-ratio: auto;
     height: 100%;
-    /* Ohne min-height:0 setzt das Raster die natuerliche Bildhoehe als
-       Mindestmass durch und der Deckel oben bliebe wirkungslos. */
-    min-height: 0;
   }
 
-  .hero-split__buttons {
-    justify-content: flex-start;
+  .hero-split__media-overlay {
+    top: 50%;
+    bottom: auto;
+    transform: translate(-50%, -50%);
+    padding: 3.2rem 4rem;
+  }
+
+  .hero-split__media-heading {
+    font-size: 3.2rem;
   }
 }

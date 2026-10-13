@@ -2831,6 +2831,18 @@
         },
         "button_style_secondary": {
           "label": "Use secondary button style"
+        },
+        "media_overline": {
+          "label": "Image: overline"
+        },
+        "media_heading": {
+          "label": "Image: heading"
+        },
+        "media_button_label": {
+          "label": "Image: button label"
+        },
+        "media_link": {
+          "label": "Image: link (whole image clickable)"
         }
       },
       "presets": {
