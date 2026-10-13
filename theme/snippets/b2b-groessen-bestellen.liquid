@@ -168,7 +168,11 @@
         fetch('{{ routes.cart_add_url }}.js', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-          body: JSON.stringify({ items: posten, sections: 'cart-icon-bubble' })
+          body: JSON.stringify({
+            items: posten,
+            sections: 'cart-notification-product,cart-notification-button,cart-icon-bubble',
+            sections_url: window.location.pathname
+          })
         })
           .then(function (antwort) { return antwort.json().then(function (d) { return { ok: antwort.ok, d: d }; }); })
           .then(function (r) {
@@ -176,6 +180,16 @@
             if (!r.ok) {
               meldung.textContent = r.d.description || r.d.message || 'Das hat nicht geklappt. Bitte versuch es noch einmal.';
               meldung.classList.add('ist-fehler');
+              zeigen();
+              return;
+            }
+            /* Shopifys Popup "Zum Warenkorb hinzugefügt" (snippets/cart-notification).
+               Es zeigt die erste hinzugefügte Größe; renderContents braucht deren key. */
+            var popup = document.querySelector('cart-notification');
+            if (popup && r.d.sections && r.d.items && r.d.items.length) {
+              meldung.hidden = true;
+              popup.renderContents(Object.assign({}, r.d, { key: r.d.items[0].key }));
+              felder.forEach(function (f) { f.value = ''; });
               zeigen();
               return;
             }

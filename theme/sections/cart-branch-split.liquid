@@ -89,9 +89,21 @@
         </script>
 
         <details class="cart-branch-split" data-branch-split-details>
+          {%- comment -%}
+            Als Karte mit Symbol, Erklaerzeile und Knopf statt einer blassen
+            Klappzeile: wer mehrere Laeden beliefert, soll die Aufteilung
+            beim ersten Blick in den Warenkorb sehen.
+          {%- endcomment -%}
           <summary class="cart-branch-split__summary">
-            <span class="h4">{{ 'sections.branch_split.heading' | t }}</span>
-            <span class="cart-branch-split__status caption-large" data-branch-split-status></span>
+            <span class="cart-branch-split__symbol" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="26" height="26"><path d="M3 9.5 4.6 4h14.8L21 9.5M3 9.5h18M3 9.5c0 1.4 1.1 2.5 2.5 2.5S8 10.9 8 9.5c0 1.4 1.1 2.5 2.5 2.5S13 10.9 13 9.5c0 1.4 1.1 2.5 2.5 2.5S18 10.9 18 9.5c0 1.4 1.1 2.5 2.5 2.5M5 12v8h14v-8M10 20v-5h4v5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+            </span>
+            <span class="cart-branch-split__kopftext">
+              <span class="h4">{{ 'sections.branch_split.heading' | t }}</span>
+              <span class="cart-branch-split__unterzeile">Mehrere Läden? Teil die Packs auf deine Filialen auf – jede bekommt ihre eigene Sendung.</span>
+              <span class="cart-branch-split__status caption-large" data-branch-split-status></span>
+            </span>
+            <span class="cart-branch-split__knopf" aria-hidden="true"></span>
           </summary>
 
           <div class="cart-branch-split__body">

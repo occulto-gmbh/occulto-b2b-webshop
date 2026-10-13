@@ -41,12 +41,13 @@
           id="cart-notification-button"
           class="button button--primary button--full-width"
         >
-          {{- 'general.cart.view_empty_cart' | t -}}
+          Zur Kasse
         </a>
         {%- comment -%}
-          B2B: kein Knopf direkt zur Kasse - der Mindestbestellwert wird im
-          Warenkorb geprueft (snippets/b2b-korb-art). Deshalb fuehrt der
-          Hauptknopf dorthin.
+          B2B: "Zur Kasse" fuehrt in den Warenkorb, nicht direkt in den
+          Checkout - der Mindestbestellwert wird dort geprueft
+          (snippets/b2b-korb-art). Beschriftung nach dem Hinzufuegen kommt aus
+          sections/cart-notification-button.liquid.
         {%- endcomment -%}
         <button type="button" class="link button-label">{{ 'general.continue_shopping' | t }}</button>
       </div>

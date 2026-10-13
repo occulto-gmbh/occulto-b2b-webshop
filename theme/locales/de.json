@@ -344,7 +344,7 @@
       "caption": "Artikel im Warenkorb",
       "remove_title": "{{ title }} entfernen",
       "note": "Spezielle Bestellanweisungen",
-      "checkout": "Auschecken",
+      "checkout": "Zur Kasse",
       "empty": "Dein Warenkorb ist leer",
       "product_disclosure": "Produktoffenlegung",
       "product_disclosures": "Produktoffenlegungen",

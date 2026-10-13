@@ -3,9 +3,11 @@
 }
 
 .cart-branch-split {
-  border: 0.1rem solid rgba(var(--color-foreground), 0.15);
-  border-radius: var(--inputs-radius, 0);
-  padding: 0 1.6rem;
+  border: 0.1rem solid rgb(var(--b2b-linie, 226 226 225));
+  border-left: 0.5rem solid rgb(var(--b2b-akzent, 199 42 9));
+  border-radius: 0.8rem;
+  background: rgb(255 255 255);
+  padding: 0 2rem;
 }
 
 .cart-branch-split__summary {
@@ -22,15 +24,68 @@
   display: none;
 }
 
+/* Statt des kleinen +/- ein Knopf mit Beschriftung (siehe __knopf). */
 .cart-branch-split__summary::after {
-  content: '+';
-  margin-left: auto;
-  font-size: 2rem;
-  line-height: 1;
+  content: none;
 }
 
-.cart-branch-split[open] > .cart-branch-split__summary::after {
-  content: '–';
+.cart-branch-split__summary {
+  align-items: center;
+  padding: 1.8rem 0;
+}
+
+.cart-branch-split__symbol {
+  display: flex;
+  flex: 0 0 auto;
+  color: rgb(var(--b2b-akzent, 199 42 9));
+}
+
+.cart-branch-split__kopftext {
+  display: flex;
+  flex: 1 1 28rem;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.cart-branch-split__unterzeile {
+  font-size: 1.5rem;
+  line-height: 1.45;
+  color: rgba(var(--color-foreground), 0.8);
+}
+
+.cart-branch-split__knopf {
+  flex: 0 0 auto;
+  margin-left: auto;
+  padding: 1rem 2.2rem;
+  border: 0.1rem solid rgb(var(--b2b-akzent, 199 42 9));
+  border-radius: 0.6rem;
+  color: rgb(var(--b2b-akzent, 199 42 9));
+  font-size: 1.5rem;
+  font-weight: 700;
+  transition: background-color var(--b2b-takt, 0.18s) ease, color var(--b2b-takt, 0.18s) ease;
+}
+
+.cart-branch-split__knopf::before {
+  content: 'Aufteilen';
+}
+
+.cart-branch-split[open] .cart-branch-split__knopf::before {
+  content: 'Schließen';
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cart-branch-split__summary:hover .cart-branch-split__knopf {
+    background: rgb(var(--b2b-akzent, 199 42 9));
+    color: rgb(255 255 255);
+  }
+}
+
+@media screen and (max-width: 599px) {
+  .cart-branch-split__knopf {
+    width: 100%;
+    margin-left: 0;
+    text-align: center;
+  }
 }
 
 .cart-branch-split__summary .h4 {
