@@ -12,9 +12,11 @@
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 1.6rem 3.2rem;
-      padding-top: 2.8rem;
-      padding-bottom: 2.8rem;
+      gap: 1.2rem 3.2rem;
+      /* Flach gehalten (13.10.2026): vorher rund 280 px hoch, das drueckte
+         den Hero unter den Rand. */
+      padding-top: 1.4rem;
+      padding-bottom: 1.4rem;
     }
 
     .dealer-discount-banner__badge {
@@ -22,13 +24,13 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      width: 9.6rem;
-      height: 9.6rem;
+      width: 6.4rem;
+      height: 6.4rem;
       border-radius: 50%;
       border: 0.2rem solid rgb(var(--color-button));
       color: rgb(var(--color-button));
       font-family: var(--font-heading-family);
-      font-size: 3.2rem;
+      font-size: 2.2rem;
       font-weight: 700;
       line-height: 1;
     }
@@ -36,29 +38,33 @@
     .dealer-discount-banner__content {
       display: flex;
       align-items: center;
-      gap: 2.4rem;
+      gap: 2rem;
       flex: 1 1 42rem;
     }
 
     .dealer-discount-banner__overline {
-      margin: 0 0 0.4rem;
-      font-size: 1.3rem;
+      margin: 0 0 0.2rem;
+      font-size: 1.2rem;
       letter-spacing: 0.15rem;
       text-transform: uppercase;
       opacity: 0.8;
     }
 
-    .dealer-discount-banner__heading {
+    .dealer-discount-banner__heading.h1 {
       margin: 0;
+      font-size: clamp(2.4rem, 2.4vw, 3.2rem);
+      line-height: 1.1;
     }
 
     .dealer-discount-banner__text {
-      margin: 0.8rem 0 0;
+      margin: 0.4rem 0 0;
+      font-size: 1.5rem;
+      line-height: 1.45;
     }
 
+    /* Hinweis in derselben Zeile statt darunter. */
     .dealer-discount-banner__note {
-      display: block;
-      margin-top: 0.4rem;
+      margin-left: 0.6rem;
       font-size: 1.3rem;
       opacity: 0.8;
     }
@@ -67,23 +73,34 @@
       display: inline-flex;
       align-items: center;
       gap: 0.8rem;
-      margin: 1.2rem 0 0;
-      padding: 0.6rem 1.4rem;
+      margin: 0.8rem 0 0;
+      padding: 0.3rem 1.2rem;
       border: 0.1rem solid rgb(var(--color-foreground) / 0.35);
       border-radius: 999px;
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       font-weight: 700;
     }
 
     @media screen and (max-width: 749px) {
       .dealer-discount-banner__badge {
-        width: 7.2rem;
-        height: 7.2rem;
-        font-size: 2.4rem;
+        width: 5.2rem;
+        height: 5.2rem;
+        font-size: 1.8rem;
       }
 
       .dealer-discount-banner__content {
-        gap: 1.6rem;
+        gap: 1.4rem;
+      }
+
+      /* Am Handy nur Kreis, Ueberschrift, Versand und Knopf - der Satz
+         wiederholt die Ueberschrift und kostete hier gut 100 px Hoehe. */
+      .dealer-discount-banner__overline,
+      .dealer-discount-banner__text {
+        display: none;
+      }
+
+      .dealer-discount-banner {
+        gap: 1rem;
       }
 
       .dealer-discount-banner .button {

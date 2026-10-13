@@ -140,6 +140,27 @@
           </div>
         </details>
       </cart-branch-split>
+      {%- comment -%}
+        Nach oben, direkt unter den Kopf "Nachbestellung" (#b2b-korb-kopf in
+        main-cart-items): wer an mehrere Filialen liefert, soll das vor den
+        Positionen sehen, nicht erst unter der Liste. Ein eigener Abschnitt
+        kann nicht in einem anderen stehen, deshalb wird er beim Laden
+        umgehaengt - vor dem Start von cart-branch-split.js (defer), das
+        Element ist da noch nicht verbunden. Ohne Kopf bleibt er hier unten.
+        Das Neuzeichnen nach Mengenaenderungen (assets/cart.js) ersetzt nur
+        das Innere von #b2b-korb-kopf und .js-contents, nicht ihn.
+      {%- endcomment -%}
+      <script>
+        (function () {
+          var split = document.currentScript.previousElementSibling;
+          var kopf = document.getElementById('b2b-korb-kopf');
+          if (!split || split.tagName !== 'CART-BRANCH-SPLIT' || !kopf) return;
+          kopf.after(split);
+          split.classList.add('cart-branch-split--oben');
+          var abschnitt = document.currentScript.closest('.shopify-section');
+          if (abschnitt) abschnitt.classList.add('cart-branch-split--leer');
+        })();
+      </script>
     </div>
   </div>
 {%- endif -%}

@@ -189,3 +189,18 @@
 .cart-branch-split__message:empty {
   display: none;
 }
+
+
+/* Unter dem Kopf der Nachbestellung (Umhaengen in sections/cart-branch-split). */
+.cart-branch-split--oben {
+  display: block;
+  margin: 1.2rem 0 1.6rem;
+}
+
+.cart-branch-split--leer {
+  display: none;
+}
+
+cart-items.is-empty .cart-branch-split--oben {
+  display: none;
+}
