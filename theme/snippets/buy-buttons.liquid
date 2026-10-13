@@ -106,9 +106,10 @@
               {{ form | payment_button }}
             {%- endif -%}
           {%- else -%}
-            <a href="{{ routes.account_login_url }}" class="product-form__submit button button--full-width button--primary">
-              {{ 'products.product.price.login_to_see_price' | t }}
-            </a>
+            {%- comment -%}
+              Fuer Gaeste kein zweiter Knopf: der Verweis steht nur oben am
+              Preis.
+            {%- endcomment -%}
           {%- endif -%}
         </div>
       {%- endform -%}

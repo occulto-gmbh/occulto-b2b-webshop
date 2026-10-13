@@ -3406,6 +3406,9 @@
         "name": "Sammelbestellung"
       }
     },
+    "cart-branch-split": {
+      "name": "Filial-Aufteilung (Warenkorb)"
+    },
     "csv-order": {
       "name": "Massenbestellung (CSV)",
       "presets": {
@@ -3438,6 +3441,18 @@
         },
         "button_style_secondary": {
           "label": "Button als sekundären Stil anzeigen"
+        },
+        "media_overline": {
+          "label": "Bild: Überzeile"
+        },
+        "media_heading": {
+          "label": "Bild: Überschrift"
+        },
+        "media_button_label": {
+          "label": "Bild: Button-Beschriftung"
+        },
+        "media_link": {
+          "label": "Bild: Link (ganzes Bild klickbar)"
         }
       },
       "presets": {

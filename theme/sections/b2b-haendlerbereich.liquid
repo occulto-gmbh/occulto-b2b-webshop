@@ -1,0 +1,256 @@
+{%- comment -%}
+  Händlerbereich – die Startseite eines angemeldeten Händlers.
+
+  Shopifys eigene Kontoseite (Bestellungen, Profil) zeigt nur Farben und
+  Logo und lässt sich ohne App nicht erweitern. Dieser Bereich steht im
+  Theme und bündelt, was ein Händler beim Wiederkommen braucht: Stand des
+  Warenkorbs, nächster Vororder-Termin, letzte Bestellungen mit "Nochmal
+  bestellen", Schnellzugriffe und den Ansprechpartner.
+
+  Verlinkt wird er im Verwaltungsmenü "customer-account-main-menu" – das
+  Menü steht im Konto-Symbol im Kopf und links auf Shopifys Kontoseite.
+
+  Die Zahlen (300 / 500 Packs, 5 %, 10 %) stehen auch in b2b-korb-art und
+  b2b-preis - aendern sie sich, hier mitziehen. Packs ohne Einzelstücke zählt
+  snippets/b2b-packs.
+{%- endcomment -%}
+
+{{ 'b2b-haendlerbereich.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign haendler = false
+  if customer and customer.tags contains 'dealer-approved'
+    assign haendler = true
+  endif
+
+  assign versandfrei_ab = 300
+  assign rabatt_ab = 500
+
+  capture packs_text
+    render 'b2b-packs'
+  endcapture
+  assign packs = packs_text | plus: 0
+
+  comment
+    Unterseiten von Shopifys Konto: account_url kann Parameter tragen,
+    deshalb erst am "?" trennen (so in der Shopify-Doku).
+  endcomment
+  assign konto_teile = routes.account_url | split: '?'
+  assign konto_profil = konto_teile.first | append: '/profile'
+  if konto_teile.size > 1
+    assign konto_profil = konto_profil | append: '?' | append: konto_teile.last
+  endif
+-%}
+
+<div class="page-width b2b-hb section-{{ section.id }}-padding">
+  {%- if haendler == false -%}
+    <div class="b2b-hb__gesperrt">
+      {%- if customer -%}
+        <h1 class="b2b-hb__titel">Dein Händlerkonto wird geprüft</h1>
+        <p>Sobald wir dich freigeschaltet haben, findest du hier deine Bestellungen, Termine und Konditionen. Fragen? Ruf uns an: <a href="tel:+4980313506041">08031 350 60 41</a>.</p>
+      {%- else -%}
+        <h1 class="b2b-hb__titel">Händlerbereich</h1>
+        <p>Melde dich an, um deine Bestellungen, Termine und Händlerpreise zu sehen.</p>
+        <p class="b2b-hb__knoepfe">
+          <a class="button button--primary" href="{{ routes.storefront_login_url }}">Anmelden</a>
+          <a class="button button--secondary" href="/pages/haendler-werden">Händler werden</a>
+        </p>
+      {%- endif -%}
+    </div>
+  {%- else -%}
+    {%- liquid
+      assign name = customer.first_name | default: customer.name
+      assign firma = customer.default_address.company
+    -%}
+    <header class="b2b-hb__kopf">
+      <h1 class="b2b-hb__titel">Willkommen zurück{% if name != blank %}, {{ name | escape }}{% endif %}</h1>
+      <p class="b2b-hb__unter">
+        {%- if firma != blank -%}{{ firma | escape }} · {% endif -%}
+        {{ customer.email | escape }}
+      </p>
+    </header>
+
+    <div class="b2b-hb__kacheln">
+      {%- comment -%} Nachbestellung: was im Warenkorb liegt und was noch fehlt. {%- endcomment -%}
+      <section class="b2b-hb__kachel b2b-hb__kachel--haupt">
+        <h2 class="b2b-hb__kachelname">Nachbestellung</h2>
+        {%- if packs > 0 -%}
+          <p class="b2b-hb__zahl">{{ packs }} <span>{% if packs == 1 %}Pack{% else %}Packs{% endif %} im Warenkorb</span></p>
+          <p class="b2b-hb__stand">
+            {%- if packs < versandfrei_ab -%}
+              {%- assign rest = versandfrei_ab | minus: packs -%}
+              Noch {{ rest }} {% if rest == 1 %}Pack{% else %}Packs{% endif %} bis versandkostenfrei
+            {%- elsif packs < rabatt_ab -%}
+              {%- assign rest = rabatt_ab | minus: packs -%}
+              Versandkostenfrei · noch {{ rest }} {% if rest == 1 %}Pack{% else %}Packs{% endif %} bis &minus;5&nbsp;%
+            {%- else -%}
+              Versandkostenfrei und &minus;5&nbsp;% auf die Bestellung
+            {%- endif -%}
+          </p>
+          <a class="button button--primary" href="{{ routes.cart_url }}">Zum Warenkorb</a>
+        {%- else -%}
+          <p class="b2b-hb__zahl">&minus;5&nbsp;% <span>ab {{ rabatt_ab }} Packs im Warenkorb</span></p>
+          <p class="b2b-hb__stand">Ab Lager, in 5er-Packs. Versandkostenfrei ab {{ versandfrei_ab }} Packs.</p>
+          <a class="button button--primary" href="{{ routes.all_products_collection_url }}">Sortiment ansehen</a>
+        {%- endif -%}
+      </section>
+
+      {%- comment -%} Vororder: Termin aus b2b-vororder-termin, nie gepflegt. {%- endcomment -%}
+      <section class="b2b-hb__kachel">
+        <h2 class="b2b-hb__kachelname">Vororder</h2>
+        <p class="b2b-hb__zahl">&minus;10&nbsp;% <span>auf jede Vororder</span></p>
+        <p class="b2b-hb__stand">
+          Annahmeschluss {% render 'b2b-vororder-termin' %} · Auslieferung ab {% render 'b2b-vororder-termin', teil: 'lieferung' %}
+        </p>
+        <a class="button button--secondary" href="/pages/vororder">Vororder abgeben</a>
+      </section>
+
+      <section class="b2b-hb__kachel">
+        <h2 class="b2b-hb__kachelname">Dein Ansprechpartner</h2>
+        <p class="b2b-hb__kontakt">
+          <a href="tel:+4980313506041">08031 350 60 41</a>
+          <a href="mailto:b2b@occulto.de">b2b@occulto.de</a>
+        </p>
+        <p class="b2b-hb__stand">Fragen zu Bestellung, Lieferung oder eigenen Designs – wir helfen direkt.</p>
+      </section>
+    </div>
+
+    <section class="b2b-hb__block">
+      <h2 class="b2b-hb__blockname">Letzte Bestellungen</h2>
+      {%- if customer.orders_count > 0 -%}
+        <ul class="b2b-hb__bestellungen" role="list">
+          {%- for order in customer.orders limit: 5 -%}
+            {%- liquid
+              assign nochmal = ''
+              assign order_packs = 0
+              for zeile in order.line_items
+                if zeile.variant_id == blank or zeile.product.tags contains 'filialversand-zuschlag'
+                  continue
+                endif
+                unless zeile.product.tags contains 'einzelstueck'
+                  assign order_packs = order_packs | plus: zeile.quantity
+                endunless
+                assign nochmal = nochmal | append: zeile.variant_id | append: ':' | append: zeile.quantity | append: ','
+              endfor
+            -%}
+            <li class="b2b-hb__bestellung">
+              <div class="b2b-hb__bestellkopf">
+                <a class="b2b-hb__nummer" href="{{ order.customer_order_url | default: order.customer_url }}">{{ order.name }}</a>
+                <span class="b2b-hb__datum">{{ order.created_at | date: '%d.%m.%Y' }}</span>
+              </div>
+              <div class="b2b-hb__bestellinfo">
+                <span>{{ order_packs }} {% if order_packs == 1 %}Pack{% else %}Packs{% endif %}</span>
+                <span>{{ order.total_price | money }}</span>
+                <span class="b2b-hb__status">{{ order.fulfillment_status_label }}</span>
+              </div>
+              {%- if nochmal != '' -%}
+                <button type="button" class="button button--secondary b2b-hb__nochmal" data-nochmal="{{ nochmal }}">
+                  Nochmal bestellen
+                </button>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+        <p class="b2b-hb__meldung" data-hb-meldung role="status" hidden></p>
+        <p class="b2b-hb__mehr"><a href="{{ routes.account_url }}">Alle Bestellungen</a></p>
+      {%- else -%}
+        <p class="b2b-hb__leer">
+          Noch keine Bestellung. Leg los mit unserem
+          <a href="{{ routes.all_products_collection_url }}">Sortiment</a> oder lade deine Bestellliste in der
+          <a href="/pages/massenbestellung">Massenbestellung</a> hoch.
+        </p>
+      {%- endif -%}
+    </section>
+
+    <section class="b2b-hb__block">
+      <h2 class="b2b-hb__blockname">Schnellzugriff</h2>
+      <ul class="b2b-hb__wege" role="list">
+        <li><a href="{{ routes.all_products_collection_url }}"><strong>Sortiment</strong><span>Alle Socken mit Händlerpreis</span></a></li>
+        <li><a href="/pages/massenbestellung"><strong>Massenbestellung</strong><span>Bestellliste als CSV-Datei hochladen</span></a></li>
+        <li><a href="{{ routes.collections_url }}/ausstellungsstander"><strong>Ausstellungsständer</strong><span>Für deine Verkaufsfläche</span></a></li>
+        <li><a href="/pages/downloads"><strong>Downloads</strong><span>Produktdaten und Bilder</span></a></li>
+        <li><a href="{{ konto_profil }}"><strong>Profil und Adressen</strong><span>Rechnungs- und Lieferadresse ändern</span></a></li>
+        <li><a href="{{ routes.account_logout_url }}"><strong>Abmelden</strong><span>{{ customer.email | escape }}</span></a></li>
+      </ul>
+    </section>
+
+    <script>
+      (function () {
+        var meldung = document.querySelector('[data-hb-meldung]');
+        function zeigen(text) {
+          if (!meldung) return;
+          meldung.hidden = false;
+          meldung.textContent = text;
+        }
+        function hinzu(posten) {
+          return fetch('{{ routes.cart_add_url }}.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({ items: posten })
+          }).then(function (r) { return r.ok; });
+        }
+        document.querySelectorAll('[data-nochmal]').forEach(function (knopf) {
+          knopf.addEventListener('click', function () {
+            var posten = knopf.dataset.nochmal.split(',').filter(Boolean).map(function (p) {
+              var teile = p.split(':');
+              return { id: parseInt(teile[0], 10), quantity: parseInt(teile[1], 10) };
+            });
+            knopf.disabled = true;
+            /* Erst alles auf einmal. Lehnt Shopify ab (ein Artikel ausverkauft
+               oder weg), einzeln nachlegen, damit der Rest trotzdem ankommt. */
+            hinzu(posten).then(function (ok) {
+              if (ok) return 0;
+              return posten.reduce(function (kette, p) {
+                return kette.then(function (fehlt) {
+                  return hinzu([p]).then(function (ok1) { return ok1 ? fehlt : fehlt + 1; });
+                });
+              }, Promise.resolve(0));
+            }).then(function (fehlt) {
+              if (fehlt === posten.length) {
+                zeigen('Diese Artikel sind gerade nicht lieferbar.');
+                knopf.disabled = false;
+                return;
+              }
+              if (fehlt > 0) {
+                meldung.hidden = false;
+                meldung.innerHTML = fehlt + ' Artikel sind gerade nicht lieferbar, der Rest liegt im Warenkorb. <a href="{{ routes.cart_url }}">Zum Warenkorb</a>';
+                knopf.disabled = false;
+                return;
+              }
+              window.location.href = '{{ routes.cart_url }}';
+            }).catch(function () {
+              zeigen('Keine Verbindung. Bitte versuch es noch einmal.');
+              knopf.disabled = false;
+            });
+          });
+        });
+      })();
+    </script>
+  {%- endif -%}
+</div>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{% schema %}
+{
+  "name": "B2B-Händlerbereich",
+  "limit": 1,
+  "settings": [
+    { "type": "header", "content": "Abstand" },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 40, "label": "Oben" },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 56, "label": "Unten" }
+  ],
+  "presets": [{ "name": "B2B-Händlerbereich" }]
+}
+{% endschema %}

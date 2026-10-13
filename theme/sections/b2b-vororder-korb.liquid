@@ -1,0 +1,147 @@
+{%- comment -%}
+  Vororder – die Übersicht im Warenkorb.
+
+  Der Warenkorb unter /cart zeigt zwei getrennte Körbe, jeden nur, wenn er
+  etwas enthält:
+    Vororder        dieser Abschnitt, der Korb liegt im Browser
+    Nachbestellung  Shopifys eigener Warenkorb darunter (main-cart-items)
+
+  Beide haben eigene Lieferzeit, eigene Mindestmenge, eigenen Rabatt und einen
+  eigenen Abschluss. Sie werden nie gemischt und nie zusammen gerechnet.
+
+  Der Inhalt entsteht im Browser (assets/b2b-vororder.js): der Vororder-Korb
+  liegt im localStorage, Liquid sieht ihn nicht. Leer bleibt der Abschnitt
+  unsichtbar – kein Kopf, kein Rabatt.
+
+  Abgeschickt wird über Shopifys Kontaktformular an die Kundensupport-Adresse
+  des Shops. Keine Kasse, kein Auftrag in der Wawi.
+{%- endcomment -%}
+
+{%- liquid
+  assign b2b_sichtbar = false
+  if customer and customer.tags contains 'dealer-approved'
+    assign b2b_sichtbar = true
+  endif
+  assign mindestmenge = section.settings.mindestmenge
+  assign groesse = section.settings.mindestmenge_groesse
+  assign mindestwert = section.settings.mindestwert
+  assign satz = section.settings.rabatt_prozent
+-%}
+
+{%- if b2b_sichtbar -%}
+  {{ 'b2b-vororder.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'b2b-vororder.js' | asset_url }}" defer="defer"></script>
+
+  <div class="page-width">
+    <section
+      class="b2b-vk"
+      data-mindestmenge="{{ mindestmenge }}"
+      data-groesse="{{ groesse }}"
+      data-mindestwert="{{ mindestwert }}"
+      data-satz="{{ satz }}"
+      aria-labelledby="b2b-vk-titel"
+      hidden
+    >
+      {%- comment -%}
+        Die Seitenueberschrift. Liegt eine Vororder im Korb, blendet
+        b2b-vororder.css die von Shopify aus - sie stuende sonst unter diesem
+        Block statt darueber.
+      {%- endcomment -%}
+      <h1 class="b2b-vk__seite">{{ 'sections.cart.title' | t }}</h1>
+
+      <div data-vk-fertig hidden class="b2b-vk-fertig">
+        <h2>Deine Vororder ist angekommen.</h2>
+        <p>
+          Wir prüfen sie und schicken dir eine Rechnung. Produziert wird nach dem
+          Annahmeschluss {% render 'b2b-vororder-termin' %}, ausgeliefert
+          voraussichtlich ab dem {% render 'b2b-vororder-termin', teil: 'lieferung' %}.
+        </p>
+      </div>
+
+      <div data-vk-inhalt>
+        <header class="b2b-art b2b-art--vororder">
+          <p class="b2b-art__zeile">
+            <span class="b2b-art__name" id="b2b-vk-titel">Vororder</span>
+            <span class="b2b-art__satz">&minus;{{ satz }}&nbsp;%</span>
+            <span class="b2b-art__sparen" data-vk-sparen></span>
+          </p>
+          <dl class="b2b-art__regeln">
+            <div>
+              <dt>Auslieferung</dt>
+              <dd>ab {% render 'b2b-vororder-termin', teil: 'lieferung' %}, aus der Produktion</dd>
+            </div>
+            <div>
+              <dt>Annahmeschluss</dt>
+              <dd>{% render 'b2b-vororder-termin' %}</dd>
+            </div>
+            <div>
+              <dt>Mindestmenge</dt>
+              <dd>{{ mindestmenge }} Packs je Artikel, je Größe ab {{ groesse }}</dd>
+            </div>
+            <div>
+              <dt>Mindestbestellwert</dt>
+              <dd>{{ mindestwert | times: 100 | money_without_trailing_zeros }} nach Rabatt</dd>
+            </div>
+            <div>
+              <dt>Versand</dt>
+              <dd>versandkostenfrei</dd>
+            </div>
+          </dl>
+        </header>
+
+        <div class="b2b-vk-rumpf">
+          <ul class="b2b-vk-liste" data-vk-liste></ul>
+
+          <dl class="b2b-vk-summen" data-vk-summen></dl>
+
+          <div class="b2b-vk-offen" data-vk-offen role="status" hidden></div>
+
+          {%- form 'contact', id: 'B2bVororder', class: 'b2b-vk-form' -%}
+            <input type="hidden" name="contact[Art der Anfrage]" value="Vororder">
+            <input type="hidden" name="contact[Annahmeschluss]" value="{% render 'b2b-vororder-termin' %}">
+            <input type="hidden" name="contact[Auslieferung ab]" value="{% render 'b2b-vororder-termin', teil: 'lieferung' %}">
+            <input type="hidden" name="contact[Kundennummer]" value="{{ customer.id }}">
+            <input type="hidden" name="contact[Firma]" value="{{ customer.default_address.company | escape }}">
+            <input type="hidden" name="contact[name]" value="{{ customer.name | escape }}">
+            <input type="hidden" name="contact[email]" value="{{ customer.email }}">
+            <input type="hidden" name="contact[Positionen]" value="" data-positionen>
+            <input type="hidden" name="contact[Summe]" value="" data-summe>
+
+            <label class="b2b-vk-form__notiz" for="b2b-vk-notiz">
+              Anmerkung (optional)
+              <textarea
+                id="b2b-vk-notiz"
+                name="contact[body]"
+                rows="2"
+                placeholder="Wunschtermin, abweichende Lieferadresse, Rückfragen …"
+              ></textarea>
+            </label>
+
+            <div class="b2b-vk-form__abschluss">
+              <p class="b2b-vk-form__hinweis">
+                Keine Bestellung und keine Zahlung – wir prüfen die Anfrage und
+                schicken dir eine Rechnung.
+              </p>
+              <button type="submit" class="button b2b-vk-form__knopf">
+                Vororder anfragen
+              </button>
+            </div>
+          {%- endform -%}
+        </div>
+      </div>
+    </section>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "B2B-Vororder im Warenkorb",
+  "limit": 1,
+  "settings": [
+    { "type": "number", "id": "mindestmenge", "default": 100, "label": "Mindestmenge je Artikel (Packs, alle Größen zusammen)" },
+    { "type": "number", "id": "mindestmenge_groesse", "default": 5, "label": "Mindestmenge je Größe (Packs)" },
+    { "type": "number", "id": "mindestwert", "default": 1500, "label": "Mindestbestellwert in Euro (nach Rabatt)" },
+    { "type": "number", "id": "rabatt_prozent", "default": 10, "label": "Rabatt in Prozent" }
+  ]
+}
+{% endschema %}

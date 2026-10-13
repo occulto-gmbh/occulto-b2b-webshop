@@ -1,0 +1,846 @@
+/* ====================================================================
+   Markenstil fuer den ganzen Shop.
+
+   b2b-marke.liquid wird nur von der B2B-Landingpage gerendert. Damit die
+   Markenwerte auch auf allen anderen Seiten definiert sind (sonst faellt
+   jeder Abschnitt, der --b2b-akzent braucht, auf einen fest eingetragenen
+   Ersatzwert zurueck), liegen sie hier und werden im Layout geladen.
+   b2b-marke traegt dieselben Werte, die Doppelung ist folgenlos.
+
+   Was hier NICHT drinsteht: Ueberschriftengroessen. Die kommen im Theme aus
+   den Einstellungen und aus heading_size je Abschnitt; sie global zu
+   ueberschreiben wuerde auch Produkttitel, Warenkorb und Konto treffen.
+   Das gehoert vorgelegt, nicht nebenbei gemacht.
+   ==================================================================== */
+
+:root {
+  /* --- Aus den Markenrichtlinien --- */
+  --b2b-schwarz: 0 0 0;
+  --b2b-tinte: 46 46 45;
+  --b2b-weiss: 255 255 255;
+  --b2b-hell: 246 246 246;
+  --b2b-akzent: 199 42 9;
+
+  /* --- Abgeleitet ---
+     Die Palette kennt nur sehr hell und sehr dunkel. Trennlinien brauchen
+     eine Zwischenstufe; sie ist eine neutrale Abstufung von #2e2e2d. */
+  --b2b-linie: 226 226 225;
+
+  /* Ein Mass fuer den Abstand zwischen Kopf und Inhalt. */
+  --b2b-kopfabstand: clamp(28px, 3vw, 44px);
+
+  /* Eine Dauer fuer alle Uebergaenge, damit sich der Shop einheitlich
+     anfuehlt statt an jeder Stelle anders schnell. */
+  --b2b-takt: 0.18s;
+}
+
+/* ====================================================================
+   KNOEPFE
+
+   Gemessen war: font-weight 400 und transition nur auf box-shadow. Auf der
+   Landingpage sind es 700 und ein Anheben beim Ueberfahren. Hier wird der
+   Shop auf die Landingpage gezogen, nicht umgekehrt - sie ist der Stand, den
+   der Nutzer abgenommen hat.
+   ==================================================================== */
+
+.button,
+.shopify-challenge__button,
+.customer button,
+button.shopify-payment-button__button--unbranded {
+  font-weight: 700;
+  transition:
+    background-color var(--b2b-takt) ease,
+    border-color var(--b2b-takt) ease,
+    color var(--b2b-takt) ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* Nur fuer Zeiger: auf dem Handy gibt es kein Ueberfahren, dort bliebe der
+   angehobene Zustand nach dem Tippen haengen. */
+@media (hover: hover) and (pointer: fine) {
+  .button:not([disabled]):not(.button--tertiary):hover,
+  .shopify-challenge__button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgb(0 0 0 / 0.16);
+  }
+}
+
+/* Der Fokusrahmen in der Akzentfarbe - bisher uebernahm ihn das Theme in
+   Schriftfarbe und er ging auf dunklen Flaechen unter. */
+.button:focus-visible,
+a:focus-visible,
+summary:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid rgb(var(--b2b-akzent));
+  outline-offset: 2px;
+}
+
+/* ====================================================================
+   VERWEISE
+
+   Rot heisst im ganzen Shop dasselbe: hier geht es weiter. Ueberschriften
+   und Fliesstext bleiben in Schriftfarbe - ein roter Absatz waere Laerm.
+   ==================================================================== */
+
+@media (hover: hover) and (pointer: fine) {
+  .rte a:hover,
+  .list-menu__item:hover,
+  .link:hover:not(.button) {
+    color: rgb(var(--b2b-akzent));
+  }
+}
+
+
+/* Der laufende Menuepunkt bekommt die Akzentfarbe statt nur einer
+   Unterstreichung - so ist auf jeder Seite ohne Lesen erkennbar, wo man ist. */
+.header__menu-item.list-menu__item--active,
+.list-menu__item--active {
+  color: rgb(var(--b2b-akzent));
+}
+
+/* ====================================================================
+   UEBERSCHRIFTEN
+
+   Eine Stufenleiter statt drei fast gleich grosser Groessen. Die Werte
+   stehen in Bildpunkten, nicht in rem: das Theme setzt die Wurzelschrift
+   auf 10px, und in rem gerechnet liest sich hier niemand mehr zurecht.
+   ==================================================================== */
+
+:where(h1, h2, h3) {
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+/* h1: die eine Aussage der Seite. */
+:where(h1) {
+  font-size: clamp(30px, 4.4vw, 52px);
+  line-height: 1.04;
+}
+
+.h1 {
+  font-size: clamp(30px, 4.4vw, 52px);
+  line-height: 1.04;
+  font-weight: 900;
+}
+
+/* h2: der Kopf eines Abschnitts. */
+:where(h2) {
+  font-size: clamp(24px, 3vw, 36px);
+  line-height: 1.1;
+}
+
+.h2 {
+  font-size: clamp(24px, 3vw, 36px);
+  line-height: 1.1;
+  font-weight: 900;
+}
+
+/* h3: der Kopf eines Teils darin. Bewusst nicht in 900 - in dieser Groesse
+   wirkt das gedrungen, und Produktkacheln tragen die Klasse ebenfalls. */
+:where(h3) {
+  font-size: clamp(18px, 1.6vw, 22px);
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+.h3 {
+  font-size: clamp(18px, 1.6vw, 22px);
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+/* Die Karten der Sammlungsuebersicht tragen h3, sollen aber ruhig bleiben:
+   dort steht ein Produktname, keine Ueberschrift. */
+.card__heading,
+.card__heading .full-unstyled-link {
+  font-weight: 700;
+  letter-spacing: normal;
+}
+
+/* Die Titelklassen des Themes.
+
+   .title und Geschwister setzen eine eigene Groesse und stechen damit das
+   Grundmass aus :where() - gemessen blieben Seitentitel bei 42px statt 52.
+   Mit dem Element davor gewinnt die Regel wieder (0,1,1 gegen 0,1,0), ohne
+   dass die Klassen fuer sich angefasst werden muessten.
+
+   Kommt spaeter eine Titelklasse dazu, gehoert sie hier in die Liste. */
+h1:is(.title, .collection-hero__title, .cart__empty-text, .main-page-title, .article-template__title),
+.hxl {
+  font-size: clamp(30px, 4.4vw, 52px);
+  line-height: 1.04;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+
+h2:is(.title, .collection-list-title, .multicolumn__title) {
+  font-size: clamp(24px, 3vw, 36px);
+  line-height: 1.1;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+
+/* Die Ueberschriften der eigenen Shopabschnitte auf dieselbe Stufe wie h2.
+
+   Sie brachten eine eigene Groesse mit (43,5px) und keine Schriftstaerke,
+   standen also weder auf der h2-Stufe noch in Schwarz. Die Abschnitte der
+   B2B-Landingpage sind hier bewusst nicht aufgefuehrt: die hat ihre eigene,
+   groessere Stufenleiter in b2b-marke, und die ist abgenommen. */
+.b2b-vorteile__titel,
+.b2b-kond__titel {
+  font-size: clamp(24px, 3vw, 36px);
+  line-height: 1.1;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+
+
+/* ====================================================================
+   FUSSZEILE
+
+   Gemessen auf dem dunklen Grund (#2e2e2d): Text und Links auf 75 Prozent
+   Weiss, Links 14, Copyright 12 Bildpunkte. Lesbar, aber klein und blass -
+   und die Fusszeile traegt Impressum, Datenschutz und AGB.
+   ==================================================================== */
+
+.footer {
+  font-size: 16px;
+}
+
+.footer .footer-block__heading {
+  margin-bottom: 14px;
+  font-size: 20px;
+  font-weight: 700;
+  color: rgb(255 255 255);
+}
+
+.footer .footer-block__details-content,
+.footer .footer__column {
+  color: rgb(255 255 255 / 0.88);
+}
+
+/* Links gross genug zum Treffen und mit Luft dazwischen. */
+.footer .list-menu__item,
+.footer .footer-block__details-content a,
+.footer .policies a,
+.footer .link {
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgb(255 255 255 / 0.88);
+}
+
+.footer .list-menu__item {
+  padding-block: 6px;
+}
+
+/* Die globale Hover-Regel faerbt Verweise in der Akzentfarbe. Auf diesem
+   dunklen Grund waere das Rot auf Dunkelgrau - rund 3:1 Kontrast und kaum
+   zu lesen. Hier stattdessen ganz weiss und unterstrichen. */
+.footer .link:hover,
+.footer .list-menu__item:hover,
+.footer .footer-block__details-content a:hover,
+.footer .policies a:hover {
+  color: rgb(255 255 255);
+  text-decoration: underline;
+}
+
+.footer .footer__copyright,
+.footer .copyright__content {
+  font-size: 13px;
+  color: rgb(255 255 255 / 0.7);
+}
+
+.footer .footer__content-top {
+  padding-bottom: 36px;
+}
+
+@media screen and (max-width: 749px) {
+  .footer .footer-block__heading {
+    font-size: 18px;
+  }
+}
+
+/* ====================================================================
+   SEITENRAND
+
+   Die Abschnitte mit b2b-Markup tragen die Klasse .container fuer ihren
+   seitlichen Abstand. Die Regel dazu stand bisher in b2b-marke.liquid -
+   und das wird nur auf der B2B-Landingpage gerendert. Auf Startseite,
+   Kontakt und Downloads hatte .container deshalb gar keine Wirkung: die
+   Stichpunkte unter dem Hero klebten auf dem Handy bei x=0 am Rand.
+
+   Die Werte sind am Hauptshop gemessen: 20 Bildpunkte, 32 ab 700, 48 ab
+   1000. --container-gutter steht auch fuer sich, der Kontaktstreifen holt
+   sich seinen Abstand direkt daraus.
+   ==================================================================== */
+
+main {
+  --container-gutter: 20px;
+}
+
+main .container {
+  margin-inline: var(--container-gutter);
+}
+
+@media screen and (min-width: 700px) {
+  main {
+    --container-gutter: 32px;
+  }
+}
+
+@media screen and (min-width: 1000px) {
+  main {
+    --container-gutter: 48px;
+  }
+}
+
+/* ====================================================================
+   HAENDLERSPERRE
+
+   Der Verweis, den Gaeste anstelle von Preis und Kaufknopf sehen.
+
+   Ein einzelnes Element, das wie ein Knopf aussieht und die Markenfarbe
+   traegt statt des Browser-Blaus.
+
+   Wo der Aufrufer schon eine Knopfklasse mitgibt (Produktseite,
+   Bestelllisten, Downloads), gilt dessen Aussehen - die Regeln hier
+   greifen nur, wo keine kommt: im Preisfeld der Produktkacheln.
+   ==================================================================== */
+
+.b2b-freigabe {
+  text-decoration: none;
+}
+
+/* Das Preisfeld der Kachel und der Produktseite. Klein genug fuer eine
+   Kachel, deutlich genug, um als anklickbar gelesen zu werden. */
+.price__login-link.b2b-freigabe {
+  /* Inhaltsbreit, aber gedeckelt. Als Block zog sich der Knopf auf der
+     Produktseite ueber 570px; mit nowrap sprengte er umgekehrt die 170px
+     schmale Kachel um 43px. inline-block plus max-width laesst ihn so breit
+     werden wie sein Text und nicht breiter als sein Kasten. */
+  display: inline-block;
+  max-width: 100%;
+  padding: 6px 12px;
+  text-align: center;
+  border: 1px solid rgb(var(--b2b-akzent, 199 42 9));
+  border-radius: 6px;
+  background: rgb(var(--b2b-akzent, 199 42 9));
+  color: rgb(255 255 255);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.3;
+  transition: background-color 0.18s ease;
+}
+
+/* Auf dem Handy sind die Kacheln 170px breit - der Knopf braucht dort
+   zwei Zeilen. Eine Stufe kleiner haelt ihn in der Kachel unauffaellig. */
+@media screen and (max-width: 749px) {
+  .price__login-link.b2b-freigabe {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .price__login-link.b2b-freigabe:hover {
+    background: rgb(160 33 7);
+    color: rgb(255 255 255);
+    text-decoration: none;
+  }
+}
+
+/* ---- Der Balken auf der Haendlerseite ---- */
+
+/* Wer schon ein Konto hat, soll den Balken sehen, bevor er ein zweites Mal
+   19 Felder ausfüllt: weiß auf grauem Grund, Markenrot als deckende Linie links
+   und im Knopf – keine getönte Fläche (siehe snippets/b2b-marke.liquid). */
+.b2b-schon-haendler {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  margin-bottom: 32px;
+  padding: 20px 24px;
+  border: 1px solid rgb(var(--b2b-linie, 226 226 225));
+  border-left: 5px solid rgb(var(--b2b-akzent, 199 42 9));
+  border-radius: 8px;
+  background: rgb(255 255 255);
+}
+
+.b2b-schon-haendler__text {
+  margin: 0;
+  color: rgb(var(--b2b-tinte, 46 46 45));
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.b2b-schon-haendler__knopf {
+  flex: 0 0 auto;
+  padding: 13px 30px;
+  border: 1px solid rgb(var(--b2b-akzent, 199 42 9));
+  border-radius: 6px;
+  background: rgb(var(--b2b-akzent, 199 42 9));
+  color: rgb(255 255 255);
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color 0.18s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .b2b-schon-haendler__knopf:hover {
+    background: rgb(160 33 7);
+    color: rgb(255 255 255);
+  }
+}
+
+@media screen and (max-width: 599px) {
+  .b2b-schon-haendler {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+}
+
+/* Auf der Produktseite traegt dieser Knopf die ganze Handlung - der zweite,
+   schwarze Knopf an der Kaufstelle ist entfallen. Also in der Groesse eines
+   Kaufknopfes statt in Kachelgroesse. Farbe und Fuellung kommen von oben;
+   price--large setzt Shopify nur auf der Produktseite. */
+.price--large .price__login-link.b2b-freigabe {
+  padding: 13px 28px;
+  font-size: 16px;
+}
+
+/* ====================================================================
+   RABATTPREIS
+
+   Der Listenpreis durchgestrichen, daneben der Preis, der berechnet
+   wird. Gerendert von snippets/b2b-preis.liquid - die Prozentsaetze
+   stehen dort, nicht hier.
+   ==================================================================== */
+
+/* Mit .price davor: Dawns ".price .price-item { display: inline-block }"
+   hat sonst dieselbe Spezifitaet und wird spaeter geladen. Dann bricht
+   nichts um, der Hinweis laeuft ueber den Kartenrand und "UVP" steht
+   getrennt von seinem Betrag. */
+.b2b-preis,
+.price .b2b-preis.price-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  max-width: 100%;
+}
+
+.b2b-preis__alt {
+  color: rgb(var(--b2b-tinte, 46 46 45) / 0.55);
+  font-size: 0.9em;
+  text-decoration: line-through;
+}
+
+.b2b-preis__neu {
+  font-weight: 700;
+}
+
+.b2b-preis__satz {
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgb(var(--b2b-akzent, 199 42 9));
+  color: rgb(255 255 255);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
+/* In der rechten Summenspalte steht wenig Platz zur Verfuegung: dort
+   untereinander statt nebeneinander. */
+.b2b-preis--summe {
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.b2b-preis__bedingung {
+  color: rgb(var(--b2b-tinte, 46 46 45) / 0.6);
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
+/* UVP klein in eigener Zeile unter dem Preis - die ganze Breite, damit sie
+   nicht zwischen Preis und Rabatthinweis rutscht. */
+.b2b-preis__uvp {
+  flex-basis: 100%;
+  color: rgb(var(--b2b-tinte, 46 46 45) / 0.6);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.b2b-preis__vorsatz {
+  color: rgb(var(--b2b-tinte, 46 46 45) / 0.7);
+  font-size: 0.9em;
+}
+
+/* ====================================================================
+   BESTELLART IM WARENKORB
+
+   Nachbestellung und Vororder sind zwei Vorgaenge mit eigener
+   Lieferzeit, eigener Mindestmenge und eigenem Rabatt. Ein Warenkorb
+   ist immer nur einer von beiden - der Kopf sagt welcher, und die
+   Farbe zieht sich ueber die Positionen darunter.
+   ==================================================================== */
+
+.b2b-art {
+  margin: 0 0 4px;
+  padding: 16px 20px;
+  border: 1px solid rgb(var(--b2b-linie, 226 226 225));
+  border-left: 5px solid rgb(var(--b2b-tinte, 46 46 45));
+  border-radius: 8px 8px 0 0;
+  background: rgb(var(--b2b-hell, 246 246 246));
+}
+
+.b2b-art__zeile {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin: 0;
+}
+
+.b2b-art__name {
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.b2b-art__satz {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: rgb(var(--b2b-tinte, 46 46 45));
+  color: rgb(255 255 255);
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.b2b-art__satz--offen {
+  border: 1px solid rgb(var(--b2b-tinte, 46 46 45) / 0.4);
+  background: transparent;
+  color: rgb(var(--b2b-tinte, 46 46 45));
+  font-weight: 500;
+}
+
+.b2b-art__sparen {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* Die Regeln, die diese Bestellart von der anderen unterscheiden. Vier bei
+   der Nachbestellung, fünf bei der Vororder - deshalb so viele Spalten, wie
+   Platz haben, statt einer festen Zahl. */
+.b2b-art__regeln {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px 24px;
+  margin: 14px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid rgb(var(--b2b-tinte, 46 46 45) / 0.12);
+}
+
+.b2b-art__regeln dt {
+  color: rgb(var(--b2b-tinte, 46 46 45) / 0.65);
+  font-size: 13px;
+}
+
+.b2b-art__regeln dd {
+  margin: 2px 0 0;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+@media screen and (max-width: 749px) {
+  .b2b-art__regeln {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+  .b2b-art__name {
+    font-size: 17px;
+  }
+}
+
+.b2b-art--kompakt {
+  padding: 10px 14px;
+  border-radius: 8px;
+}
+
+.b2b-art--kompakt .b2b-art__name {
+  font-size: 15px;
+}
+
+/* Die Positionen gehoeren sichtbar zum Kopf darueber. */
+.b2b-korb .cart-items {
+  padding-inline: 20px;
+  border: 1px solid rgb(var(--b2b-linie, 226 226 225));
+  border-top: none;
+  border-left: 5px solid rgb(var(--b2b-tinte, 46 46 45));
+  border-radius: 0 0 8px 8px;
+}
+
+
+.b2b-preis__sparen {
+  color: rgb(var(--b2b-akzent, 199 42 9));
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Der Verweis auf die Vororder unter den Regeln der Nachbestellung. */
+.b2b-art__fussnote {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  opacity: 0.8;
+}
+
+/* ------------------------------------------------------------- Produktseite
+   Unter dem Preis die Bedingungen in einer Zeile, unter dem Kaufknopf der
+   Sprung zur Groessentabelle (templates/product.json). */
+.b2b-pdp-hinweis {
+  margin: -0.4rem 0 0;
+  color: rgb(var(--b2b-tinte, 46 46 45) / 0.7);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Lange Produktnamen liefen in der schmalen Kaufbox ueber vier Zeilen und
+   schoben die Bestellung unter den Bildschirmrand. */
+.product__info-container .product__title h1 {
+  font-size: clamp(2.4rem, 1rem + 1.4vw, 3.2rem);
+  line-height: 1.2;
+}
+
+/* Alle Groessen in der Kaufbox (snippets/b2b-groessen-bestellen.liquid). */
+.b2b-gb__kopf {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.b2b-gb__kopf span {
+  color: rgb(var(--b2b-tinte, 46 46 45) / 0.6);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+/* Viele Varianten scrollen in sich, damit der Knopf im Bild bleibt. */
+.b2b-gb__liste {
+  max-height: 42vh;
+  margin: 0 0 12px;
+  padding: 0;
+  overflow-y: auto;
+  border-top: 1px solid rgb(var(--b2b-linie, 226 226 225));
+  list-style: none;
+}
+
+.b2b-gb__zeile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 2px;
+  border-bottom: 1px solid rgb(var(--b2b-linie, 226 226 225));
+}
+
+.b2b-gb__name {
+  display: flex;
+  flex-direction: column;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.b2b-gb__lager {
+  color: rgb(var(--b2b-tinte, 46 46 45) / 0.6);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.b2b-gb__zeile.ist-aus .b2b-gb__name {
+  opacity: 0.5;
+}
+
+.b2b-gb__zahl {
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 40px;
+  border: 1px solid rgb(var(--b2b-linie, 226 226 225));
+  border-radius: 6px;
+  background: rgb(255 255 255);
+}
+
+.b2b-gb__zahl:focus-within {
+  border-color: rgb(var(--b2b-akzent, 199 42 9));
+}
+
+.b2b-gb__zahl button {
+  width: 36px;
+  border: 0;
+  background: transparent;
+  color: rgb(var(--b2b-tinte, 46 46 45));
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.b2b-gb__zahl button:disabled {
+  cursor: default;
+  opacity: 0.3;
+}
+
+.b2b-gb__zahl input {
+  width: 56px;
+  border: 0;
+  background: transparent;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.b2b-gb__zahl input::-webkit-outer-spin-button,
+.b2b-gb__zahl input::-webkit-inner-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+.b2b-gb__zahl input:focus {
+  outline: none;
+}
+
+.b2b-gb__summe {
+  margin: 0 0 10px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.b2b-gb__meldung {
+  margin: 8px 0 0;
+  font-size: 14px;
+}
+
+.b2b-gb__meldung.ist-fehler {
+  color: rgb(var(--b2b-akzent, 199 42 9));
+  font-weight: 700;
+}
+
+/* ------------------------------------------------------- Vorschlaege
+   Der feste Artikel vorneweg (sections/b2b-vorschlaege.liquid) mit eigenem
+   Knopf unter der Karte. */
+.b2b-vorschlaege__knopf {
+  margin-top: 10px;
+  min-height: 42px;
+  font-size: 14px;
+}
+
+.b2b-vorschlaege__meldung {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* ------------------------------------------------- Kasse im Warenkorb-Kopf
+   "Zur Kasse" rechts in der Kopfzeile der Nachbestellung, damit er ohne
+   Scrollen erreichbar ist (snippets/b2b-korb-art.liquid). */
+.b2b-art__kasse {
+  min-width: 180px;
+  min-height: 48px;
+  margin-left: auto;
+}
+
+.b2b-art__kasse[disabled] {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+/* Mindestbestellwert noch nicht erreicht: deckend rot, weil es die Kasse
+   sperrt - anders als die offenen Rabattstufen. */
+.b2b-art__satz--fehlt {
+  background: rgb(var(--b2b-akzent, 199 42 9));
+  color: rgb(255 255 255);
+}
+
+.b2b-art__mindestwert {
+  margin: 10px 0 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+#main-cart-footer .b2b-art__mindestwert {
+  margin: 0 0 10px;
+  text-align: right;
+}
+
+@media screen and (max-width: 749px) {
+  .b2b-art__kasse {
+    width: 100%;
+    margin-left: 0;
+  }
+  #main-cart-footer .b2b-art__mindestwert {
+    text-align: center;
+  }
+}
+
+/* hidden muss auch gegen Dawns display-Regeln gewinnen (assets/cart.js). */
+#main-cart-footer [data-b2b-mindestwert-hinweis][hidden],
+#main-cart-footer .cart__dynamic-checkout-buttons[hidden] {
+  display: none;
+}
+
+/* ---------------------------------------------- Stand auf "Haendler werden"
+   Statt des Formulars fuer angemeldete Besucher
+   (sections/dealer-registration-form.liquid). Weiss, Linie links: rot bei
+   Freischaltung, sonst Schriftfarbe. */
+.b2b-status {
+  margin: 24px 0 32px;
+  padding: 22px 24px;
+  border: 1px solid rgb(var(--b2b-linie, 226 226 225));
+  border-left: 5px solid rgb(var(--b2b-tinte, 46 46 45));
+  border-radius: 8px;
+  background: rgb(255 255 255);
+}
+
+.b2b-status--ok {
+  border-left-color: rgb(var(--b2b-akzent, 199 42 9));
+}
+
+.b2b-status__titel {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.b2b-status__text {
+  margin: 8px 0 0;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.b2b-status__knoepfe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0 0;
+}

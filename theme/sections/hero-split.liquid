@@ -10,7 +10,7 @@
 {{ 'section-hero-split.css' | asset_url | stylesheet_tag }}
 
 <div class="hero-split color-{{ section.settings.color_scheme }}">
-  <div class="hero-split__text">
+  <div class="hero-split__text{% if section.settings.text_image != blank %} hero-split__text--has-image{% endif %}">
     {%- if section.settings.text_image != blank -%}
       {{
         section.settings.text_image
@@ -21,7 +21,6 @@
           widths: '400,600,800,1200',
           sizes: '(min-width: 750px) 50vw, 100vw'
       }}
-      <div class="hero-split__text-scrim"></div>
     {%- endif -%}
     <div class="hero-split__text-inner">
       {%- if section.settings.overline != blank -%}
@@ -43,7 +42,22 @@
       {%- endif -%}
     </div>
   </div>
-  <div class="hero-split__media">
+  {%- liquid
+    assign media_tag = 'div'
+    if section.settings.media_link != blank
+      assign media_tag = 'a'
+    endif
+    assign has_media_overlay = false
+    if section.settings.media_heading != blank or section.settings.media_button_label != blank
+      assign has_media_overlay = true
+    endif
+  -%}
+  <{{ media_tag }}
+    class="hero-split__media{% if has_media_overlay %} hero-split__media--has-overlay{% endif %}"
+    {% if media_tag == 'a' %}
+      href="{{ section.settings.media_link }}"
+    {% endif %}
+  >
     {%- if section.settings.image != blank -%}
       {{
         section.settings.image
@@ -56,7 +70,20 @@
           sizes: '(min-width: 750px) 50vw, 100vw'
       }}
     {%- endif -%}
-  </div>
+    {%- if has_media_overlay -%}
+      <div class="hero-split__media-overlay color-{{ section.settings.color_scheme }}">
+        {%- if section.settings.media_overline != blank -%}
+          <p class="hero-split__overline caption-with-letter-spacing">{{ section.settings.media_overline }}</p>
+        {%- endif -%}
+        {%- if section.settings.media_heading != blank -%}
+          <p class="hero-split__media-heading h3">{{ section.settings.media_heading }}</p>
+        {%- endif -%}
+        {%- if section.settings.media_button_label != blank -%}
+          <span class="button button--primary hero-split__media-button">{{ section.settings.media_button_label }} &rarr;</span>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </{{ media_tag }}>
 </div>
 
 {% schema %}
@@ -67,6 +94,26 @@
       "type": "image_picker",
       "id": "image",
       "label": "t:sections.hero-split.settings.image.label"
+    },
+    {
+      "type": "text",
+      "id": "media_overline",
+      "label": "t:sections.hero-split.settings.media_overline.label"
+    },
+    {
+      "type": "text",
+      "id": "media_heading",
+      "label": "t:sections.hero-split.settings.media_heading.label"
+    },
+    {
+      "type": "text",
+      "id": "media_button_label",
+      "label": "t:sections.hero-split.settings.media_button_label.label"
+    },
+    {
+      "type": "url",
+      "id": "media_link",
+      "label": "t:sections.hero-split.settings.media_link.label"
     },
     {
       "type": "image_picker",

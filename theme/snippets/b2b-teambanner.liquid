@@ -1,0 +1,135 @@
+{% doc %}
+  Kontaktbanner fuer die B2B-Seiten, direkt oberhalb des Footers.
+  Tritt dort an die Stelle des Newsletter-Banners "10 % auf deine erste
+  Bestellung", der aus einem geteilten Footer-Abschnitt kommt und im B2B
+  nicht passt. Der Newsletter-Abschnitt wird hier nur ausgeblendet, nicht
+  veraendert - er bleibt im uebrigen Shop unberuehrt.
+
+  @example
+  {% render 'b2b-teambanner' %}
+{% enddoc %}
+
+<aside class="b2b-teamband">
+  <div class="b2b-teamband__inhalt">
+    <div class="b2b-teamband__text">
+      <p class="b2b-teamband__titel">Fragen zu deinem Projekt?</p>
+      <p class="b2b-teamband__unter">
+        Wir beraten dich unverbindlich und schicken dir einen kostenlosen Designvorschlag.
+      </p>
+    </div>
+
+    <div class="b2b-teamband__wege">
+      <a class="b2b-teamband__weg" href="tel:+4980313506041">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.24 11.4 11.4 0 0 0 3.6.58 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.46.57 3.6a1 1 0 0 1-.25 1z" fill="currentColor"/></svg>
+        <span>08031 350 60 41</span>
+      </a>
+      <a class="b2b-teamband__weg" href="mailto:b2b@occulto.de">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5z" fill="currentColor"/></svg>
+        <span>b2b@occulto.de</span>
+      </a>
+    </div>
+
+    <a class="b2b-teamband__cta" href="#b2b-anfrage">Unverbindlich anfragen</a>
+  </div>
+</aside>
+
+<style>
+  /* Newsletter-Werbung des Shops auf den B2B-Seiten ausblenden.
+     Erstens der eingebettete Abschnitt im Footer, zweitens das
+     Klaviyo-Popup "10 % auf deine erste Bestellung". Beides ist auf
+     Endkunden gemuenzt und passt im B2B nicht. Im uebrigen Shop bleibt
+     alles unveraendert - diese Regel laedt nur mit diesem Snippet. */
+  [id*='custom_liquid_AmEkpz'],
+  div[class*='kl-private-reset-css'] {
+    display: none !important;
+  }
+
+  /* Luft nach unten, sonst klebt der Banner am Footer. */
+  .b2b-teamband {
+    padding: 0 var(--container-gutter, 20px);
+    margin-block: 24px 72px;
+  }
+  .b2b-teamband__inhalt {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px 32px;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 28px 32px;
+    border-radius: 12px;
+    background: rgb(var(--text-color, 28 28 28));
+    color: rgb(var(--background, 255 255 255));
+  }
+
+  .b2b-teamband__titel {
+    margin: 0 0 4px;
+    font-size: clamp(20px, 1.9vw, 26px);
+    font-weight: 900;
+  }
+  .b2b-teamband__unter {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    opacity: 0.8;
+    max-width: 44ch;
+  }
+
+  .b2b-teamband__wege {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .b2b-teamband__weg {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 16px;
+    color: inherit;
+    text-decoration: none;
+    opacity: 0.85;
+    overflow-wrap: anywhere;
+  }
+  .b2b-teamband__weg:hover {
+    opacity: 1;
+    text-decoration: underline;
+  }
+
+  .b2b-teamband__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    padding: 15px 30px;
+    border-radius: var(--button-border-radius, 6px);
+    /* Knopfstil "dunkel" des Designsystems, siehe snippets/b2b-marke.liquid.
+       Steht hier und nicht dort, weil der Knopf hier definiert wird - sonst
+       haetten zwei Dateien widersprechende Regeln fuer dasselbe Element. */
+    border: 1px solid rgb(var(--b2b-tinte, 46 46 45));
+    background: rgb(var(--b2b-tinte, 46 46 45));
+    color: rgb(var(--b2b-weiss, 255 255 255));
+    font-weight: 700;
+    text-decoration: none;
+    transition:
+      background-color 0.18s ease,
+      border-color 0.18s ease,
+      color 0.18s ease;
+  }
+  .b2b-teamband__cta:hover {
+    border-color: rgb(var(--b2b-akzent, 199 42 9));
+    background: rgb(var(--b2b-akzent, 199 42 9));
+    color: rgb(var(--b2b-weiss, 255 255 255));
+  }
+
+  @media screen and (max-width: 860px) {
+    .b2b-teamband__inhalt {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 24px;
+    }
+    .b2b-teamband__cta {
+      width: 100%;
+    }
+  }
+</style>

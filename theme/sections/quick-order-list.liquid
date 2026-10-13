@@ -33,12 +33,10 @@
     show_image: section.settings.show_image,
     show_sku: section.settings.show_sku
   %}
-{%- else -%}
-  <div class="quick-order-list-login-gate page-width section-{{ section.id }}-padding">
-    <a href="{{ routes.account_login_url }}" class="button button--secondary">
-      {{ 'products.product.price.login_to_see_price' | t }}
-    </a>
-  </div>
+{%- comment -%}
+  Fuer Gaeste bleibt hier nichts stehen: der Verweis steht nur am Preis,
+  damit die Produktseite nicht zweimal dasselbe Angebot zeigt.
+{%- endcomment -%}
 {%- endif -%}
 
 {% schema %}

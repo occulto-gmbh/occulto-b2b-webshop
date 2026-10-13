@@ -1,0 +1,21 @@
+{%- comment -%}
+  Gibt die Zahl der Packs im Warenkorb aus – ohne Einzelstücke.
+
+  Einzelstück ist ein Artikel mit dem Tag "einzelstueck", z. B. der
+  Ausstellungsständer: einzeln bestellbar statt in 5er-Packs, und er zählt
+  nicht zu den Schwellen "versandkostenfrei ab 300 Packs" und "−5 % ab 500
+  Packs". cart.item_count zählt ihn mit, deshalb dieser Zähler.
+
+  Gibt Text aus (render hat einen eigenen Gültigkeitsbereich): mit capture
+  auffangen und mit "plus: 0" zur Zahl machen, Vorbild b2b-korb-art.
+{%- endcomment -%}
+
+{%- liquid
+  assign packs = cart.item_count
+  for item in cart.items
+    if item.product.tags contains 'einzelstueck'
+      assign packs = packs | minus: item.quantity
+    endif
+  endfor
+  echo packs
+-%}

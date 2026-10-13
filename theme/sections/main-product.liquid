@@ -212,7 +212,7 @@
                   {{ block.settings.custom_liquid }}
                 {%- when 'collapsible_tab' -%}
                   <div class="product__accordion accordion quick-add-hidden" {{ block.shopify_attributes }}>
-                    <details id="Details-{{ block.id }}-{{ section.id }}">
+                    <details id="Details-{{ block.id }}-{{ section.id }}"{% if block.settings.b2b_offen %} open{% endif %}>
                       <summary>
                         <div class="summary__title">
                           {% render 'icon-accordion', icon: block.settings.icon %}
@@ -228,7 +228,13 @@
                       </div>
                     </details>
                   </div>
+                {%- when 'b2b_groessen' -%}
+                  <div {{ block.shopify_attributes }}>
+                    {% render 'b2b-groessen-bestellen', product: product %}
+                  </div>
                 {%- when 'quantity_selector' -%}
+                  {%- comment -%} Menge nur fuer Haendler - Gaeste haben keinen Kaufknopf. {%- endcomment -%}
+                  {%- if customer and customer.tags contains 'dealer-approved' -%}
                   <div
                     id="Quantity-Form-{{ section.id }}"
                     class="product-form__input product-form__quantity{% if settings.inputs_shadow_vertical_offset != 0 and settings.inputs_shadow_vertical_offset < 0 %} product-form__quantity-top{% endif %}"
@@ -278,14 +284,18 @@
                           name="quantity"
                           id="Quantity-{{ section.id }}"
                           data-cart-quantity="{{ cart_qty }}"
-                          data-min="{{ product.selected_or_first_available_variant.quantity_rule.min }}"
-                          min="{{ product.selected_or_first_available_variant.quantity_rule.min }}"
+                          {%- comment -%}
+                            5er-Packs wie in der Groessentabelle (snippets/quantity-input.liquid):
+                            Shopifys quantity_rule steht hier immer auf 1.
+                          {%- endcomment -%}
+                          data-min="5"
+                          min="5"
                           {% if product.selected_or_first_available_variant.quantity_rule.max != null %}
                             data-max="{{ product.selected_or_first_available_variant.quantity_rule.max }}"
                             max="{{ product.selected_or_first_available_variant.quantity_rule.max }}"
                           {% endif %}
-                          step="{{ product.selected_or_first_available_variant.quantity_rule.increment }}"
-                          value="{{ product.selected_or_first_available_variant.quantity_rule.min }}"
+                          step="5"
+                          value="5"
                           form="{{ product_form_id }}"
                         >
                         <button class="quantity__button" name="plus" type="button">
@@ -455,6 +465,7 @@
                       </volume-pricing>
                     {%- endif -%}
                   </div>
+                  {%- endif -%}
                 {%- when 'popup' -%}
                   <modal-opener
                     class="product-popup-modal__opener quick-add-hidden"
@@ -747,7 +758,18 @@
       -%}
 
       <script type="application/ld+json">
-        {{ product | structured_data }}
+        {%- comment -%}
+          structured_data enthaelt die Angebote samt Preis. Fuer Gaeste
+          faellt der Block deshalb ganz weg - sonst stuende der
+          Haendlerpreis im Quelltext, obwohl die Seite ihn verbirgt.
+
+          Kein Ersatz ohne Preis: ein Angebot ohne Preis ist fuer Google
+          unvollstaendig und bringt keine Rich Results. Und dieser Shop
+          soll ohnehin nicht ueber Produktpreise gefunden werden.
+        {%- endcomment -%}
+        {%- if customer and customer.tags contains 'dealer-approved' -%}
+          {{ product | structured_data }}
+        {%- endif -%}
       </script>
     </div>
   </product-component>
@@ -872,6 +894,11 @@
           "default": true
         }
       ]
+    },
+    {
+      "type": "b2b_groessen",
+      "name": "Größen bestellen (B2B)",
+      "limit": 1
     },
     {
       "type": "quantity_selector",
@@ -1020,6 +1047,12 @@
       "type": "collapsible_tab",
       "name": "t:sections.main-product.blocks.collapsible_tab.name",
       "settings": [
+        {
+          "type": "checkbox",
+          "id": "b2b_offen",
+          "default": false,
+          "label": "Von Anfang an aufgeklappt"
+        },
         {
           "type": "text",
           "id": "heading",
@@ -2290,6 +2323,27 @@
       "id": "hide_variants",
       "default": false,
       "label": "t:sections.main-product.settings.hide_variants.label"
+    },
+    {
+      "type": "header",
+      "content": "Hangtag (2. und 3. Bild)"
+    },
+    {
+      "type": "image_picker",
+      "id": "b2b_hangtag_vorne",
+      "label": "Hangtag Vorderseite"
+    },
+    {
+      "type": "image_picker",
+      "id": "b2b_hangtag_hinten",
+      "label": "Hangtag Rückseite"
+    },
+    {
+      "type": "text",
+      "id": "b2b_hangtag_ohne",
+      "label": "Ohne Hangtag bei",
+      "default": "Mütze, Adventskalender, Zusatzpaket",
+      "info": "Stichworte im Produkttitel, durch Komma getrennt. Alle anderen Produkte zeigen das Hangtag als 2. und 3. Bild."
     },
     {
       "type": "checkbox",

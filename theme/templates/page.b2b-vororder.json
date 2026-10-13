@@ -1,0 +1,57 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+/*
+ * Vororder-Maske.
+ *
+ * Seit dem 30.09.2026 keine Shopify-Bestellung mehr: der Abschnitt
+ * b2b-vororder-maske sammelt die Mengen im Browser und schickt sie als
+ * E-Mail-Anfrage ueber Shopifys Kontaktformular. Occulto bearbeitet sie von
+ * Hand und schreibt eine Rechnung.
+ *
+ * Damit entfaellt das Bestandsproblem: Shopify kuerzt nur, was durch den
+ * Warenkorb geht, und da geht hier nichts mehr durch.
+ *
+ * main-page ist abgeschaltet - der Abschnitt bringt Titel und Regeln mit.
+ *
+ * collection "all" ist Shopifys eigene Sammlung ueber alles, was im
+ * Online-Shop veroeffentlicht ist (108 Produkte). Achtung: "all" taucht in
+ * der Sammlungsauswahl des Theme-Editors nicht auf - wer die Einstellung
+ * dort anfasst, verliert sie.
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "disabled": true,
+      "settings": {
+        "padding_top": 36,
+        "padding_bottom": 0
+      }
+    },
+    "vororder": {
+      "type": "b2b-vororder-maske",
+      "settings": {
+        "titel": "Vororder abgeben",
+        "collection": "all",
+        "products_per_page": 50,
+        "mindestmenge": 100,
+        "mindestmenge_groesse": 5,
+        "mindestwert": 1500,
+        "rabatt_prozent": 10,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    }
+  },
+  "order": [
+    "main",
+    "vororder"
+  ]
+}

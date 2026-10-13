@@ -1,1 +1,6 @@
-{{ 'general.cart.view' | t: count: cart.item_count }}
+{%- comment -%}
+  Beschriftung des Hauptknopfs im Popup nach "In den Warenkorb". Er fuehrt
+  in den Warenkorb (Mindestbestellwert), heisst aber "Zur Kasse" - wie die
+  Knoepfe im Warenkorb selbst.
+{%- endcomment -%}
+Zur Kasse

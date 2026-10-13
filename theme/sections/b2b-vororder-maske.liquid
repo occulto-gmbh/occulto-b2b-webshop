@@ -1,0 +1,276 @@
+{%- comment -%}
+  Vororder – die Auswahl.
+
+  Eine Vororder ist KEINE Shopify-Bestellung. Sie hat einen eigenen Korb im
+  Browser (assets/b2b-vororder.js), die Übersicht dazu steht im Warenkorb
+  unter /cart (sections/b2b-vororder-korb.liquid), und von dort geht sie als
+  E-Mail-Anfrage an Occulto. Occulto schreibt dann von Hand eine Rechnung.
+
+  Warum nicht der Shopify-Warenkorb: Shopify kürzt dort jede Menge auf den
+  Lagerbestand, und eine Vororder bestellt Ware aus der nächsten Produktion,
+  die es heute noch gar nicht gibt.
+
+  Diese Seite sammelt nur. Absenden geht erst in der Übersicht – der
+  Händler soll sehen, was er anfragt, bevor es rausgeht.
+
+  Die Mengenregeln stehen hier in den Einstellungen und müssen zu denen in
+  sections/b2b-vororder-korb.liquid passen.
+{%- endcomment -%}
+
+{%- liquid
+  assign b2b_sichtbar = false
+  if customer and customer.tags contains 'dealer-approved'
+    assign b2b_sichtbar = true
+  endif
+
+  assign collection = collections[section.settings.collection]
+  assign mindestmenge = section.settings.mindestmenge
+  assign groesse = section.settings.mindestmenge_groesse
+  assign mindestwert = section.settings.mindestwert
+  assign satz = section.settings.rabatt_prozent
+-%}
+
+{{ 'b2b-vororder.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'b2b-vororder.js' | asset_url }}" defer="defer"></script>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="page-width section-{{ section.id }}-padding">
+  {%- unless b2b_sichtbar -%}
+    {% render 'b2b-freigabe-link', klasse: 'button button--primary' %}
+  {%- else -%}
+    <header class="b2b-vo-kopf">
+      <h1 class="b2b-vo-kopf__titel">{{ section.settings.titel | escape }}</h1>
+      <dl class="b2b-vo-kopf__regeln">
+        <div>
+          <dt>Rabatt</dt>
+          <dd>{{ satz }} % auf die ganze Vororder</dd>
+        </div>
+        <div>
+          <dt>Mindestmenge</dt>
+          <dd>{{ mindestmenge }} Packs je Artikel, alle Größen zusammen – je Größe ab {{ groesse }}</dd>
+        </div>
+        <div>
+          <dt>Mindestbestellwert</dt>
+          <dd>{{ mindestwert | times: 100 | money_without_trailing_zeros }} nach Rabatt</dd>
+        </div>
+        <div>
+          <dt>Versand</dt>
+          <dd>versandkostenfrei</dd>
+        </div>
+        <div>
+          <dt>Annahmeschluss</dt>
+          <dd>{% render 'b2b-vororder-termin' %}</dd>
+        </div>
+        <div>
+          <dt>Auslieferung</dt>
+          <dd>ab {% render 'b2b-vororder-termin', teil: 'lieferung' %}</dd>
+        </div>
+      </dl>
+      <p class="b2b-vo-kopf__hinweis">
+        Wähle hier aus, im Warenkorb siehst du die Übersicht und schickst die
+        Vororder ab. Sie ist eine Anfrage, keine Bestellung: du wirst nicht zur
+        Kasse geleitet, wir schicken dir eine Rechnung.
+      </p>
+    </header>
+
+    <div class="b2b-vo-leiste">
+      <label class="b2b-vo-leiste__suche">
+        <span class="visually-hidden">Produkte durchsuchen</span>
+        <input
+          type="search"
+          class="b2b-vo-leiste__feld"
+          placeholder="Suchen: Name oder Art.-Nr."
+          autocomplete="off"
+          data-vo-suche
+        >
+      </label>
+      <label class="b2b-vo-leiste__label" for="b2b-sort-{{ section.id }}">Sortieren nach</label>
+      <select class="b2b-vo-leiste__wahl" id="b2b-sort-{{ section.id }}">
+        <option value="standard">Reihenfolge des Katalogs</option>
+        <option value="name">Name A–Z</option>
+        <option value="preis-auf">Preis aufsteigend</option>
+        <option value="preis-ab">Preis absteigend</option>
+        <option value="art">Produktart</option>
+      </select>
+    </div>
+
+    {%- comment -%}
+      data-seiten und data-abschnitt: das Skript holt die übrigen Seiten nach,
+      damit Suche und Sortierung über das ganze Sortiment gehen.
+    {%- endcomment -%}
+    {% paginate collection.products by section.settings.products_per_page %}
+      <div
+        class="b2b-vo"
+        data-mindestmenge="{{ mindestmenge }}"
+        data-groesse="{{ groesse }}"
+        data-mindestwert="{{ mindestwert }}"
+        data-satz="{{ satz }}"
+        data-abschnitt="{{ section.id }}"
+        data-seiten="{{ paginate.pages }}"
+        data-seite="{{ paginate.current_page }}"
+      >
+        <div class="b2b-vo-liste">
+          {%- for product in collection.products -%}
+            {%- liquid
+              comment
+                Einzelstuecke (Ausstellungsstaender) gibt es nur als
+                Nachbestellung, ohne Mindestmenge je Artikel.
+              endcomment
+              if product.tags contains 'einzelstueck'
+                continue
+              endif
+              assign bild_url = ''
+              if product.featured_media
+                assign bild_url = product.featured_media | image_url: width: 128
+              endif
+              assign skus = product.variants | map: 'sku' | join: ' '
+            -%}
+            <article
+              class="b2b-vo-produkt"
+              data-name="{{ product.title | escape }}"
+              data-preis="{{ product.price_min }}"
+              data-art="{{ product.type | escape }}"
+              data-suche="{{ product.title | append: ' ' | append: product.type | append: ' ' | append: skus | downcase | escape }}"
+            >
+              <div class="b2b-vo-produkt__kopf">
+                {%- if product.featured_media -%}
+                  {{
+                    product.featured_media
+                    | image_url: width: 144
+                    | image_tag:
+                      loading: 'lazy',
+                      class: 'b2b-vo-produkt__bild',
+                      width: 72,
+                      height: 72
+                  }}
+                {%- else -%}
+                  <span class="b2b-vo-produkt__bild"></span>
+                {%- endif -%}
+                <div>
+                  <h2 class="b2b-vo-produkt__titel">{{ product.title | escape }}</h2>
+                  <p class="b2b-vo-produkt__preis">
+                    {%- render 'b2b-preis', preis: product.price_min, vororder: true, je_pack: true, uvp: product.compare_at_price_min, uvp_ab: product.compare_at_price_varies -%}
+                  </p>
+                  <p class="b2b-vo-produkt__stand" data-artikel-stand hidden></p>
+                </div>
+              </div>
+
+              <ul class="b2b-vo-varianten">
+                {%- for variant in product.variants -%}
+                  <li class="b2b-vo-variante">
+                    <span class="b2b-vo-variante__name">
+                      {{ variant.title | escape }}
+                      {%- if variant.sku != blank -%}
+                        <span class="b2b-vo-variante__sku">{{ variant.sku | escape }}</span>
+                      {%- endif -%}
+                    </span>
+                    {%- comment -%}
+                      Kein Lagerdeckel, kein "Ausverkauft": bestellt wird Ware
+                      aus der naechsten Produktion.
+                    {%- endcomment -%}
+                    <div
+                      class="b2b-vo-zahl"
+                      data-vo-zahl
+                      data-variante="{{ variant.id }}"
+                      data-artikel="{{ product.id }}"
+                      data-artikel-name="{{ product.title | escape }}"
+                      data-bezeichnung="{{ product.title | escape }} / {{ variant.title | escape }}"
+                      data-sku="{{ variant.sku | escape }}"
+                      data-preis="{{ variant.price }}"
+                      data-bild="{{ bild_url }}"
+                    >
+                      <button type="button" class="b2b-vo-zahl__knopf" data-minus aria-label="Weniger">&minus;</button>
+                      <input
+                        type="number"
+                        inputmode="numeric"
+                        min="0"
+                        step="5"
+                        value=""
+                        placeholder="0"
+                        aria-label="Menge in Packs für {{ product.title | escape }} {{ variant.title | escape }}"
+                      >
+                      <button type="button" class="b2b-vo-zahl__knopf" data-plus aria-label="Mehr">+</button>
+                    </div>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            </article>
+          {%- else -%}
+            <p>Aktuell sind keine Produkte für die Vororder verfügbar.</p>
+          {%- endfor -%}
+        </div>
+        <p class="b2b-vo-keine" data-vo-keine hidden>Kein Produkt passt zur Suche.</p>
+        {% render 'pagination', paginate: paginate %}
+      </div>
+    {%- endpaginate -%}
+
+    {%- comment -%}
+      Die Leiste unten. Bewusst nur eine Zeile: eine hoehere klebende Leiste
+      wuerde unten abgeschnitten. Absenden gehoert in die Uebersicht.
+    {%- endcomment -%}
+    <div class="b2b-vo-fuss" data-vo-leiste>
+      <p class="b2b-vo-fuss__stand" data-stand>Noch nichts ausgewählt.</p>
+      <a class="button b2b-vo-fuss__weiter ist-gesperrt" href="{{ routes.cart_url }}" data-weiter aria-disabled="true">
+        Zum Warenkorb
+      </a>
+    </div>
+  {%- endunless -%}
+</div>
+
+{% schema %}
+{
+  "name": "B2B-Vororder-Maske",
+  "limit": 1,
+  "settings": [
+    { "type": "text", "id": "titel", "default": "Vororder abgeben", "label": "Überschrift" },
+    { "type": "collection", "id": "collection", "label": "Sortiment" },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 10,
+      "max": 50,
+      "step": 5,
+      "default": 50,
+      "label": "Produkte je Seite"
+    },
+    { "type": "number", "id": "mindestmenge", "default": 100, "label": "Mindestmenge je Artikel (Packs, alle Größen zusammen)" },
+    { "type": "number", "id": "mindestmenge_groesse", "default": 5, "label": "Mindestmenge je Größe (Packs)" },
+    { "type": "number", "id": "mindestwert", "default": 1500, "label": "Mindestbestellwert in Euro (nach Rabatt)" },
+    { "type": "number", "id": "rabatt_prozent", "default": 10, "label": "Rabatt in Prozent" },
+    { "type": "header", "content": "Abstand" },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 36,
+      "label": "Oben"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 36,
+      "label": "Unten"
+    }
+  ],
+  "presets": [{ "name": "B2B-Vororder-Maske" }]
+}
+{% endschema %}

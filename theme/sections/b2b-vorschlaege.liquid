@@ -1,0 +1,331 @@
+{%- comment -%}
+  Produktvorschläge mit einem festen Artikel vorneweg – unten auf der
+  Produktseite und im Warenkorb.
+
+  Der feste Artikel (Einstellung "Immer vorschlagen", gedacht für den
+  Ausstellungsständer) steht immer an erster Stelle. Dahinter folgen Shopifys
+  eigene Empfehlungen: auf der Produktseite zum gezeigten Produkt, im
+  Warenkorb zum ersten Socken darin.
+
+  Ersetzt auf der Produktseite Dawns related-products, das keinen festen
+  Artikel kennt. Die Mechanik ist dieselbe: <product-recommendations> aus
+  global.js lädt diesen Abschnitt über die Empfehlungs-URL nach und tauscht
+  den Inhalt aus. Bis dahin – und wenn die Empfehlungen ausbleiben – steht
+  der feste Artikel schon da, weil er nicht von den Empfehlungen abhängt.
+
+  Ausgelassen werden: das gezeigte Produkt selbst, was schon im Warenkorb
+  liegt, und der Hilfsartikel für den Filialversand.
+
+  Falle: Beim Nachladen über die Empfehlungs-URL ist "product" leer, Liquid
+  weiß dann nicht, auf welcher Seite es steht. Deshalb blendet auf der
+  Produktseite des festen Artikels eine Regel außerhalb des ausgetauschten
+  Inhalts ihn aus, und ob nach dem Hineinlegen neu geladen wird, entscheidet
+  das Skript an der Adresse.
+{%- endcomment -%}
+
+{%- liquid
+  assign fest = section.settings.immer_vorschlagen
+
+  comment
+    Bezugsprodukt fuer Shopifys Empfehlungen. Im Warenkorb der erste
+    Socken - nicht der Staender und nicht der Hilfsartikel.
+  endcomment
+  assign bezug_id = blank
+  if product
+    assign bezug_id = product.id
+  else
+    for item in cart.items
+      if item.product.tags contains 'einzelstueck' or item.product.tags contains 'filialversand-zuschlag'
+        continue
+      endif
+      assign bezug_id = item.product_id
+      break
+    endfor
+  endif
+
+  comment
+    Ausschlussliste als ",id,id," - so trifft "contains" nur ganze IDs.
+  endcomment
+  assign raus = ','
+  if product
+    assign raus = raus | append: product.id | append: ','
+  endif
+  for item in cart.items
+    assign raus = raus | append: item.product_id | append: ','
+  endfor
+
+  comment
+    Im leeren Warenkorb nichts: dort steht nur die Vororder-Uebersicht, und
+    der Staender gehoert zur Nachbestellung. Beim Nachladen ist "product"
+    ebenfalls leer, daran erkennbar, dass Empfehlungen vorliegen.
+  endcomment
+  assign leerer_korb = false
+  if product == blank and recommendations.performed != true and cart.item_count == 0
+    assign leerer_korb = true
+  endif
+
+  assign fest_zeigen = false
+  if fest != blank and leerer_korb == false
+    assign fest_marke = ',' | append: fest.id | append: ','
+    unless raus contains fest_marke
+      assign fest_zeigen = true
+    endunless
+  endif
+
+  assign haendler = false
+  if customer and customer.tags contains 'dealer-approved'
+    assign haendler = true
+  endif
+
+  comment
+    Ein paar mehr anfragen, als gezeigt werden: einige fallen durch die
+    Ausschlussliste.
+  endcomment
+  assign anfrage = section.settings.products_to_show | plus: 3 | at_most: 10
+-%}
+
+{%- if bezug_id != blank or fest_zeigen or recommendations.performed -%}
+  {{ 'component-card.css' | asset_url | stylesheet_tag }}
+  {{ 'component-price.css' | asset_url | stylesheet_tag }}
+  {{ 'section-related-products.css' | asset_url | stylesheet_tag }}
+
+  {%- style -%}
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+      padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+    }
+    @media screen and (min-width: 750px) {
+      .section-{{ section.id }}-padding {
+        padding-top: {{ section.settings.padding_top }}px;
+        padding-bottom: {{ section.settings.padding_bottom }}px;
+      }
+    }
+  {%- endstyle -%}
+
+  {%- if product and fest != blank and product.id == fest.id -%}
+    <style>#b2b-vorschlaege-{{ section.id }} .b2b-vorschlaege__fest { display: none; }</style>
+  {%- endif -%}
+
+  {%- comment -%}
+    Ohne Bezugsprodukt (nur der Staender im Warenkorb) gibt es nichts
+    nachzuladen - dann ein schlichtes div, damit keine Anfrage ins Leere geht.
+  {%- endcomment -%}
+  {%- liquid
+    assign huelle = 'product-recommendations'
+    if bezug_id == blank and recommendations.performed != true
+      assign huelle = 'div'
+    endif
+  -%}
+  <div class="color-{{ section.settings.color_scheme }} gradient" id="b2b-vorschlaege-{{ section.id }}">
+    <{{ huelle }}
+      class="related-products b2b-vorschlaege page-width section-{{ section.id }}-padding isolate"
+      data-url="{{ routes.product_recommendations_url }}?limit={{ anfrage }}"
+      data-section-id="{{ section.id }}"
+      data-product-id="{{ bezug_id }}"
+    >
+      {%- liquid
+        comment
+          Auf der Seite des festen Artikels ist er ausgeblendet (Regel oben) -
+          dann zaehlt er nicht und traegt allein keine Ueberschrift.
+        endcomment
+        assign fest_sichtbar = fest_zeigen
+        if product and fest != blank and product.id == fest.id
+          assign fest_sichtbar = false
+        endif
+        assign gezeigt = 0
+        if fest_sichtbar
+          assign gezeigt = 1
+        endif
+      -%}
+      {%- if fest_sichtbar or recommendations.products_count > 0 -%}
+        <h2 class="related-products__heading inline-richtext {{ section.settings.heading_size }}">
+          {{ section.settings.heading }}
+        </h2>
+        <ul
+          class="grid product-grid grid--{{ section.settings.columns_desktop }}-col-desktop grid--{{ section.settings.columns_mobile }}-col-tablet-down"
+          role="list"
+        >
+          {%- if fest_zeigen -%}
+            <li class="grid__item b2b-vorschlaege__fest">
+              {% render 'card-product',
+                card_product: fest,
+                media_aspect_ratio: section.settings.image_ratio,
+                image_shape: 'default',
+                show_secondary_image: false,
+                show_vendor: false,
+                show_rating: false,
+                product_view_context: 'recommendation'
+              %}
+              {%- if haendler and fest.available -%}
+                {%- comment -%}
+                  Eigener Knopf statt Dawns Schnellkauf: der legt im Warenkorb
+                  zwar hinein, zeigt die neue Position aber erst nach dem
+                  Neuladen. Hier wird im Warenkorb neu geladen, anderswo
+                  bleibt man auf der Seite.
+                {%- endcomment -%}
+                <button
+                  type="button"
+                  class="button button--secondary button--full-width b2b-vorschlaege__knopf"
+                  data-vorschlag-variante="{{ fest.selected_or_first_available_variant.id }}"
+                >
+                  In den Warenkorb
+                </button>
+                <p class="b2b-vorschlaege__meldung" role="status" hidden></p>
+              {%- endif -%}
+            </li>
+          {%- endif -%}
+
+          {%- for vorschlag in recommendations.products -%}
+            {%- liquid
+              if gezeigt >= section.settings.products_to_show
+                break
+              endif
+              assign marke = ',' | append: vorschlag.id | append: ','
+              if raus contains marke
+                continue
+              endif
+              if fest != blank and vorschlag.id == fest.id
+                continue
+              endif
+              if vorschlag.tags contains 'filialversand-zuschlag'
+                continue
+              endif
+              assign gezeigt = gezeigt | plus: 1
+            -%}
+            <li class="grid__item">
+              {% render 'card-product',
+                card_product: vorschlag,
+                media_aspect_ratio: section.settings.image_ratio,
+                image_shape: 'default',
+                show_secondary_image: false,
+                show_vendor: false,
+                show_rating: false,
+                product_view_context: 'recommendation'
+              %}
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </{{ huelle }}>
+  </div>
+
+  {%- if haendler and fest_zeigen -%}
+    <script>
+      (function () {
+        /* Am Dokument, weil product-recommendations den Inhalt austauscht. */
+        if (window.b2bVorschlagKnopf) return;
+        window.b2bVorschlagKnopf = true;
+        document.addEventListener('click', function (e) {
+          var knopf = e.target.closest('[data-vorschlag-variante]');
+          if (!knopf) return;
+          var meldung = knopf.nextElementSibling;
+          knopf.disabled = true;
+          fetch('{{ routes.cart_add_url }}.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({
+              items: [{ id: parseInt(knopf.dataset.vorschlagVariante, 10), quantity: 1 }],
+              sections: 'cart-icon-bubble'
+            })
+          })
+            .then(function (antwort) { return antwort.json().then(function (d) { return { ok: antwort.ok, d: d }; }); })
+            .then(function (r) {
+              if (r.ok && location.pathname.indexOf('{{ routes.cart_url }}') === 0) {
+                location.reload();
+                return;
+              }
+              meldung.hidden = false;
+              if (!r.ok) {
+                meldung.textContent = r.d.description || r.d.message || 'Das hat nicht geklappt. Bitte versuch es noch einmal.';
+                knopf.disabled = false;
+                return;
+              }
+              meldung.innerHTML = '✓ Im Warenkorb · <a href="{{ routes.cart_url }}">Zum Warenkorb</a>';
+              var blase = document.getElementById('cart-icon-bubble');
+              if (blase && r.d.sections && r.d.sections['cart-icon-bubble']) {
+                var neu = new DOMParser().parseFromString(r.d.sections['cart-icon-bubble'], 'text/html').querySelector('.shopify-section');
+                if (neu) blase.innerHTML = neu.innerHTML;
+              }
+              knopf.disabled = false;
+            })
+            .catch(function () {
+              meldung.hidden = false;
+              meldung.textContent = 'Keine Verbindung. Bitte versuch es noch einmal.';
+              knopf.disabled = false;
+            });
+        });
+      })();
+    </script>
+  {%- endif -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "B2B-Vorschläge",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    { "type": "inline_richtext", "id": "heading", "default": "Passt dazu", "label": "Überschrift" },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        { "value": "h2", "label": "Klein" },
+        { "value": "h1", "label": "Mittel" }
+      ],
+      "default": "h2",
+      "label": "Größe der Überschrift"
+    },
+    {
+      "type": "product",
+      "id": "immer_vorschlagen",
+      "label": "Immer vorschlagen",
+      "info": "Steht immer an erster Stelle, z. B. der Ausstellungsständer. Fehlt, wenn er schon im Warenkorb liegt."
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 5,
+      "label": "Anzahl Produkte"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 5,
+      "label": "Spalten am Computer"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "2",
+      "label": "Spalten am Handy"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "options": [
+        { "value": "adapt", "label": "Wie das Bild" },
+        { "value": "portrait", "label": "Hochformat" },
+        { "value": "square", "label": "Quadrat" }
+      ],
+      "default": "adapt",
+      "label": "Bildformat"
+    },
+    { "type": "color_scheme", "id": "color_scheme", "label": "Farbschema", "default": "scheme-1" },
+    { "type": "header", "content": "Abstand" },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 36, "label": "Oben" },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 44, "label": "Unten" }
+  ],
+  "presets": [{ "name": "B2B-Vorschläge" }]
+}
+{% endschema %}

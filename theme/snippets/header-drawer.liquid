@@ -60,6 +60,7 @@
                                   <a
                                     id="HeaderDrawer-{{ link.handle }}-{{ childlink.handle }}"
                                     href="{{ childlink.url }}"
+                                    {% if childlink.url contains '.pdf' %}target="_blank" rel="noopener"{% endif %}
                                     class="menu-drawer__menu-item link link--text list-menu__item focus-inset{% if childlink.current %} menu-drawer__menu-item--active{% endif %}"
                                     {% if childlink.current %}
                                       aria-current="page"
@@ -104,6 +105,7 @@
                                             <a
                                               id="HeaderDrawer-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
                                               href="{{ grandchildlink.url }}"
+                                              {% if grandchildlink.url contains '.pdf' %}target="_blank" rel="noopener"{% endif %}
                                               class="menu-drawer__menu-item link link--text list-menu__item focus-inset{% if grandchildlink.current %} menu-drawer__menu-item--active{% endif %}"
                                               {% if grandchildlink.current %}
                                                 aria-current="page"
@@ -127,6 +129,7 @@
                     <a
                       id="HeaderDrawer-{{ link.handle }}"
                       href="{{ link.url }}"
+                      {% if link.url contains '.pdf' %}target="_blank" rel="noopener"{% endif %}
                       class="menu-drawer__menu-item list-menu__item link link--text focus-inset{% if link.current %} menu-drawer__menu-item--active{% endif %}"
                       {% if link.current %}
                         aria-current="page"
@@ -136,7 +139,40 @@
                     </a>
                   {%- endif -%}
                 </li>
+                {%- comment -%}
+                  Ein Menuepunkt, der nicht aus dem Shop-Menue kommt. Menues lassen
+                  sich nur in der Verwaltung pflegen; dieser steht in den
+                  Einstellungen des Kopfes und sitzt an der Stelle, die dort
+                  hinterlegt ist.
+                {%- endcomment -%}
+                {%- assign b2b_zeigen = false -%}
+                {%- if section.settings.b2b_link_label != blank and section.settings.b2b_link_url != blank -%}
+                  {%- if link.title == section.settings.b2b_link_nach -%}
+                    {%- assign b2b_zeigen = true -%}
+                  {%- elsif forloop.last -%}
+                    {%- assign gefunden = false -%}
+                    {%- for pruef in section.settings.menu.links -%}
+                      {%- if pruef.title == section.settings.b2b_link_nach -%}
+                        {%- assign gefunden = true -%}
+                      {%- endif -%}
+                    {%- endfor -%}
+                    {%- unless gefunden -%}
+                      {%- assign b2b_zeigen = true -%}
+                    {%- endunless -%}
+                  {%- endif -%}
+                {%- endif -%}
+                {%- if b2b_zeigen -%}
+                  <li>
+                    <a
+                      href="{{ section.settings.b2b_link_url }}"
+                      class="menu-drawer__menu-item list-menu__item link link--text focus-inset"
+                    >
+                      <span>{{ section.settings.b2b_link_label | escape }}</span>
+                    </a>
+                  </li>
+                {%- endif -%}
               {%- endfor -%}
+
             </ul>
           </nav>
           <div class="menu-drawer__utility-links">

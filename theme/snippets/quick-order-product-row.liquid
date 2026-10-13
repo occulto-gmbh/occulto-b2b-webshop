@@ -14,19 +14,24 @@
     <div class="product-item__title--wrapper">
       <div class="variant-item__media">
         <div class="variant-item__image-container gradient global-media-settings">
+          {%- comment -%}
+            72px statt 36: in der Vororder-Maske ist das Produktbild die
+            einzige Orientierung ueber 108 Artikel hinweg, und bei 36px
+            waren die Kaestchen so klein, dass sie leer wirkten.
+          {%- endcomment -%}
           {%- if image -%}
-            {%- assign img_height = 36 | divided_by: image.aspect_ratio | ceil -%}
+            {%- assign img_height = 72 | divided_by: image.aspect_ratio | ceil -%}
             {{
               image
-              | image_url: width: 72
+              | image_url: width: 144
               | image_tag:
                 loading: 'lazy',
                 fetchpriority: 'low',
                 decoding: 'async',
                 class: 'variant-item__image',
-                width: 36,
+                width: 72,
                 height: img_height,
-                widths: '72',
+                widths: '72, 144',
                 alt: image.alt
               | escape
             }}

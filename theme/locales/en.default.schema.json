@@ -2796,6 +2796,9 @@
         "name": "Bulk order"
       }
     },
+    "cart-branch-split": {
+      "name": "Branch split (cart)"
+    },
     "csv-order": {
       "name": "Bulk order (CSV)",
       "presets": {
@@ -2828,6 +2831,18 @@
         },
         "button_style_secondary": {
           "label": "Use secondary button style"
+        },
+        "media_overline": {
+          "label": "Image: overline"
+        },
+        "media_heading": {
+          "label": "Image: heading"
+        },
+        "media_button_label": {
+          "label": "Image: button label"
+        },
+        "media_link": {
+          "label": "Image: link (whole image clickable)"
         }
       },
       "presets": {

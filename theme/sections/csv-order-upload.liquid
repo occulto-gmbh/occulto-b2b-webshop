@@ -58,6 +58,21 @@
         <p data-csv-order-status class="csv-order-upload__status caption-large"></p>
         <div data-csv-order-results class="csv-order-upload__results"></div>
       </csv-order-upload>
+
+      {%- comment -%}
+        Die Massenbestellung legt Lagerware in den Warenkorb (Nachbestellung).
+        Wer Ware aus der naechsten Produktion will, gehoert in die Vororder.
+      {%- endcomment -%}
+      <div class="b2b-status b2b-vo-verweis">
+        <p class="b2b-status__titel">Ware aus der nächsten Produktion?</p>
+        <p class="b2b-status__text">
+          Dann bestell über die Vororder: &minus;10&nbsp;% auf alles, versandkostenfrei.
+          Annahmeschluss {% render 'b2b-vororder-termin' %}, Auslieferung ab {% render 'b2b-vororder-termin', teil: 'lieferung' %}.
+        </p>
+        <p class="b2b-status__knoepfe">
+          <a class="button button--secondary" href="/pages/vororder">Zur Vororder</a>
+        </p>
+      </div>
     </div>
   </div>
 {%- endif -%}

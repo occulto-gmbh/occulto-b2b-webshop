@@ -1,0 +1,768 @@
+{%- comment -%}
+  Designsystem der B2B-Landingpage: Farben, Ueberschriften, Knoepfe, Hover und
+  Bewegung an einer Stelle.
+
+  Quelle der Marke: "Brand Guidelines 2027", Kapitel 04 Typografie und 05
+  Farbpalette. Abgeschrieben, nicht abgeleitet.
+
+    Farben   #000000  #2e2e2d  #ffffff  #f6f6f6  Neutrale Basis
+             #c72a09                             Akzent, gezielt und sparsam
+
+    Schrift  Primaer: Basic Sans (Adobe Fonts, Kit wdu6knh)
+             Headlines      Black
+             Subline/Info   Medium
+             Fliesstext     Regular
+             CAPS gern fuer Statements
+
+  ACHTUNG ZUM KIT: wdu6knh liefert Basic Sans nur in 400 und 700. Black und
+  Medium fehlen. Die Regeln fordern trotzdem 900 und 500 an - der Browser
+  nimmt heute 700 bzw. 400, und sobald die Schnitte in Adobe Fonts ergaenzt
+  sind, greifen sie von selbst.
+
+  DREI ENTSCHEIDUNGEN, die das Bild der Seite bestimmen:
+
+  1. Ein Kopfmuster fuer jeden Abschnitt: rotes Label, sehr grosse Headline in
+     Versalien, ruhige Subline. Wer scrollt, weiss nach einer halben Sekunde,
+     worum es geht.
+
+  2. Ein Knopfstil fuer Handlungen: dunkel gefuellt, im Hover rot. Verschiedene
+     Knoepfe je Abschnitt lassen die Seite zusammengestueckelt wirken.
+
+  3. Rot nur deckend. Transparente Abstufungen von #c72a09 wirken orange und
+     nicht wie die Marke. Flaechen sind deshalb neutral grau, Rot bleibt Linie,
+     Punkt, Symbol oder Knopf.
+
+  Eingebunden vom Abschnitt `punktnav`, dem letzten der Seite: die Abschnitte
+  bringen ihr CSS selbst mit, und bei gleicher Spezifitaet gewinnt das
+  spaetere.
+{%- endcomment -%}
+<style>
+  :root {
+    /* --- Aus den Guidelines --- */
+    --b2b-schwarz: 0 0 0;
+    --b2b-tinte: 46 46 45;
+    --b2b-weiss: 255 255 255;
+    --b2b-hell: 246 246 246;
+    --b2b-akzent: 199 42 9;
+
+    /* --- Abgeleitet, nicht aus den Guidelines ---
+       Die Palette kennt nur sehr hell und sehr dunkel. Trennlinien und der
+       Untergrund der Produktbilder brauchen Zwischenstufen; beide sind
+       neutrale Abstufungen von #2e2e2d. */
+    --b2b-linie: 226 226 225;
+    --b2b-warengrund: 207 207 206;
+
+    /* Ein Mass fuer den Abstand zwischen Kopf und Inhalt. */
+    --b2b-kopfabstand: clamp(28px, 3vw, 44px);
+  }
+
+  /* ====================================================================
+     1. ABSCHNITTSKOPF
+     ================================================================== */
+
+  /* Label: klein, fett, Versalien, Akzent. Steht ueber der Headline und sagt
+     in zwei Worten, worum es geht. */
+  .b2b-label,
+  main .section-header .prose .h6,
+  main .shopify-section--faq .h6 {
+    display: block;
+    margin: 0 0 10px;
+    color: rgb(var(--b2b-akzent));
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  /* Headline: das Statement des Abschnitts. Versalien laut Guidelines, sehr
+     gross, damit der Abschnitt ohne Lesen erkennbar ist. */
+  main h1,
+  main h2,
+  main .b2b-ablauf__titel,
+  main .b2b-angebot__titel,
+  main .b2b-anlaesse__titel,
+  main .b2b-geschichten__titel,
+  main .b2b-team__titel,
+  main .faq h2,
+  main h2.h2 {
+    margin-top: 0;
+    color: rgb(var(--b2b-tinte));
+    font-family: var(--font-heading-family, Helvetica, Arial, sans-serif);
+    font-size: clamp(28px, 4.6vw, 62px);
+    font-weight: 900;
+    line-height: 0.98;
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+
+  main h3 {
+    color: rgb(var(--b2b-tinte));
+    font-family: var(--font-heading-family, Helvetica, Arial, sans-serif);
+    font-size: clamp(19px, 1.6vw, 23px);
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  .b2b-karussell__bildtext {
+    font-weight: 500;
+  }
+
+  /* ====================================================================
+     2. KNOEPFE
+     ================================================================== */
+
+  main .b2b-ablauf__cta,
+  main .b2b-teamband__cta,
+  main .button {
+    border-radius: var(--button-border-radius, 6px);
+    font-weight: 700;
+    text-decoration: none;
+    transition:
+      background-color 0.18s ease,
+      border-color 0.18s ease,
+      color 0.18s ease;
+  }
+
+  /* Dunkel gefuellt: die Hauptaktion eines Abschnitts. */
+  main .b2b-ablauf__cta,
+  main .b2b-teamband__cta {
+    border: 1px solid rgb(var(--b2b-tinte));
+    background: rgb(var(--b2b-tinte));
+    color: rgb(var(--b2b-weiss));
+  }
+
+  main .b2b-ablauf__cta:hover,
+  main .b2b-teamband__cta:hover {
+    border-color: rgb(var(--b2b-akzent));
+    background: rgb(var(--b2b-akzent));
+    color: rgb(var(--b2b-weiss));
+  }
+
+  /* ====================================================================
+     3. AKZENT - eine Logik fuer die ganze Seite
+     Rot heisst Aktion, Auswahl, Fortschritt oder Orientierung. Immer deckend,
+     nie als Flaeche, nie transparent.
+     ================================================================== */
+
+  main .slideshow .button:hover,
+  main .slideshow .button:focus-visible {
+    background-image: none;
+    background-color: rgb(var(--b2b-akzent));
+    border-color: rgb(var(--b2b-akzent));
+    color: rgb(var(--b2b-weiss));
+  }
+
+  .slideshow__next-section-button:hover,
+  .slideshow__next-section-button:focus-visible {
+    color: rgb(var(--b2b-akzent));
+    border-color: rgb(var(--b2b-akzent));
+  }
+
+  /* Partner: duenne Linie als Abschluss des Logobands. */
+  .b2b-partner::after {
+    content: '';
+    display: block;
+    width: 56px;
+    height: 2px;
+    margin: 28px auto 0;
+    background: rgb(var(--b2b-akzent));
+  }
+
+  /* Ablauf: laufender Schritt, Strecke, Schrittnummern. Ring statt Schleier. */
+  .b2b-ablauf__schritt.ist-aktiv .b2b-ablauf__kreis {
+    border-color: rgb(var(--b2b-akzent));
+    border-width: 2px;
+  }
+
+  .b2b-ablauf__fortschritt {
+    background: rgb(var(--b2b-akzent));
+  }
+
+  .b2b-ablauf__nummer {
+    background: rgb(var(--b2b-akzent));
+    color: rgb(var(--b2b-weiss));
+  }
+
+  .b2b-karussell__pfeil:hover:not(:disabled) {
+    background: rgb(var(--b2b-akzent));
+    color: rgb(var(--b2b-weiss));
+  }
+
+  /* Anlaesse: voller Ring statt Schleier. */
+  .b2b-anlass:hover .b2b-anlass__rahmen {
+    box-shadow: 0 0 0 3px rgb(var(--b2b-akzent));
+  }
+
+  .b2b-siegel__text strong {
+    color: rgb(var(--b2b-akzent));
+  }
+
+  /* Team: neutraler Grund, Buchstabe im Akzent - kein Rotschleier. */
+  .b2b-person__bild {
+    border-color: rgb(var(--b2b-linie));
+    background: rgb(var(--b2b-hell));
+    color: rgb(var(--b2b-akzent));
+  }
+
+  main details[open] > summary {
+    color: rgb(var(--b2b-akzent));
+  }
+
+  .b2b-kontakt__knopf:hover {
+    background: rgb(var(--b2b-akzent));
+  }
+
+
+  /* Flaechen bleiben neutral. */
+  .b2b-anlass__rahmen,
+  .b2b-karussell__element--bild .b2b-karussell__bild {
+    background: rgb(var(--b2b-warengrund));
+  }
+
+  /* ====================================================================
+     4. HOVER - ueberall dieselbe Antwort
+     ================================================================== */
+
+  /* Karten bekommen beim Ueberfahren eine rote Linie unter dem Bild. */
+  .b2b-karussell__element--bild .b2b-karussell__bild {
+    position: relative;
+  }
+
+  .b2b-karussell__element--bild .b2b-karussell__bild::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: rgb(var(--b2b-akzent));
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  .b2b-karussell__element--bild:hover .b2b-karussell__bild::after {
+    transform: scaleX(1);
+  }
+
+  /* Textlinks bekommen einen Akzentstrich, der aufzieht. */
+  .b2b-teamband__weg,
+  .b2b-person__link {
+    background-image: linear-gradient(rgb(var(--b2b-akzent)), rgb(var(--b2b-akzent)));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0 2px;
+  }
+
+  .b2b-teamband__weg:hover,
+  .b2b-person__link:hover {
+    background-size: 100% 2px;
+    opacity: 1;
+  }
+
+  main a:focus-visible,
+  main button:focus-visible,
+  main summary:focus-visible {
+    outline: 2px solid rgb(var(--b2b-akzent));
+    outline-offset: 3px;
+  }
+
+  /* ====================================================================
+     5. BEWEGUNG - ruhig und knapp
+     ================================================================== */
+
+  @media (prefers-reduced-motion: no-preference) {
+    .slideshow__next-section-button {
+      animation: b2b-wink 2.8s ease-in-out infinite;
+      transition:
+        color 0.2s ease,
+        border-color 0.2s ease;
+    }
+
+    .b2b-karussell__element--bild .b2b-karussell__bild::after {
+      transition: transform 0.3s ease;
+    }
+
+    .b2b-teamband__weg,
+    .b2b-person__link {
+      transition:
+        background-size 0.3s ease,
+        opacity 0.2s ease;
+    }
+
+    .b2b-karussell__element--bild .b2b-karussell__bild img,
+    .b2b-anlass__bild {
+      transition: transform 0.45s ease;
+    }
+
+    .b2b-karussell__element--bild:hover .b2b-karussell__bild img {
+      transform: scale(1.04);
+    }
+
+    /* Einblenden beim Scrollen, einmalig. Kann der Browser keine
+       Scroll-Zeitachse, steht alles einfach da. */
+    @supports (animation-timeline: view()) {
+      .b2b-ablauf,
+      .b2b-angebot,
+      .b2b-anlaesse,
+      .b2b-geschichten,
+      .b2b-team,
+      .b2b-siegel {
+        animation: b2b-auftauchen linear both;
+        animation-timeline: view();
+        animation-range: entry 10% entry 55%;
+      }
+    }
+  }
+
+  /* Silbentrennung nur auf schmalen Schirmen: dort stehen die Spalten unter-
+     einander und lange Komposita wie KUNDENGESCHICHTEN passen sonst nicht.
+     In den schmalen Seitenspalten am Schreibtisch zerlegte sie Woerter in
+     drei Zeilen - deshalb dort aus. */
+  @media screen and (max-width: 700px) {
+    main h1,
+    main h2 {
+      hyphens: auto;
+    }
+  }
+
+  @keyframes b2b-wink {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(6px);
+    }
+  }
+
+  @keyframes b2b-auftauchen {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+
+  /* Mehr Luft zwischen den Abschnitten: 64 Bildpunkte wirkten gedraengt. */
+  main .section-spacing {
+    padding-block: clamp(56px, 6vw, 104px);
+  }
+
+  /* Seitenrand. Im Hauptshop bringt das Theme sowohl die Klasse .container
+     als auch die Variable --container-gutter mit, hier keines von beidem.
+     Die Werte sind am Livestand gemessen: 20 Bildpunkte auf dem Handy,
+     32 ab 700, 48 ab 1000. Die Variable steht auch fuer sich: der
+     Kontaktstreifen holt sich seinen Seitenabstand direkt daraus. */
+  main {
+    --container-gutter: 20px;
+  }
+
+  main .container {
+    margin-inline: var(--container-gutter);
+  }
+
+  @media screen and (min-width: 700px) {
+    main {
+      --container-gutter: 32px;
+    }
+  }
+
+  @media screen and (min-width: 1000px) {
+    main {
+      --container-gutter: 48px;
+    }
+  }
+
+  /* ====================================================================
+     6. HERO-KNOEPFE
+     ================================================================== */
+
+  /* Derselbe Radius wie alle anderen Knoepfe statt der Pillenform des Themes. */
+  main .slideshow .button,
+  main .slideshow-carousel .button {
+    border-radius: var(--button-border-radius, 6px);
+  }
+
+  /* ====================================================================
+     PUNKTNAVIGATION
+     Keine Raender mehr, sondern gefuellte Punkte: der Ring wirkte hart und
+     passte zu nichts anderem auf der Seite. Beim Ueberfahren waechst der
+     Punkt unter dem Zeiger, seine direkten Nachbarn etwas weniger - wie in
+     der Leiste unten am Mac. Das macht das Ziel groesser und zeigt, dass die
+     Leiste bedienbar ist.
+     ================================================================== */
+
+  /* Die Beschriftung steht ausserhalb des Flusses. Sonst bestimmt ihre
+     Zeilenhoehe die Hoehe der Zeile - die Punkte sassen dann in 21 statt 9
+     Bildpunkten hohen Zeilen, und die Linie liess sich nicht mehr sauber von
+     Mittelpunkt zu Mittelpunkt ziehen. Nebenbei loest das den zweiten
+     Punkt: beim Ueberfahren waechst der Punkt um gut 8 Bildpunkte nach
+     links, 24 Abstand lassen ihm Platz. */
+  .b2b-punktnav a {
+    position: relative;
+    gap: 0;
+  }
+
+  .b2b-punktnav__label {
+    position: absolute;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .b2b-punktnav__punkt {
+    width: 9px;
+    height: 9px;
+    border: 0;
+    border-radius: 50%;
+    background: rgb(var(--b2b-warengrund));
+    /* Um die eigene Mitte wachsen, nicht vom rechten Rand aus: sonst
+       wandert der vergroesserte Punkt nach links von der Linie herunter. */
+    transform-origin: center center;
+  }
+
+  .b2b-punktnav a:hover .b2b-punktnav__punkt,
+  .b2b-punktnav a:focus-visible .b2b-punktnav__punkt {
+    background: rgb(var(--b2b-akzent));
+    transform: scale(1.9);
+  }
+
+  /* Die beiden Nachbarn des gehoverten Punkts gehen leicht mit. */
+  .b2b-punktnav li:has(+ li > a:hover) .b2b-punktnav__punkt,
+  .b2b-punktnav li:has(> a:hover) + li .b2b-punktnav__punkt {
+    transform: scale(1.4);
+  }
+
+  .b2b-punktnav a.ist-aktiv .b2b-punktnav__punkt {
+    background: rgb(var(--b2b-akzent));
+    transform: scale(1.5);
+  }
+
+  .b2b-punktnav a.ist-aktiv:hover .b2b-punktnav__punkt {
+    transform: scale(1.9);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .b2b-punktnav__punkt {
+      transition:
+        transform 0.18s cubic-bezier(0.2, 0.9, 0.3, 1.2),
+        background-color 0.18s ease;
+    }
+  }
+  /* ====================================================================
+     8. DIE SPUR
+     Die Punkte standen lose untereinander. Jetzt verbindet sie eine duenne
+     Linie, die sich beim Scrollen von oben nach unten rot fuellt - der
+     Leser sieht auf einen Blick, wie weit er ist und dass es weitergeht.
+     Die Fuellung haengt an der Scrollposition des Dokuments, nicht an
+     einem Zeitgeber: sie laeuft vor und zurueck, genau wie das Rad.
+     ================================================================== */
+
+  .b2b-punktnav ul {
+    position: relative;
+    gap: 22px;
+    padding: 8px 0;
+  }
+
+  /* Die ruhende Linie. Sie sitzt unter den Mittelpunkten der Punkte:
+     die sind 9 breit und rechts buendig, die Mitte liegt also bei 4,5. */
+  /* Der helle Saum liegt auf der ganzen Leiste, nicht auf den einzelnen
+     Punkten: ein Ring je Punkt schnitt die Linie in Stuecke und sie wirkte
+     gestrichelt. drop-shadow umrandet Linie und Punkte als eine Form, also
+     nur aussen herum. Gebraucht wird der Saum auf dem fast schwarzen Hero,
+     wo eine helle Linie sonst verschwindet. */
+  .b2b-punktnav ul {
+    filter: drop-shadow(0 0 1px rgb(var(--b2b-weiss) / 0.85));
+  }
+
+  /* Die Linie laeuft von Mittelpunkt zu Mittelpunkt, nicht ueber die ganze
+     Liste: 8 Bildpunkte Innenabstand plus der halbe Punkt sind 12,5. */
+  .b2b-punktnav ul::before,
+  .b2b-punktnav ul::after {
+    content: '';
+    position: absolute;
+    right: 3.5px;
+    top: 12.5px;
+    bottom: 12.5px;
+    width: 2px;
+    border-radius: 1px;
+  }
+
+  .b2b-punktnav ul::before {
+    background: rgb(var(--b2b-warengrund));
+  }
+
+  /* Die Fuellung. Der Anteil kommt als Variable aus dem Skript der Leiste,
+     nicht aus animation-timeline: scroll(). Grund: die Leiste ist fixiert,
+     und auf einem fixierten Element tickt die Scroll-Zeitachse in Chromium
+     nicht mit - gemessen, sie fror beim Anteil des ersten Bildaufbaus ein.
+     Ohne Skript steht die Variable auf 0 und nur die ruhende Linie ist da. */
+  .b2b-punktnav ul::after {
+    background: rgb(var(--b2b-akzent));
+    transform: scaleY(var(--b2b-fortschritt, 0));
+    transform-origin: top center;
+  }
+
+  /* Die Punkte gehoeren ueber die Linie und muessen deckend sein, sonst
+     schimmert die rote Fuellung durch sie hindurch. */
+  .b2b-punktnav__punkt {
+    position: relative;
+    z-index: 1;
+  }
+
+
+
+
+  /* ====================================================================
+     8b. DIE ZWEITE ZEILE IM HERO
+     Die Ueberschrift im Hero ist ein Absatz in Ueberschriftgroesse, kein h1.
+     Der Zusatz haengt als zweite Zeile darin, weil der Abschnitt nur zwei
+     Textfelder kennt - Unterzeile ueber der Ueberschrift, Ueberschrift - und
+     die Unterzeile bereits den Preis traegt.
+
+     WARUM em UND KEINE EIGENE KLASSE
+     Das Feld ist ein inline_richtext. Shopify prueft es beim Hochladen und
+     lehnt <br> und jedes class-Attribut ab; die oertliche Vorschau zeigt
+     beides trotzdem an, der Push scheitert dann aber. Erlaubt sind nur
+     wenige Tags, darunter <em>. Das display:block darin erzeugt den
+     Umbruch, und als Ziel reicht die Verschachtelung.
+
+     Er muss deutlich leichter sein als die Ueberschrift: in deren Groesse
+     gelesen waere es keine Ergaenzung mehr, sondern eine zweite Ansage.
+     ================================================================== */
+
+  /* Jede Zeile der Ueberschrift ein Block: der Umbruch ist gesetzt und nicht
+     der Zeilenbreite ueberlassen.
+
+     margin: 0 ist noetig - das Theme gibt Absatzkindern 20 Bildpunkte mit,
+     und die stehen bei zwei Zeilen derselben Ueberschrift mitten drin.
+     Die knappe Zeilenhoehe zieht die beiden Zeilen zusaetzlich zusammen:
+     bei dieser Schriftgroesse traegt schon 0.95 genug Luft. */
+  main > .shopify-section[id$='__hero'] p.h1 strong {
+    display: block;
+    margin: 0;
+    line-height: 0.95;
+  }
+
+  /* Ohne Breitenbegrenzung: die Zeile soll in einer Zeile stehen. Auf
+     schmalen Schirmen bricht sie von selbst, das ist in Ordnung.
+
+     Kraeftiger als der Rest des Fliesstexts, weil sie das Angebot traegt -
+     kostenlos und unverbindlich ist das Argument der ganzen Seite.
+
+     Die Obergrenze von 22 ist gemessen, nicht gegriffen: der Textrahmen im
+     Hero ist 700 Bildpunkte breit, und bei 24 braeuchte die Zeile 718 und
+     braeche um. Bei 22 sind es 658. */
+  main > .shopify-section[id$='__hero'] p.h1 em {
+    display: block;
+    margin-top: 20px;
+    font-size: clamp(17px, 1.8vw, 22px);
+    font-style: normal;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  /* ====================================================================
+     9. DER UEBERGANG ZWISCHEN DEN ABSCHNITTEN
+
+     Ein Abschnitt bleibt stehen, waehrend der naechste von unten
+     heraufkommt. Steht er an, loest sich der stehende und beide wandern
+     gemeinsam weiter. So taucht ein Abschnitt nach dem anderen auf, statt
+     dass alle in einem festen Band vorbeiziehen.
+
+     Zwei Zutaten: eine Buehne, die hoeher ist als der Inhalt, und ein
+     Inhalt, der darin klebt. Der Ueberschuss ist der Laufweg - der Weg, den
+     man scrollt, waehrend der Inhalt steht.
+
+     DER NACHRUECKENDE KANN NICHT DARUNTER RUTSCHEN
+     Das war die Sorge beim ersten Anlauf und sie war unbegruendet. Beide
+     Abschnitte sind Geschwister im Fluss: die Oberkante des naechsten sitzt
+     an der Unterkante der Buehne, und das klebende Kind darf die Buehne
+     nicht verlassen. Der Abstand zwischen beiden ist immer der Rest des
+     Laufwegs und wird genau dann null, wenn das Kleben endet. Nachgemessen
+     ueber alle Abschnitte: nie kleiner als null.
+
+     Deshalb ist der Laufweg frei waehlbar und nicht durch den Platz unter
+     dem Inhalt begrenzt. Er ist fuer alle gleich lang - ein Abschnitt soll
+     sich nicht laenger anfuehlen als der andere, nur weil er kuerzer ist.
+
+     WO DER INHALT STEHT
+     Immer gleich weit unter der Kopfzeile, nicht direkt daran. Eine
+     Ueberschrift, die an der Navigationsleiste klebt, wirkt angeschnitten;
+     ein Abstand, der von Abschnitt zu Abschnitt springt, wirkt zufaellig.
+     Der Platz darueber kostet nichts: er verschiebt nur den Haftpunkt,
+     nicht die Standzeit.
+
+     Gemeint ist der Abstand zur ersten sichtbaren Zeile, also zur kleinen
+     Ueberschrift. Abschnitte bringen unterschiedlich viel Innenpolster mit -
+     Konfigurator und Referenzen je 77 Bildpunkte, Sortiment und Anlaesse
+     keines -, und das zaehlt bereits als Abstand. Es wird deshalb abgezogen,
+     sonst staende dieselbe Zeile in einem Abschnitt 77 Bildpunkte tiefer als
+     im naechsten.
+
+     Nach unten begrenzt der freie Platz den Versatz, damit die Unterkante des
+     Inhalts im Bild bleibt. Bei Gut zu wissen greift das: der Abschnitt ist so
+     hoch, dass nur 51 Bildpunkte bleiben.
+
+     Gerechnet wird mit der sichtbaren Hoehe, also ohne das leere Polster am
+     unteren Rand des Abschnitts. Sonst waeren gerade die Abschnitte mit viel
+     Polster - Sortiment, Anlaesse, Gut zu wissen - ganz herausgefallen.
+
+     WARUM min-height UND NICHT padding-bottom
+     Weil der Laufweg sonst wirkungslos bliebe. Ein klebendes Element darf
+     seine Umgebungsbox nicht verlassen, und die reicht nur bis zum Rand des
+     Inhalts - Polster gehoert nicht dazu. Nachgemessen: mit 600 Bildpunkten
+     Polster blieb der Abschnitt stehen wie ohne, mit derselben Zahl als
+     Hoehe klebte er.
+
+     AUSSEN VOR
+     Hero und Sponsorenband: die beiden gehoeren zusammen, ein Uebergang
+     dazwischen wuerde sie auseinanderziehen. Abschnitte mit eigener Buehne
+     (Ablauf, Veredelung) bringen ihr Kleben selbst mit. Schmale Baender -
+     die Oekozertifikate, der Kontaktstreifen ganz unten - stehen nicht still:
+     ein Band von 100 Bildpunkten, das 378 lang haengt, wirkt wie ein Haenger,
+     nicht wie Absicht. Und alles, was hoeher ist als das Fenster - beim
+     Kleben waere die Unterkante dann nicht mehr erreichbar.
+     ================================================================== */
+
+  main > .shopify-section.b2b-uebergang {
+    min-height: var(--b2b-buehne, auto);
+  }
+
+  .b2b-uebergang > * {
+    position: sticky;
+    top: calc(var(--header-height, 95px) + var(--b2b-versatz, 0px));
+  }
+
+  /* Derselbe Versatz noch einmal fuer die Punktleiste. Ohne ihn landet
+     ein Sprung mit der Ueberschrift direkt unter der Navigationsleiste,
+     und der Abschnitt rutscht erst beim Weiterscrollen an seinen Platz.
+     Das Wurzelelement haelt die Kopfzeile schon frei (scroll-padding-top
+     im Theme), hier kommt also nur der Versatz obendrauf. Er steht auf
+     beiden: die Leiste zielt mal auf den Abschnitt, mal auf ein Element
+     darin. */
+  main > .shopify-section.b2b-uebergang,
+  .b2b-uebergang > * {
+    scroll-margin-top: var(--b2b-versatz, 0px);
+  }
+</style>
+<script>
+  (function () {
+    /* Der Uebergang zwischen den Abschnitten - siehe Abschnitt 9 im Stilblock.
+
+       Warum ein Skript und keine festen Zahlen im CSS: Haftpunkt und Laufweg
+       haengen an der Inhaltshoehe, und die kennt nur der Browser. Sie aendert
+       sich ausserdem laufend - wenn Schriften nachladen, Bilder ankommen,
+       jemand eine Frage aufklappt oder das Anfrageformular einen Schritt
+       weitergeht. Deshalb wird gemessen statt geraten. */
+
+    var haupt = document.querySelector('main');
+    if (!haupt) return;
+
+    /* Abschnitte mit eigener Buehne bringen ihr Kleben selbst mit - ein
+       zweites daruebergelegt hiesse zwei klebende Lagen ineinander. */
+    var EIGENE_BUEHNE = '.b2b-ablauf, .b2b-bahn, .b2b-punktnav, .b2b-rad-buehne';
+    /* Das Sponsorenband gehoert an den Hero. Stuende der Hero und das Band
+       kaeme einzeln herauf, waeren die beiden auseinandergezogen. */
+    var ZUSAMMEN = ['__hero', '__partner'];
+
+    /* Die Standzeit, als Anteil der Fensterhoehe. Bei 900 Bildpunkten sind
+       das 378 - lang genug, dass das Stehen auffaellt, kurz genug, dass es
+       nicht zaeh wird. */
+    var ANTEIL = 0.42;
+    /* Abstand der ersten sichtbaren Zeile zur Kopfzeile - fuer alle gleich,
+       damit die kleinen Ueberschriften beim Durchscrollen auf einer Linie
+       stehen. */
+    var ABSTAND_OBEN = 80;
+    /* Schmale Baender stehen gar nicht still, siehe Stilblock. Die Grenze
+       liegt ueber dem Kontaktstreifen (153) und unter dem kuerzesten
+       Abschnitt, der mitmachen soll (Ansprechpartner, 316). */
+    var MIN_INHALT = 240;
+    /* Unter 120 Bildpunkten merkt niemand etwas ausser einem Ruckler. */
+    var MIN_LAUFWEG = 120;
+
+    var abschnitte = Array.prototype.filter.call(
+      haupt.children,
+      function (el, i, alle) {
+        if (!el.classList.contains('shopify-section')) return false;
+        if (el === alle[alle.length - 1]) return false; // dem letzten folgt nichts
+        if (el.querySelector(EIGENE_BUEHNE)) return false;
+        for (var n = 0; n < ZUSAMMEN.length; n++) {
+          if (el.id.slice(-ZUSAMMEN[n].length) === ZUSAMMEN[n]) return false;
+        }
+        return el.firstElementChild;
+      }
+    );
+    if (!abschnitte.length) return;
+
+    var breitGenug = window.matchMedia('(min-width: 761px)');
+    var ruhig = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    function kopfhoehe() {
+      var v = getComputedStyle(document.documentElement).getPropertyValue('--header-height');
+      var z = parseFloat(v);
+      return isNaN(z) ? 95 : z;
+    }
+
+    function aus(el) {
+      el.classList.remove('b2b-uebergang');
+      el.style.removeProperty('--b2b-buehne');
+      el.style.removeProperty('--b2b-versatz');
+    }
+
+    function messen() {
+      var an = breitGenug.matches && !ruhig.matches;
+      var oben = kopfhoehe();
+      var fenster = window.innerHeight;
+
+      abschnitte.forEach(function (el) {
+        if (!an) return aus(el);
+
+        /* Gemessen wird der Inhalt, nie der Abschnitt: dessen Hoehe setzt
+           dieses Skript selbst, das gaebe eine Schleife. */
+        var inhalt = el.firstElementChild;
+        var hoch = inhalt.getBoundingClientRect().height;
+        /* Das Polster unten ist leer und zaehlt nicht zur sichtbaren Hoehe.
+           Das oben dagegen ist bereits Abstand zur Kopfzeile und wird vom
+           Versatz abgezogen. */
+        var stil = getComputedStyle(inhalt);
+        var sichtbar = hoch - (parseFloat(stil.paddingBottom) || 0);
+        var polsterOben = parseFloat(stil.paddingTop) || 0;
+        var frei = fenster - oben - sichtbar;
+
+        /* Passt der Inhalt nicht ins Fenster, bliebe seine Unterkante
+           waehrend des Klebens unerreichbar. Dann lieber gar nicht. */
+        if (sichtbar < MIN_INHALT || frei < 0) return aus(el);
+
+        var laufweg = fenster * ANTEIL;
+        if (laufweg < MIN_LAUFWEG) return aus(el);
+
+        var versatz = Math.max(0, Math.min(ABSTAND_OBEN - polsterOben, frei));
+        el.style.setProperty('--b2b-versatz', Math.round(versatz) + 'px');
+        el.style.setProperty('--b2b-buehne', Math.round(hoch + laufweg) + 'px');
+        el.classList.add('b2b-uebergang');
+      });
+    }
+
+    window.addEventListener('resize', messen, { passive: true });
+    window.addEventListener('load', messen);
+    if (breitGenug.addEventListener) {
+      breitGenug.addEventListener('change', messen);
+      ruhig.addEventListener('change', messen);
+    }
+    /* Aufklappbare Fragen, nachladende Bilder und die beiden Apps aendern die
+       Inhaltshoehe noch lange nach dem Laden. */
+    if (window.ResizeObserver) {
+      var beobachter = new ResizeObserver(messen);
+      abschnitte.forEach(function (el) { beobachter.observe(el.firstElementChild); });
+    }
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(messen);
+    messen();
+  })();
+</script>

@@ -84,6 +84,11 @@
             lazy_load: false
           %}
         </li>
+        {%- comment -%} Hangtag als 2. und 3. Bild, siehe b2b-hangtag-bilder. {%- endcomment -%}
+        {%- unless limit == 1 -%}
+          {%- render 'b2b-hangtag-bilder', product: product -%}
+          {%- assign hangtag_da = true -%}
+        {%- endunless -%}
       {%- endif -%}
       {%- for media in product.media -%}
         {% if media_position >= limit
@@ -122,6 +127,10 @@
               lazy_load: lazy_load
             %}
           </li>
+          {%- unless hangtag_da or limit == 1 -%}
+            {%- render 'b2b-hangtag-bilder', product: product -%}
+            {%- assign hangtag_da = true -%}
+          {%- endunless -%}
         {%- endunless -%}
       {%- endfor -%}
     </ul>

@@ -1,0 +1,211 @@
+{% comment %}
+  Downloads für Händler: Produktstammdaten (Excel/CSV) und Produktbilder (ZIP).
+  Die Daten kommen live aus dem Shop, also aus dem, was der JTL-Connector
+  synchronisiert (Titel, SKU, EAN, Preise, Material, Beschreibung, Bilder).
+  Excel/CSV/ZIP werden im Browser erzeugt (assets/dealer-downloads.js), damit
+  sie immer aktuell sind und die Händlerpreise hinter dem Login bleiben.
+  Pflegehinweise stehen nicht in den JTL-Daten; der Text kommt aus den
+  Section-Einstellungen (übernommen von occulto.de).
+{% endcomment %}
+
+{%- liquid
+  assign b2b_price_visible = false
+  if customer and customer.tags contains 'dealer-approved'
+    assign b2b_price_visible = true
+  endif
+-%}
+
+{%- style -%}
+  .dealer-downloads {
+    padding-top: 3.6rem;
+    padding-bottom: 4.8rem;
+  }
+
+  .dealer-downloads__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(26rem, 1fr));
+    gap: 2rem;
+    margin-top: 2.4rem;
+  }
+
+  .dealer-downloads__card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    padding: 2.4rem;
+    border: 0.1rem solid rgba(var(--color-foreground), 0.15);
+  }
+
+  .dealer-downloads__card h2 {
+    margin: 0;
+  }
+
+  .dealer-downloads__card p {
+    margin: 0;
+  }
+
+  .dealer-downloads__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: auto;
+  }
+
+  .dealer-downloads__status {
+    min-height: 2rem;
+    color: rgba(var(--color-foreground), 0.75);
+  }
+
+  .dealer-downloads__meta {
+    color: rgba(var(--color-foreground), 0.65);
+  }
+{%- endstyle -%}
+
+<div class="color-{{ section.settings.color_scheme }} gradient">
+  <div class="page-width dealer-downloads">
+    <h1 class="h2">{{ section.settings.heading | escape }}</h1>
+
+    {%- if b2b_price_visible -%}
+      <p>{{ section.settings.intro | escape }}</p>
+
+      {%- paginate collections.all.products by 250 -%}
+        <script type="application/json" data-dealer-downloads-data>
+          {
+            "nextPage": {% if paginate.next %}{{ paginate.current_page | plus: 1 }}{% else %}null{% endif %},
+            "products": [
+              {%- assign first_product = true -%}
+              {%- for product in collections.all.products -%}
+                {%- if product.tags contains 'filialversand-zuschlag' -%}{%- continue -%}{%- endif -%}
+                {%- unless first_product -%},{%- endunless -%}
+                {%- assign first_product = false -%}
+                {
+                  "title": {{ product.title | json }},
+                  "url": {{ product.url | prepend: request.origin | json }},
+                  "categories": [
+                    {%- assign first_collection = true -%}
+                    {%- for collection in product.collections -%}
+                      {%- if collection.handle == 'frontpage' or collection.handle == 'alle-produkte' or collection.handle == 'sortiment-highlights' -%}{%- continue -%}{%- endif -%}
+                      {%- unless first_collection -%},{%- endunless -%}
+                      {%- assign first_collection = false -%}
+                      {{ collection.title | json }}
+                    {%- endfor -%}
+                  ],
+                  "material": {{ product.metafields.custom.materialeigenschaft.value | default: '' | json }},
+                  "origin": {{ product.metafields.custom.herkunftsland.value | default: '' | json }},
+                  "description": {{ product.description | replace: '</p>', ' </p>' | strip_html | strip_newlines | strip | json }},
+                  "images": [
+                    {%- for image in product.images -%}
+                      {{ image | image_url: width: image.width | prepend: 'https:' | json }}{%- unless forloop.last -%},{%- endunless -%}
+                    {%- endfor -%}
+                  ],
+                  "variants": [
+                    {%- for variant in product.variants -%}
+                      {
+                        "sku": {{ variant.sku | json }},
+                        "ean": {{ variant.barcode | default: '' | json }},
+                        "size": {{ variant.options | last | json }},
+                        "price": {{ variant.price | json }},
+                        "uvp": {{ variant.compare_at_price | default: 0 | json }},
+                        "stock": {% if variant.inventory_management == 'shopify' %}{{ variant.inventory_quantity | at_least: 0 }}{% else %}null{% endif %}
+                      }{%- unless forloop.last -%},{%- endunless -%}
+                    {%- endfor -%}
+                  ]
+                }
+              {%- endfor -%}
+            ]
+          }
+        </script>
+      {%- endpaginate -%}
+
+      <dealer-downloads
+        data-care="{{ section.settings.care_instructions | escape }}"
+        data-default-origin="{{ section.settings.default_origin | escape }}"
+        data-pack-step="5"
+        data-section-id="{{ section.id }}"
+        data-vat-rate="{{ section.settings.vat_rate }}"
+      >
+        <div class="dealer-downloads__grid">
+          <div class="dealer-downloads__card">
+            <h2 class="h4">Produktstammdaten</h2>
+            <p>
+              Alle Artikel mit Artikelnummer, EAN, Größe, Material, Herkunftsland, Pflegehinweisen, Händlerpreis, UVP, Bestand,
+              Beschreibung und Bilddateinamen – eine Zeile pro Größe.
+            </p>
+            <p class="dealer-downloads__meta caption">Immer tagesaktuell aus unserem Warenwirtschaftssystem.</p>
+            <div class="dealer-downloads__actions">
+              <button type="button" class="button" data-download="xlsx">Excel herunterladen</button>
+              <button type="button" class="button button--secondary" data-download="csv">CSV herunterladen</button>
+            </div>
+          </div>
+
+          <div class="dealer-downloads__card">
+            <h2 class="h4">Produktbilder</h2>
+            <p>
+              Alle Produktbilder in voller Auflösung als ZIP. Die Dateien heißen wie die Artikelnummer der
+              jeweiligen Farbe, z. B. 11001-006.jpg, 11001-006_2.jpg.
+            </p>
+            <p class="dealer-downloads__meta caption" data-download-images-meta></p>
+            <div class="dealer-downloads__actions">
+              <button type="button" class="button" data-download="zip">Bilder (ZIP) herunterladen</button>
+            </div>
+          </div>
+        </div>
+        <p class="dealer-downloads__status caption-large" data-download-status role="status"></p>
+      </dealer-downloads>
+
+      <script src="{{ 'dealer-downloads.js' | asset_url }}" defer="defer"></script>
+    {%- else -%}
+      <p>
+        Die Downloads (Produktstammdaten und Produktbilder) stehen freigeschalteten Handelspartnern zur Verfügung.
+      </p>
+      {%- assign gast_zugang = 'templates.dealer_registration.request_access' | t -%}
+      <p>{% render 'b2b-freigabe-link', klasse: 'button', gast_text: gast_zugang %}</p>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Händler-Downloads",
+  "limit": 1,
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Überschrift",
+      "default": "Downloads"
+    },
+    {
+      "type": "text",
+      "id": "intro",
+      "label": "Einleitung",
+      "default": "Hier liegen unsere aktuellen Produktstammdaten und alle Produktbilder – für deine Warenwirtschaft und deinen Onlineshop."
+    },
+    {
+      "type": "textarea",
+      "id": "care_instructions",
+      "label": "Pflegehinweise (für alle Artikel)",
+      "default": "Bei maximal 30 °C in der Maschine waschen. Flach an der Luft trocknen, Trockner meiden. Neue Produkte vor dem ersten Tragen waschen. Textilien farblich voneinander trennen. Weichspüler und Bleichmittel meiden."
+    },
+    {
+      "type": "text",
+      "id": "default_origin",
+      "label": "Herkunftsland (Standard)",
+      "info": "Gilt, solange am Produkt kein Metafeld custom.herkunftsland gesetzt ist.",
+      "default": "Türkei"
+    },
+    {
+      "type": "number",
+      "id": "vat_rate",
+      "label": "MwSt.-Satz für UVP brutto (%)",
+      "default": 19
+    }
+  ]
+}
+{% endschema %}

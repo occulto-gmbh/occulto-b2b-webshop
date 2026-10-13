@@ -1,0 +1,40 @@
+{%- comment -%}
+  basic-sans, die Hausschrift - dieselbe wie im Hauptshop occulto.de.
+
+  Die Schrift, die der Hauptshop tatsaechlich zeigt: basic-sans ueber Adobe
+  Fonts, Kit wdu6knh - derselbe Link wie in dessen layout/theme.liquid.
+
+  basic-sans laesst sich nicht selbst hosten: die Adobe-Lizenz erlaubt die
+  Webnutzung nur ueber deren Dienst. Das heisst, jeder Seitenaufruf fragt bei
+  use.typekit.net an (Besucher-IP an Dritte vor der Einwilligung). Der
+  Hauptshop laedt dasselbe Kit aber bereits - die Abwaegung ist im
+  Unternehmen also schon getroffen, und beide Shops sehen gleich aus.
+
+  Das Kit enthaelt nur zwei Staerken, 400 und 700, jeweils auch kursiv.
+  Angaben darueber (900 an mehreren Ueberschriften) werden als 700
+  dargestellt; darunter (500) als 400. Deshalb stehen die Staerken hier
+  ausdruecklich: die Theme-Einstellungen liefern 500 fuer Ueberschriften,
+  und das wuerde mit basic-sans duenn.
+
+  Die Variablen sind die, aus denen das Theme jede Schriftangabe ableitet -
+  so greift die Schrift ueberall, ohne an hundert Stellen etwas zu aendern.
+{%- endcomment -%}
+{%- # Fremdquelle mit Absicht: die Adobe-Lizenz erlaubt kein Selbsthosten -%}
+{% # theme-check-disable RemoteAsset %}
+<link rel="preconnect" href="https://use.typekit.net" crossorigin>
+<link rel="preconnect" href="https://p.typekit.net" crossorigin>
+<link rel="stylesheet" href="https://use.typekit.net/wdu6knh.css">
+{% # theme-check-enable RemoteAsset %}
+
+<style>
+  :root {
+    --font-body-family: 'basic-sans', Helvetica, Arial, sans-serif;
+    --font-body-style: normal;
+    --font-body-weight: 400;
+    --font-body-weight-bold: 700;
+
+    --font-heading-family: 'basic-sans', Helvetica, Arial, sans-serif;
+    --font-heading-style: normal;
+    --font-heading-weight: 700;
+  }
+</style>

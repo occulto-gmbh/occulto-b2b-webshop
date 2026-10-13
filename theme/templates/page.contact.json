@@ -6,8 +6,7 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */
-{
+ */{
   "sections": {
     "main": {
       "type": "main-page",
@@ -36,17 +35,25 @@
     "form": {
       "type": "contact-form",
       "settings": {
-        "heading": "Questions or comments? Get in touch and we'll be happy to help.",
+        "heading": "Frag uns – wir melden uns.",
         "heading_size": "h2",
         "color_scheme": "scheme-1",
         "padding_top": 36,
         "padding_bottom": 36
+      }
+    },
+    "kontaktwege": {
+      "type": "b2b-abschnitt",
+      "settings": {
+        "custom_liquid": "<section class=\"b2b-wege\">\n  <p class=\"b2b-wege__label\">Direkt zu uns</p>\n  <div class=\"b2b-wege__liste\">\n    <a class=\"b2b-wege__weg\" href=\"tel:+4980313506041\">\n      <svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" aria-hidden=\"true\"><path d=\"M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.24 11.4 11.4 0 0 0 3.6.58 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.46.57 3.6a1 1 0 0 1-.25 1z\" fill=\"currentColor\"/></svg>\n      <span>08031 350 60 41</span>\n    </a>\n    <a class=\"b2b-wege__weg\" href=\"mailto:b2b@occulto.de\">\n      <svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" aria-hidden=\"true\"><path d=\"M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5z\" fill=\"currentColor\"/></svg>\n      <span>b2b@occulto.de</span>\n    </a>\n  </div>\n</section>\n<style>\n  /* Eigenstaendig gehalten: b2b-marke wird bisher nur auf der Landingpage\n     geladen, die Klassen von dort gibt es hier nicht. */\n  .b2b-wege {\n    max-width: 1150px;\n    margin: 0 auto;\n    padding-block: 32px;\n    text-align: center;\n  }\n\n  .b2b-wege__label {\n    margin: 0 0 14px;\n    color: rgb(var(--b2b-akzent, 199 42 9));\n    font-size: 13px;\n    font-weight: 700;\n    line-height: 1.2;\n    letter-spacing: 0.14em;\n    text-transform: uppercase;\n  }\n\n  .b2b-wege__liste {\n    display: flex;\n    flex-wrap: wrap;\n    justify-content: center;\n    gap: 14px 40px;\n  }\n\n  .b2b-wege__weg {\n    display: inline-flex;\n    align-items: center;\n    gap: 10px;\n    font-size: 18px;\n    font-weight: 700;\n    color: inherit;\n    text-decoration: none;\n    overflow-wrap: anywhere;\n  }\n\n  .b2b-wege__weg svg {\n    flex: 0 0 auto;\n    color: rgb(var(--b2b-akzent, 199 42 9));\n  }\n\n  .b2b-wege__weg:hover,\n  .b2b-wege__weg:focus-visible {\n    color: rgb(var(--b2b-akzent, 199 42 9));\n    text-decoration: underline;\n  }\n\n  /* Auf schmalen Schirmen untereinander statt nebeneinander - zwei lange\n     Angaben in einer Zeile brechen sonst mitten in der Nummer um. */\n  @media screen and (max-width: 599px) {\n    .b2b-wege__liste {\n      flex-direction: column;\n      align-items: center;\n      gap: 12px;\n    }\n    .b2b-wege__weg {\n      font-size: 16px;\n    }\n  }\n</style>",
+        "wrapper_classes": "container"
       }
     }
   },
   "order": [
     "main",
     "image_banner",
+    "kontaktwege",
     "form"
   ]
 }

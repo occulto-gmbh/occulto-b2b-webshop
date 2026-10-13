@@ -17,18 +17,25 @@
         "padding_bottom": 36
       }
     },
+    "cart-branch-split": {
+      "type": "cart-branch-split",
+      "settings": {
+        "color_scheme": "scheme-2",
+        "surcharge_product_handle": "zusatzpaket-filialversand",
+        "packs_per_parcel": 275,
+        "parcel_price": "9.99"
+      }
+    },
     "cart-footer": {
       "type": "main-cart-footer",
       "blocks": {
         "subtotal": {
           "type": "subtotal",
-          "settings": {
-          }
+          "settings": {}
         },
         "buttons": {
           "type": "buttons",
-          "settings": {
-          }
+          "settings": {}
         }
       },
       "block_order": [
@@ -40,10 +47,37 @@
         "padding_top": 40,
         "padding_bottom": 40
       }
+    },
+    "vororder": {
+      "type": "b2b-vororder-korb",
+      "settings": {
+        "mindestmenge": 100,
+        "mindestmenge_groesse": 5,
+        "mindestwert": 1500,
+        "rabatt_prozent": 10
+      }
+    },
+    "b2b-vorschlaege": {
+      "type": "b2b-vorschlaege",
+      "settings": {
+        "heading": "Passt dazu",
+        "heading_size": "h2",
+        "immer_vorschlagen": "lochplattenst-nder-mit-4-lochplatten-ral9005-mit-100-einfachhaken",
+        "products_to_show": 5,
+        "columns_desktop": 5,
+        "columns_mobile": "2",
+        "image_ratio": "adapt",
+        "color_scheme": "scheme-1",
+        "padding_top": 24,
+        "padding_bottom": 44
+      }
     }
   },
   "order": [
+    "vororder",
     "cart-items",
-    "cart-footer"
+    "cart-branch-split",
+    "cart-footer",
+    "b2b-vorschlaege"
   ]
 }

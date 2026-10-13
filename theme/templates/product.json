@@ -22,24 +22,27 @@
         },
         "description": {
           "type": "description",
+          "disabled": true,
           "settings": {}
         },
         "collapsible-row-1": {
           "type": "collapsible_tab",
           "settings": {
+            "b2b_offen": false,
             "heading": "Produktmerkmale",
             "icon": "star",
-            "content": "",
-            "page": "product-features"
+            "content": "{{ product.description }}",
+            "page": ""
           }
         },
         "collapsible-row-0": {
           "type": "collapsible_tab",
           "settings": {
+            "b2b_offen": true,
             "heading": "Material und Pflege",
             "icon": "leaf",
-            "content": "",
-            "page": "materials-and-care"
+            "content": "<p><strong>Material:&nbsp;</strong>{{ product.metafields.custom.materialeigenschaft.value }}</p><p><strong>Herkunft:&nbsp;</strong>{{ product.metafields.custom.herkunftsland.value }}</p><p><strong>Pflege:</strong></p><ul><li>Bei&nbsp;maximal 30°C in der Maschine&nbsp;waschen</li><li>Trockner&nbsp;besser vermeiden</li><li>Flach an der Luft trocknen&nbsp;</li><li>Neue Produkte vor dem ersten Tragen waschen</li><li>Textilien farblich voneinander trennen</li><li>Weichspüler & Bleichmittel meiden</li></ul>",
+            "page": ""
           }
         },
         "share": {
@@ -47,11 +50,23 @@
           "settings": {
             "share_label": "Share"
           }
+        },
+        "b2b-hinweis": {
+          "type": "custom_liquid",
+          "settings": {
+            "custom_liquid": "{%- if customer and customer.tags contains 'dealer-approved' -%}\n{%- if product.tags contains 'einzelstueck' -%}\n<p class=\"b2b-pdp-hinweis\">Händlerpreis zzgl. MwSt. · einzeln bestellbar</p>\n{%- else -%}\n<p class=\"b2b-pdp-hinweis\">Händlerpreise zzgl. MwSt. · versandkostenfrei ab 300 Packs · bestellbar in 5er-Packs</p>\n{%- endif -%}\n{%- endif -%}"
+          }
+        },
+        "groessen": {
+          "type": "b2b_groessen",
+          "settings": {}
         }
       },
       "block_order": [
         "title",
         "price",
+        "b2b-hinweis",
+        "groessen",
         "description",
         "collapsible-row-1",
         "collapsible-row-0",
@@ -60,17 +75,31 @@
       "settings": {
         "enable_sticky_info": true,
         "color_scheme": "",
-        "media_size": "small",
+        "media_size": "medium",
         "constrain_to_viewport": false,
         "media_fit": "cover",
-        "gallery_layout": "thumbnail_slider",
-        "media_position": "right",
-        "image_zoom": "lightbox",
+        "gallery_layout": "stacked",
         "mobile_thumbnails": "hide",
+        "media_position": "left",
+        "image_zoom": "lightbox",
         "hide_variants": true,
         "enable_video_looping": false,
         "padding_top": 36,
-        "padding_bottom": 36
+        "padding_bottom": 36,
+        "b2b_hangtag_vorne": "shopify://shop_images/Hangtag_Vorderseite.png",
+        "b2b_hangtag_ohne": "Mütze, Adventskalender, Zusatzpaket",
+        "b2b_hangtag_hinten": "shopify://shop_images/Hangtag_Hinterseite.png"
+      }
+    },
+    "disclosures": {
+      "type": "disclosures",
+      "settings": {
+        "heading": "Pflichtangaben",
+        "heading_size": "h2",
+        "open_by_default": false,
+        "color_scheme": "",
+        "padding_top": 36,
+        "padding_bottom": 0
       }
     },
     "quick-order-list": {
@@ -82,31 +111,22 @@
         "color_scheme": "scheme-2",
         "padding_top": 36,
         "padding_bottom": 16
-      }
+      },
+      "disabled": true
     },
-    "related-products": {
-      "type": "related-products",
+    "b2b-vorschlaege": {
+      "type": "b2b-vorschlaege",
       "settings": {
         "heading": "Weitere beliebte Artikel",
         "heading_size": "h2",
+        "immer_vorschlagen": "lochplattenst-nder-mit-4-lochplatten-ral9005-mit-100-einfachhaken",
         "products_to_show": 5,
         "columns_desktop": 5,
-        "color_scheme": "scheme-1",
-        "image_ratio": "adapt",
-        "image_shape": "default",
-        "show_secondary_image": false,
-        "show_vendor": false,
-        "show_rating": false,
         "columns_mobile": "2",
+        "image_ratio": "adapt",
+        "color_scheme": "scheme-1",
         "padding_top": 36,
         "padding_bottom": 44
-      }
-    },
-    "disclosures": {
-      "type": "disclosures",
-      "settings": {
-        "padding_top": 36,
-        "padding_bottom": 0
       }
     }
   },
@@ -114,6 +134,6 @@
     "main",
     "disclosures",
     "quick-order-list",
-    "related-products"
+    "b2b-vorschlaege"
   ]
 }

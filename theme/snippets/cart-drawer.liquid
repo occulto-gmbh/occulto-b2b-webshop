@@ -89,6 +89,7 @@
           novalidate
         >
           <div id="CartDrawer-CartItems" class="drawer__contents js-contents">
+            {% render 'b2b-korb-art', kompakt: true %}
             {%- if cart != empty -%}
               <div class="drawer__cart-items-wrapper">
                 <table class="cart-items" role="table">
@@ -301,7 +302,7 @@
                                     class="quantity__button"
                                     name="minus"
                                     type="button"
-                                    {% if item.instructions and item.instructions.can_update_quantity == false %}
+                                    {% if item.product.tags contains 'filialversand-zuschlag' or item.instructions.can_update_quantity == false %}
                                       disabled
                                     {% endif %}
                                   >
@@ -321,6 +322,10 @@
                                     # snippets/quantity-input.liquid) — item.variant.quantity_rule ist immer die
                                     # native {min:1, increment:1} ohne B2B-Preislisten-Katalog, deshalb hart auf 5.
                                     assign pack_step = 5
+                                    # Einzelstuecke (Tag einzelstueck, z. B. Ausstellungsstaender) gehen einzeln.
+                                    if item.product.tags contains 'einzelstueck'
+                                      assign pack_step = 1
+                                    endif
                                     assign drawer_quantity_max = null
                                     if item.variant.inventory_management == 'shopify' and item.variant.inventory_policy != 'continue'
                                       assign drawer_quantity_max = item.variant.inventory_quantity | at_least: 0
@@ -345,7 +350,7 @@
                                     aria-label="{{ 'products.product.quantity.input_label' | t: product: item.product.title | escape }}"
                                     id="Drawer-quantity-{{ item.index | plus: 1 }}"
                                     data-index="{{ item.index | plus: 1 }}"
-                                    {% if item.instructions and item.instructions.can_update_quantity == false %}
+                                    {% if item.product.tags contains 'filialversand-zuschlag' or item.instructions.can_update_quantity == false %}
                                       disabled
                                     {% endif %}
                                   >
@@ -353,7 +358,7 @@
                                     class="quantity__button"
                                     name="plus"
                                     type="button"
-                                    {% if item.instructions and item.instructions.can_update_quantity == false %}
+                                    {% if item.product.tags contains 'filialversand-zuschlag' or item.instructions.can_update_quantity == false %}
                                       disabled
                                     {% endif %}
                                   >
@@ -379,7 +384,7 @@
                                   class="button button--tertiary cart-remove-button"
                                   aria-label="{{ 'sections.cart.remove_title' | t: title: item.title | escape }}"
                                   data-variant-id="{{ item.variant.id }}"
-                                  {% if item.instructions and item.instructions.can_remove == false %}
+                                  {% if item.product.tags contains 'filialversand-zuschlag' or item.instructions.can_remove == false %}
                                     class="hidden"
                                   {% endif %}
                                 >
@@ -538,6 +543,8 @@
               </ul>
             {%- endif -%}
           </div>
+
+          {%- comment -%} Rabatt steht nur oben, im Kopf der Nachbestellung. {%- endcomment -%}
 
           <div class="totals" role="status">
             <h2 class="totals__total">{{ 'sections.cart.estimated_total' | t }}</h2>

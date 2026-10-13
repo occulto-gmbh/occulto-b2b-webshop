@@ -1,0 +1,148 @@
+/* Das Spinrad fuer die Bestseller.
+
+   Eine zusaetzliche Betriebsart des vorhandenen Karussells, keine Ablösung:
+   ohne die Klasse ist-rad bleibt alles, wie es ist. Das ist wichtig, weil
+   dieselben Bausteine auf den Produktseiten stehen, wo das Rad nichts zu
+   suchen hat - und weil unter 761 Bildpunkten Breite, bei abbestellter
+   Bewegung und ohne Skript die waagrecht scrollende Reihe der bessere
+   Rueckfall ist.
+
+   Die Klassen setzt b2b-rad.js. */
+
+/* ---------------------------------------------------------------
+   Die Buehne: hoeher als das, was man sieht. Der Ueberschuss ist der
+   Weg, den man scrollt, waehrend der Abschnitt steht und sich das Rad
+   dreht - dieselbe Bauform wie beim Ablauf.
+   --------------------------------------------------------------- */
+
+.b2b-rad-buehne {
+  /* Hoehe der stehenden Lage. Gedeckelt, damit darunter Platz bleibt, in den
+     der naechste Abschnitt hereinkommt.
+
+     Knapp am Inhalt gehalten: der braucht nachgemessen rund 500 Bildpunkte.
+     Mit 690 standen 240 davon leer, und genau das sah nach zu viel Luft aus.
+     Der Rest des Fensters gehoert dem Uebergang. */
+  /* Derselbe Abstand zur Kopfzeile wie bei den Abschnitten mit dem
+     allgemeinen Uebergang - dort steht die kleine Ueberschrift 80 Bildpunkte
+     darunter. Ohne den Versatz klebte das Sortiment mit 11. */
+  --b2b-rad-versatz: 80px;
+  --b2b-rad-lage: min(
+    calc(100svh - var(--header-height, 95px) - var(--b2b-rad-versatz)),
+    560px
+  );
+  /* Scrollweg je Produkt.
+
+     100 ist kein runder Zufallswert: eine Rastung am Mausrad liefert in
+     Chrome und Firefox genau 100 Bildpunkte. Ein Klick am Rad dreht das
+     Karussell damit um genau ein Produkt weiter. Am Trackpad bleibt es
+     stufenlos, dort gibt es keine Rastung. */
+  --b2b-rad-takt: 100px;
+}
+
+.b2b-rad-buehne.ist-rad {
+  height: calc(var(--b2b-rad-lage) + var(--b2b-rad-weg, 960px));
+}
+
+.b2b-rad-buehne.ist-rad .b2b-rad-kleben {
+  position: sticky;
+  top: calc(var(--header-height, 95px) + var(--b2b-rad-versatz));
+  height: var(--b2b-rad-lage);
+  display: flex;
+  flex-direction: column;
+  /* Oben buendig, nicht mittig: der Abstand zur Kopfzeile soll fest sein und
+     nicht davon abhaengen, wie hoch der Inhalt gerade ist. */
+  justify-content: flex-start;
+}
+
+/* ---------------------------------------------------------------
+   Das Rad selbst.
+   --------------------------------------------------------------- */
+
+.b2b-karussell.ist-rad .b2b-karussell__pfeil {
+  display: none;
+}
+
+.b2b-karussell.ist-rad .b2b-karussell__spur {
+  position: relative;
+  display: block;
+  height: var(--b2b-rad-hoehe, 340px);
+  overflow: visible;
+  /* Ohne Perspektive waere rotateY eine reine Stauchung. Der Wert ist
+     bewusst gross: naeher heran wirkt die Drehung wie ein Aufklappen. */
+  perspective: 1400px;
+  transform-style: preserve-3d;
+  scroll-snap-type: none;
+  /* clip statt hidden: hidden machte aus der Spur einen Scrollbehaelter,
+     und das klebende Verhalten der Lage darueber haenge dann daran. clip
+     beschneidet nur. Noetig, weil die aeusseren Kacheln bei dieser Groesse
+     ueber den Rand hinausragen wuerden. */
+  overflow-x: clip;
+  overflow-y: visible;
+}
+
+.b2b-karussell.ist-rad .b2b-karussell__element {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: var(--b2b-rad-breite, 440px);
+  margin-left: calc(var(--b2b-rad-breite, 440px) / -2);
+  flex: none;
+  /* Kein transition: das Skript setzt bei jedem Bild einen neuen Wert,
+     eine Nachlaufzeit liesse das Rad hinter dem Finger herlaufen. */
+  transition: none;
+  backface-visibility: hidden;
+}
+
+/* Nur die mittlere Kachel traegt ihren Text in voller Deckkraft - am Rand
+   ist er ohnehin zu klein zum Lesen und beruhigt das Bild, wenn er
+   zuruecktritt. */
+.b2b-karussell.ist-rad .b2b-karussell__element .b2b-angebot__name,
+.b2b-karussell.ist-rad .b2b-karussell__element .b2b-karussell__bildtext {
+  transition: opacity 0.25s ease;
+}
+
+.b2b-karussell.ist-rad .b2b-karussell__element:not(.ist-mitte) .b2b-angebot__name,
+.b2b-karussell.ist-rad .b2b-karussell__element:not(.ist-mitte) .b2b-karussell__bildtext {
+  opacity: 0.6;
+}
+
+/* Der Zeiger sagt, dass etwas passiert - nur eben etwas anderes. */
+.b2b-karussell.ist-rad .b2b-karussell__element:not(.ist-mitte) .b2b-karussell__bild {
+  cursor: pointer;
+}
+
+/* ---------------------------------------------------------------
+   Die Fortschrittsleiste unter dem Rad. Sie sagt, wie weit man ist -
+   ohne sie steht man in einem Abschnitt, der sich nicht bewegt, und
+   weiss nicht warum.
+   --------------------------------------------------------------- */
+
+.b2b-rad-leiste {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 26px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.b2b-karussell.ist-rad ~ .b2b-rad-leiste,
+.ist-rad .b2b-rad-leiste {
+  display: flex;
+}
+
+.b2b-rad-leiste li {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgb(var(--b2b-linie, 226 226 225));
+  transition:
+    transform 0.25s ease,
+    background-color 0.25s ease;
+}
+
+.b2b-rad-leiste li.ist-aktiv {
+  background: rgb(var(--b2b-akzent, 199 42 9));
+  transform: scale(1.5);
+}

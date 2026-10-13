@@ -10,6 +10,13 @@
   {% render 'quick-order-list-row' variant: variant %}
 {% endcomment %}
 
+{%- liquid
+  # Einzelstuecke (Tag einzelstueck, z. B. Ausstellungsstaender): ohne Packrabatt, siehe b2b-preis.
+  assign b2b_einzelstueck = false
+  if item.product.tags contains 'einzelstueck' or item.tags contains 'einzelstueck'
+    assign b2b_einzelstueck = true
+  endif
+-%}
 {% # theme-check-disable %}
 {% assign cart_qty = cart | item_count_for_variant: variant.id %}
 {% # theme-check-enable %}
@@ -67,7 +74,6 @@
       {%- render 'quick-order-list-row-inventory', variant: variant -%}
     </div>
 
-    {%- assign item_price = item.price | money -%}
     {%- comment -%} Streichpreise werden im B2B-Shop nicht angezeigt {%- endcomment -%}
     {%- if false -%}
       <dl class="variant-item__discounted-prices">
@@ -112,9 +118,7 @@
               </div>
             </price-per-item>
           {%- else -%}
-            <span class="price">
-              {{- 'sections.quick_order_list.each' | t: money: item_price -}}
-            </span>
+            {% render 'b2b-preis', preis: item.price, je_pack: true, uvp: item.compare_at_price, einzelstueck: b2b_einzelstueck %}
           {%- endif -%}
         </dd>
       </dl>
@@ -148,9 +152,7 @@
           </div>
         </price-per-item>
       {%- else -%}
-        <span class="price">
-          {{- 'sections.quick_order_list.each' | t: money: item_price -}}
-        </span>
+        {% render 'b2b-preis', preis: item.price, je_pack: true, uvp: item.compare_at_price, einzelstueck: b2b_einzelstueck %}
       {%- endif -%}
     {%- endif -%}
 
@@ -163,7 +165,12 @@
     {%- render 'loading-spinner' -%}
     {% comment %} TODO: enable theme-check once `line_items_for` is accepted as valid filter {% endcomment %}
     {% # theme-check-disable %}
-    <span class="price">{{ cart | line_items_for: item | sum: 'original_line_price' | money }}</span>
+    {%- comment -%}
+      Auch die Zeilensumme mit Rabatt, sonst rechnet der Haendler die Spalte
+      zusammen und wundert sich im Checkout ueber eine andere Zahl.
+    {%- endcomment -%}
+    {%- assign zeilensumme = cart | line_items_for: item | sum: 'original_line_price' -%}
+    {% render 'b2b-preis', preis: zeilensumme, klasse: 'b2b-preis--summe', ohne_hinweis: true %}
     {% # theme-check-enable %}
   </td>
 
@@ -330,7 +337,6 @@
       </div>
     </quantity-popover>
   </td>
-  {%- assign item_price = item.price | money -%}
   <td class="variant-item__price small-hide medium-hide">
     {%- comment -%} Streichpreise werden im B2B-Shop nicht angezeigt {%- endcomment -%}
     {%- if false -%}
@@ -376,9 +382,7 @@
               </div>
             </price-per-item>
           {%- else -%}
-            <span class="price">
-              {{- 'sections.quick_order_list.each' | t: money: item_price -}}
-            </span>
+            {% render 'b2b-preis', preis: item.price, je_pack: true, uvp: item.compare_at_price, einzelstueck: b2b_einzelstueck %}
           {%- endif -%}
         </dd>
       </dl>
@@ -412,9 +416,7 @@
           </div>
         </price-per-item>
       {%- else -%}
-        <span class="price">
-          {{- 'sections.quick_order_list.each' | t: money: item_price -}}
-        </span>
+        {% render 'b2b-preis', preis: item.price, je_pack: true, uvp: item.compare_at_price, einzelstueck: b2b_einzelstueck %}
       {%- endif -%}
     {%- endif -%}
 
@@ -426,7 +428,12 @@
     {%- render 'loading-spinner' -%}
     {% comment %} TODO: enable theme-check once `line_items_for` is accepted as valid filter {% endcomment %}
     {% # theme-check-disable %}
-    <span class="price">{{ cart | line_items_for: item | sum: 'original_line_price' | money }}</span>
+    {%- comment -%}
+      Auch die Zeilensumme mit Rabatt, sonst rechnet der Haendler die Spalte
+      zusammen und wundert sich im Checkout ueber eine andere Zahl.
+    {%- endcomment -%}
+    {%- assign zeilensumme = cart | line_items_for: item | sum: 'original_line_price' -%}
+    {% render 'b2b-preis', preis: zeilensumme, klasse: 'b2b-preis--summe', ohne_hinweis: true %}
     {% # theme-check-enable %}
   </td>
 </tr>

@@ -1,3 +1,22 @@
+/* B2B: Die Kassen-Knoepfe im Fuss folgen dem Mindestbestellwert. Der Kopf
+   (snippets/b2b-korb-art.liquid) rechnet ihn und traegt das Ergebnis in
+   data-b2b-mindestwert-erreicht; beim Laden setzt main-cart-footer.liquid
+   denselben Stand per Liquid, hier wird er nach jeder Aenderung nachgezogen. */
+function b2bKasseNachMindestwert() {
+  const kopf = document.querySelector('#b2b-korb-kopf [data-b2b-mindestwert-erreicht]');
+  const fuss = document.getElementById('main-cart-footer');
+  if (!fuss) return;
+  const erreicht = !kopf || kopf.dataset.b2bMindestwertErreicht === 'true';
+  fuss.querySelectorAll('[name="checkout"]').forEach((knopf) => {
+    if (!erreicht) knopf.disabled = true;
+    else if (document.querySelector('.cart-item')) knopf.disabled = false;
+  });
+  fuss.querySelectorAll('[data-b2b-mindestwert-hinweis], .cart__dynamic-checkout-buttons').forEach((el) => {
+    if (el.hasAttribute('data-b2b-mindestwert-hinweis')) el.hidden = erreicht;
+    else el.hidden = !erreicht;
+  });
+}
+
 class CartRemoveButton extends HTMLElement {
   constructor() {
     super();
@@ -172,6 +191,16 @@ class CartItems extends window.StandardEvents.createViewEventElement(HTMLElement
         section: document.getElementById('main-cart-footer').dataset.id,
         selector: '.js-contents',
       },
+      // B2B: Kopf der Nachbestellung (Packs, Schwellen, Mindestwert) mitziehen.
+      ...(document.getElementById('b2b-korb-kopf')
+        ? [
+            {
+              id: 'b2b-korb-kopf',
+              section: document.getElementById('main-cart-items').dataset.id,
+              selector: '#b2b-korb-kopf',
+            },
+          ]
+        : []),
     ];
   }
 
@@ -217,6 +246,28 @@ class CartItems extends window.StandardEvents.createViewEventElement(HTMLElement
           const items = document.querySelectorAll('.cart-item');
 
           if (parsedState.errors) {
+            /* Occulto: nicht blind auf die alte Menge zurückfallen.
+
+               Liegt eine Zeile schon über dem, was Shopify verkaufen kann
+               (etwa weil der Bestand gesunken ist, seit sie im Korb liegt),
+               lehnt Shopify jeden 5er-Schritt ab, der noch darüber liegt -
+               und dieser Zweig setzte das Feld jedes Mal auf die alte Menge
+               zurück. Mit 100 im Korb und 50 verfügbar ergab Minus 95,
+               abgelehnt, zurück auf 100: man kam nie wieder herunter.
+
+               Shopify nennt die erlaubte Menge in der Meldung ("nur 50
+               Artikel"). Liegt sie unter der gewünschten, wird die Zeile
+               direkt darauf gesetzt. Tausenderpunkte werden mitgelesen,
+               sonst würde aus "1.000" eine 1. */
+            const treffer = String(parsedState.errors).match(/\d[\d.\s]*/);
+            const erlaubt = treffer ? parseInt(treffer[0].replace(/\D/g, ''), 10) : NaN;
+            const gerendert = parseInt(quantityElement.getAttribute('value'), 10);
+
+            if (Number.isFinite(erlaubt) && erlaubt < quantity && erlaubt !== gerendert) {
+              this.updateQuantity(line, erlaubt, event, name, variantId);
+              return;
+            }
+
             quantityElement.value = quantityElement.getAttribute('value');
             this.updateLiveRegions(line, parsedState.errors);
             return;
@@ -238,6 +289,7 @@ class CartItems extends window.StandardEvents.createViewEventElement(HTMLElement
               section.selector
             );
           });
+          b2bKasseNachMindestwert();
           const updatedValue = parsedState.items[line - 1] ? parsedState.items[line - 1].quantity : undefined;
           let message = '';
           if (items.length === parsedState.items.length && updatedValue !== parseInt(quantityElement.value)) {

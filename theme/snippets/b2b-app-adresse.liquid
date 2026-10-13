@@ -1,0 +1,17 @@
+{%- comment -%}
+  Die Adresse der Konfigurator-Anwendung. Genau eine Stelle.
+
+  Die Landingpage bindet den Konfigurator und das Anfrageformular als iframes
+  ein. Beide Abschnitte holen sich die Adresse hier ab, und die Skripte leiten
+  ihre Herkunftspruefung aus dem geladenen Rahmen ab - deshalb steht die
+  Adresse nirgends sonst.
+
+  UMZUG NACH DEM DEPLOYMENT: hier die Zeile aendern, sonst nichts.
+  Ohne abschliessenden Schraegstrich, die Abschnitte haengen ihren Pfad an.
+
+  Lokal muss hier nichts stehen: laeuft die Seite unter 127.0.0.1 oder
+  localhost, zeigen die Skripte den Rahmen ohnehin auf denselben Host,
+  Port 3000. So funktioniert die Vorschau auch dann noch, wenn hier laengst
+  eine oeffentliche Adresse steht.
+{%- endcomment -%}
+{{- 'https://friendly-kulfi-ddcaeb.netlify.app' -}}

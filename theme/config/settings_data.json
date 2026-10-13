@@ -148,8 +148,8 @@
         "settings": {
           "background": "#f6f6f6",
           "background_gradient": "",
-          "text": "#1c1c1c",
-          "button": "#2e2e2d",
+          "text": "#2e2e2d",
+          "button": "#c72a09",
           "button_label": "#ffffff",
           "secondary_button_label": "#2e2e2d",
           "shadow": "#000000"
@@ -159,8 +159,8 @@
         "settings": {
           "background": "#ffffff",
           "background_gradient": "",
-          "text": "#1c1c1c",
-          "button": "#2e2e2d",
+          "text": "#2e2e2d",
+          "button": "#c72a09",
           "button_label": "#ffffff",
           "secondary_button_label": "#2e2e2d",
           "shadow": "#000000"
@@ -168,33 +168,33 @@
       },
       "scheme-3": {
         "settings": {
-          "background": "#ededed",
+          "background": "#f6f6f6",
           "background_gradient": "",
-          "text": "#1c1c1c",
-          "button": "#ffffff",
-          "button_label": "#1c1c1c",
-          "secondary_button_label": "#1c1c1c",
+          "text": "#2e2e2d",
+          "button": "#2e2e2d",
+          "button_label": "#ffffff",
+          "secondary_button_label": "#2e2e2d",
           "shadow": "#000000"
         }
       },
       "scheme-4": {
         "settings": {
-          "background": "#1c1c1c",
+          "background": "#2e2e2d",
           "background_gradient": "",
           "text": "#ffffff",
-          "button": "#ffffff",
-          "button_label": "#1c1c1c",
+          "button": "#c72a09",
+          "button_label": "#ffffff",
           "secondary_button_label": "#ffffff",
           "shadow": "#000000"
         }
       },
       "scheme-5": {
         "settings": {
-          "background": "#2e2e2d",
+          "background": "#c72a09",
           "background_gradient": "",
           "text": "#ffffff",
-          "button": "#f9ca4f",
-          "button_label": "#1c1c1c",
+          "button": "#ffffff",
+          "button_label": "#c72a09",
           "secondary_button_label": "#ffffff",
           "shadow": "#000000"
         }

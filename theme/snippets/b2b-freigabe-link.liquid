@@ -1,0 +1,46 @@
+{%- comment -%}
+  Der Verweis an einer Haendlersperre.
+
+  Ein Ziel, nicht zwei: /pages/haendler-werden. Dort steht oben ein Balken
+  "Schon Haendler? Anmelden", der den zweiten Weg abdeckt.
+
+  Warum nicht zwei Verweise nebeneinander: Auf einer Sammlungsseite steht
+  dieser Block einmal je Produktkachel, bei 85 Kacheln also 85 Mal. Zwei
+  blaue Zeilen pro Kachel sind dort Laerm, und die Anmeldung gilt ohnehin
+  nur fuer die Minderheit, die schon ein Konto hat.
+
+  Warum das Formular und nicht die Anmeldung das Ziel ist: Wer hier landet,
+  ist in aller Regel noch kein Haendler. Schickt man ihn zur Anmeldung,
+  bestaetigt er seine E-Mail - und sieht danach immer noch keine Preise,
+  weil ihm die Freigabe fehlt. Eine Sackgasse, die aussieht wie ein Fehler.
+
+  Freigegebene Haendler sehen davon nichts: die aufrufenden Stellen rendern
+  das Snippet nur im else-Zweig ihrer eigenen dealer-approved-Pruefung.
+
+  @param klasse     CSS-Klassen fuer den Verweis
+  @param gast_text  Ueberschreibt die Beschriftung. Fertiger Text, kein
+                    Uebersetzungsschluessel.
+
+  @example
+  {% render 'b2b-freigabe-link', klasse: 'button button--secondary' %}
+{%- endcomment -%}
+
+{%- liquid
+  if customer and customer.tags contains 'dealer-pending'
+    assign b2b_text = 'templates.dealer_registration.approval_pending' | t
+  else
+    assign b2b_text = 'templates.dealer_registration.unlock_price' | t
+  endif
+
+  comment
+    Ein uebergebener Text ist fertiger Text und darf nicht durch den
+    t-Filter - sonst steht dort "Translation missing: de.Anmelden".
+  endcomment
+  if gast_text != blank
+    assign b2b_text = gast_text
+  endif
+-%}
+
+<a href="/pages/haendler-werden" class="b2b-freigabe {{ klasse }}">
+  {{- b2b_text -}}
+</a>

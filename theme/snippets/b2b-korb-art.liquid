@@ -1,0 +1,174 @@
+{%- comment -%}
+  Der Kopf über den Warenkorbpositionen: was diese Bestellung ist und was für
+  sie gilt.
+
+  Im Warenkorb gibt es nur eine Art: die Nachbestellung. Eine Vororder geht
+  nicht durch den Warenkorb – sie ist eine E-Mail-Anfrage aus der Maske unter
+  /pages/vororder, wird von Hand bearbeitet und mit einer Rechnung
+  beantwortet.
+
+  Die 5 % müssen zu theme/snippets/b2b-preis.liquid und zu
+  extensions/order-value-discount/src/run.ts passen. Versandkostenfrei ab
+  300 Packs ist ein Rabatt "Kostenloser Versand" in der Shopify-Verwaltung -
+  hier steht nur der Hinweis.
+
+  Mindestbestellwert aus snippets/b2b-mindestwert (300 € netto, gemessen an
+  cart.total_price - die Preise sind netto).
+  Darunter sind alle Kassen-Knöpfe gesperrt: hier im Kopf per Liquid, im
+  Fuß per assets/cart.js, das data-b2b-mindestwert-erreicht liest. Die
+  Function extensions/minimum-order-value steht noch auf 500 € und ist nicht
+  ausgerollt - vor dem Ausrollen auf 300 setzen.
+
+  Der Kopf steht in main-cart-items in #b2b-korb-kopf und wird nach jeder
+  Mengenänderung mit neu gezeichnet (assets/cart.js, getSectionsToRender).
+
+  Zwei Stufen, immer nur die nächste offene wird genannt: erst "noch N Packs
+  bis versandkostenfrei" (300), dann "noch N Packs bis −5 %" (500).
+  Erreichtes steht als Abzeichen davor.
+
+  @param kompakt  true für die Warenkorb-Schublade
+{%- endcomment -%}
+
+{%- comment -%}
+  Das Warenkorb-Merkmal "Vororder" wird entfernt, sobald es auftaucht, und
+  nicht nur beim leeren Warenkorb: Shopify behält Merkmale auch dann, wenn
+  die letzte Position entfernt wird, und ein Warenkorb mit diesem Merkmal ist
+  falsch beschriftet.
+{%- endcomment -%}
+{%- if cart.attributes.Vororder != blank -%}
+  <script>
+    fetch('{{ routes.cart_update_url }}', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ attributes: { Vororder: '' } })
+    }).catch(function () {});
+  </script>
+{%- endif -%}
+
+{%- if cart != empty -%}
+  {%- liquid
+    assign satz = 5
+    assign ab_packs = 500
+    assign versandfrei_ab = 300
+    capture mindestwert_text
+      render 'b2b-mindestwert'
+    endcapture
+    assign mindestwert_euro = mindestwert_text | plus: 0
+    assign mindestwert = mindestwert_euro | times: 100
+    assign wert_fehlt = mindestwert | minus: cart.total_price
+    assign mindestwert_erreicht = true
+    if wert_fehlt > 0
+      assign mindestwert_erreicht = false
+    endif
+
+    comment
+      Packs ohne Einzelstuecke (Ausstellungsstaender), siehe b2b-packs.
+    endcomment
+    capture packs_text
+      render 'b2b-packs'
+    endcapture
+    assign packs = packs_text | plus: 0
+
+    assign greift = false
+    if packs >= ab_packs
+      assign greift = true
+    endif
+    assign versandfrei = false
+    if packs >= versandfrei_ab
+      assign versandfrei = true
+    endif
+
+    comment
+      Die 5 % gelten nur fuer Packs - Einzelstuecke bleiben aussen vor.
+    endcomment
+    assign rabattfaehig = cart.total_price
+    for item in cart.items
+      if item.product.tags contains 'einzelstueck'
+        assign rabattfaehig = rabattfaehig | minus: item.final_line_price
+      endif
+    endfor
+    assign ersparnis = rabattfaehig | times: satz | divided_by: 100
+    assign fehlende_packs = ab_packs | minus: packs
+    assign fehlende_versand = versandfrei_ab | minus: packs
+  -%}
+
+  <div class="b2b-art{% if kompakt %} b2b-art--kompakt{% endif %}" data-b2b-mindestwert-erreicht="{{ mindestwert_erreicht }}">
+    <p class="b2b-art__zeile">
+      <span class="b2b-art__name">Nachbestellung</span>
+
+      {%- if versandfrei -%}
+        <span class="b2b-art__satz">versandkostenfrei</span>
+      {%- endif -%}
+      {%- if greift -%}
+        <span class="b2b-art__satz">&minus;{{ satz }}&nbsp;%</span>
+        <span class="b2b-art__sparen">Du sparst {{ ersparnis | money }}</span>
+      {%- endif -%}
+
+      {%- unless mindestwert_erreicht -%}
+        <span class="b2b-art__satz b2b-art__satz--fehlt">
+          noch {{ wert_fehlt | money }} bis zum Mindestbestellwert
+        </span>
+      {%- endunless -%}
+
+      {%- unless versandfrei -%}
+        <span class="b2b-art__satz b2b-art__satz--offen">
+          noch {{ fehlende_versand }} Packs bis versandkostenfrei
+        </span>
+      {%- else -%}
+        {%- unless greift -%}
+          <span class="b2b-art__satz b2b-art__satz--offen">
+            noch {{ fehlende_packs }} Packs bis &minus;{{ satz }}&nbsp;%
+          </span>
+        {%- endunless -%}
+      {%- endunless -%}
+
+      {%- unless kompakt -%}
+        {%- comment -%}
+          Zur Kasse ohne Scrollen. Gehoert zum Formular #cart in
+          main-cart-items, wie der Knopf im Fuss.
+        {%- endcomment -%}
+        <button
+          type="submit"
+          form="cart"
+          name="checkout"
+          class="button button--primary b2b-art__kasse"
+          {% unless mindestwert_erreicht %}disabled aria-describedby="b2b-art-mindestwert"{% endunless %}
+        >
+          Zur Kasse
+        </button>
+      {%- endunless -%}
+    </p>
+    {%- unless mindestwert_erreicht or kompakt -%}
+      <p class="b2b-art__mindestwert" id="b2b-art-mindestwert">
+        Nachbestellungen gehen ab {{ mindestwert_euro }} € netto. Es fehlen noch {{ wert_fehlt | money }}.
+      </p>
+    {%- endunless -%}
+
+    {%- unless kompakt -%}
+      <dl class="b2b-art__regeln">
+        <div>
+          <dt>Lieferung</dt>
+          <dd>aus dem Lager</dd>
+        </div>
+        <div>
+          <dt>Versand</dt>
+          <dd>kostenlos ab {{ versandfrei_ab }} Packs</dd>
+        </div>
+        <div>
+          <dt>Rabatt</dt>
+          <dd>{{ satz }} % ab {{ ab_packs }} Packs im Warenkorb</dd>
+        </div>
+        <div>
+          <dt>Mindestbestellwert</dt>
+          <dd>{{ mindestwert_euro }} € netto</dd>
+        </div>
+      </dl>
+
+      <p class="b2b-art__fussnote">
+        Ware aus der nächsten Produktion bestellst du über die
+        <a href="/pages/vororder">Vororder</a> – eigene Lieferzeit, eigener
+        Rabatt, und sie läuft nicht über die Kasse.
+      </p>
+    {%- endunless -%}
+  </div>
+{%- endif -%}

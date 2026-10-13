@@ -1,0 +1,219 @@
+{%- comment -%}
+  Alle Größen eines Produkts auf einen Blick bestellen – in der Kaufbox der
+  Produktseite, ohne Scrollen.
+
+  Ersetzt auf der Produktseite Variantenwahl, Menge, Kaufknopf und die
+  Größentabelle darunter: Händler nehmen meist mehrere Größen auf einmal.
+  Je Größe 0 oder ein Vielfaches von 5 (5er-Packs, wie snippets/quantity-input),
+  höchstens der Lagerbestand. Ein Knopf legt alles zusammen in den Warenkorb.
+
+  Einzelstücke (Tag "einzelstueck", z. B. der Ausstellungsständer) gehen in
+  1er-Schritten und heißen Stück statt Packs.
+
+  Nur für freigeschaltete Händler. Gäste sehen beim Preis den Verweis auf die
+  Freischaltung.
+
+  @param product
+{%- endcomment -%}
+
+{%- if customer and customer.tags contains 'dealer-approved' -%}
+  {%- liquid
+    assign schritt = 5
+    assign einheit = 'Packs'
+    if product.tags contains 'einzelstueck'
+      assign schritt = 1
+      assign einheit = 'Stück'
+    endif
+  -%}
+  <div class="b2b-gb" data-b2b-gb>
+    <p class="b2b-gb__kopf">
+      {%- if product.has_only_default_variant -%}Menge{%- else -%}Menge je Größe{%- endif -%}
+      <span>{% if schritt == 1 %}einzeln bestellbar{% else %}in 5er-Packs{% endif %}</span>
+    </p>
+
+    <ul class="b2b-gb__liste">
+      {%- for variant in product.variants -%}
+        {%- liquid
+          assign lager = nil
+          if variant.inventory_management == 'shopify' and variant.inventory_policy != 'continue'
+            assign lager = variant.inventory_quantity | at_least: 0
+          endif
+
+          comment
+            Hoechstmenge in ganzen Schritten: bei 7 im Lager gehen 5 Packs.
+          endcomment
+          assign hoechst = ''
+          if lager != nil
+            assign hoechst = lager | divided_by: schritt | times: schritt
+          endif
+
+          assign aus = false
+          if variant.available == false or hoechst == 0
+            assign aus = true
+          endif
+
+          if product.has_only_default_variant and schritt == 1
+            assign name = product.title
+          elsif product.has_only_default_variant
+            assign name = 'Einheitsgröße'
+          else
+            assign name = variant.title
+          endif
+        -%}
+        <li class="b2b-gb__zeile{% if aus %} ist-aus{% endif %}">
+          <span class="b2b-gb__name">
+            {{ name | escape }}
+            <span class="b2b-gb__lager">
+              {%- if aus -%}
+                ausverkauft
+              {%- elsif lager != nil -%}
+                {{ lager }} auf Lager
+              {%- else -%}
+                lieferbar
+              {%- endif -%}
+            </span>
+          </span>
+          <div class="b2b-gb__zahl">
+            <button type="button" data-gb-minus aria-label="Weniger {{ name | escape }}" disabled>&minus;</button>
+            <input
+              type="number"
+              inputmode="numeric"
+              min="0"
+              step="{{ schritt }}"
+              value=""
+              placeholder="0"
+              {% if hoechst != '' %}max="{{ hoechst }}"{% endif %}
+              data-variante="{{ variant.id }}"
+              data-preis="{{ variant.price }}"
+              aria-label="{{ einheit }} {{ name | escape }}"
+              {% if aus %}disabled{% endif %}
+            >
+            <button type="button" data-gb-plus aria-label="Mehr {{ name | escape }}"{% if aus %} disabled{% endif %}>+</button>
+          </div>
+        </li>
+      {%- endfor -%}
+    </ul>
+
+    <p class="b2b-gb__summe" data-gb-summe>Noch keine Größe gewählt.</p>
+    <button type="button" class="button button--primary button--full-width b2b-gb__knopf" data-gb-knopf disabled>
+      In den Warenkorb
+    </button>
+    <p class="b2b-gb__meldung" data-gb-meldung role="status" hidden></p>
+  </div>
+
+  <script>
+    (function () {
+      var wurzel = document.currentScript.previousElementSibling;
+      if (!wurzel || !wurzel.hasAttribute('data-b2b-gb')) return;
+      var SCHRITT = {{ schritt }};
+      var EINHEIT = '{{ einheit }}';
+      var summe = wurzel.querySelector('[data-gb-summe]');
+      var knopf = wurzel.querySelector('[data-gb-knopf]');
+      var meldung = wurzel.querySelector('[data-gb-meldung]');
+      var felder = Array.prototype.slice.call(wurzel.querySelectorAll('input[data-variante]'));
+
+      function euro(cent) {
+        return '€' + (cent / 100).toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+
+      /* 0 oder ein Vielfaches des Schritts, nie über dem Lagerbestand. */
+      function gueltig(feld, menge) {
+        var max = feld.max === '' ? Infinity : parseInt(feld.max, 10);
+        menge = Math.ceil((parseInt(menge, 10) || 0) / SCHRITT) * SCHRITT;
+        return Math.max(0, Math.min(menge, max));
+      }
+
+      function zeigen() {
+        var packs = 0;
+        var wert = 0;
+        felder.forEach(function (feld) {
+          var m = parseInt(feld.value, 10) || 0;
+          packs += m;
+          wert += m * (parseInt(feld.dataset.preis, 10) || 0);
+          var zeile = feld.parentNode;
+          zeile.querySelector('[data-gb-minus]').disabled = m <= 0;
+          var max = feld.max === '' ? Infinity : parseInt(feld.max, 10);
+          zeile.querySelector('[data-gb-plus]').disabled = feld.disabled || m >= max;
+        });
+        summe.textContent = packs ? packs.toLocaleString('de-DE') + ' ' + EINHEIT + ' · ' + euro(wert) + ' netto' : 'Noch keine Größe gewählt.';
+        knopf.disabled = packs === 0;
+      }
+
+      felder.forEach(function (feld) {
+        var zeile = feld.parentNode;
+        function setzen(menge) {
+          var m = gueltig(feld, menge);
+          feld.value = m > 0 ? m : '';
+          meldung.hidden = true;
+          zeigen();
+        }
+        zeile.querySelector('[data-gb-minus]').addEventListener('click', function () {
+          setzen((parseInt(feld.value, 10) || 0) - SCHRITT);
+        });
+        zeile.querySelector('[data-gb-plus]').addEventListener('click', function () {
+          setzen((parseInt(feld.value, 10) || 0) + SCHRITT);
+        });
+        feld.addEventListener('change', function () {
+          setzen(feld.value);
+        });
+      });
+
+      knopf.addEventListener('click', function () {
+        var posten = felder
+          .filter(function (f) { return (parseInt(f.value, 10) || 0) > 0; })
+          .map(function (f) { return { id: parseInt(f.dataset.variante, 10), quantity: parseInt(f.value, 10) }; });
+        if (!posten.length) return;
+
+        knopf.disabled = true;
+        fetch('{{ routes.cart_add_url }}.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({
+            items: posten,
+            sections: 'cart-notification-product,cart-notification-button,cart-icon-bubble',
+            sections_url: window.location.pathname
+          })
+        })
+          .then(function (antwort) { return antwort.json().then(function (d) { return { ok: antwort.ok, d: d }; }); })
+          .then(function (r) {
+            meldung.hidden = false;
+            if (!r.ok) {
+              meldung.textContent = r.d.description || r.d.message || 'Das hat nicht geklappt. Bitte versuch es noch einmal.';
+              meldung.classList.add('ist-fehler');
+              zeigen();
+              return;
+            }
+            /* Shopifys Popup "Zum Warenkorb hinzugefügt" (snippets/cart-notification).
+               Es zeigt die erste hinzugefügte Größe; renderContents braucht deren key. */
+            var popup = document.querySelector('cart-notification');
+            if (popup && r.d.sections && r.d.items && r.d.items.length) {
+              meldung.hidden = true;
+              popup.renderContents(Object.assign({}, r.d, { key: r.d.items[0].key }));
+              felder.forEach(function (f) { f.value = ''; });
+              zeigen();
+              return;
+            }
+            var packs = posten.reduce(function (s, p) { return s + p.quantity; }, 0);
+            meldung.classList.remove('ist-fehler');
+            meldung.innerHTML = '✓ ' + packs.toLocaleString('de-DE') + ' ' + EINHEIT + ' im Warenkorb · <a href="{{ routes.cart_url }}">Zum Warenkorb</a>';
+            /* Die Zahl am Warenkorb-Symbol mitziehen. */
+            var blase = document.getElementById('cart-icon-bubble');
+            if (blase && r.d.sections && r.d.sections['cart-icon-bubble']) {
+              var neu = new DOMParser().parseFromString(r.d.sections['cart-icon-bubble'], 'text/html').querySelector('.shopify-section');
+              if (neu) blase.innerHTML = neu.innerHTML;
+            }
+            felder.forEach(function (f) { f.value = ''; });
+            zeigen();
+          })
+          .catch(function () {
+            meldung.hidden = false;
+            meldung.classList.add('ist-fehler');
+            meldung.textContent = 'Keine Verbindung. Bitte versuch es noch einmal.';
+            zeigen();
+          });
+      });
+
+      zeigen();
+    })();
+  </script>
+{%- endif -%}

@@ -1,0 +1,79 @@
+{%- comment -%}
+  Hangtag Vorder- und Rückseite als 2. und 3. Bild in der Produktgalerie –
+  bei allen Socken.
+
+  Im Theme statt als Produktbild in Shopify: die Produkte kommen per Abgleich
+  aus JTL, der würde zusätzliche Produktbilder wieder überschreiben. So
+  erscheint das Hangtag automatisch bei jedem Socken, auch bei neuen.
+
+  Welche Bilder und welche Produkte ausgenommen sind, steht in den
+  Einstellungen des Produkt-Abschnitts (Hangtag). Ausgenommen wird über
+  Stichworte im Produkttitel, z. B. Mütze, Adventskalender.
+
+  Gibt Listenelemente aus – wird von product-media-gallery innerhalb der
+  Bildliste gerendert, direkt nach dem ersten Bild.
+
+  @param product
+{%- endcomment -%}
+
+{%- liquid
+  assign zeigen = true
+  if section.settings.b2b_hangtag_vorne == blank and section.settings.b2b_hangtag_hinten == blank
+    assign zeigen = false
+  endif
+
+  comment
+    Einzelstuecke (Ausstellungsstaender) haben kein Hangtag.
+  endcomment
+  if product.tags contains 'einzelstueck'
+    assign zeigen = false
+  endif
+
+  assign ausnahmen = section.settings.b2b_hangtag_ohne | split: ','
+  for ausnahme in ausnahmen
+    assign wort = ausnahme | strip
+    if wort != blank and product.title contains wort
+      assign zeigen = false
+    endif
+  endfor
+-%}
+
+{%- if zeigen -%}
+  {%- for seite in (1..2) -%}
+    {%- liquid
+      if seite == 1
+        assign bild = section.settings.b2b_hangtag_vorne
+      else
+        assign bild = section.settings.b2b_hangtag_hinten
+      endif
+    -%}
+    {%- if bild != blank -%}
+      <li
+        class="product__media-item grid__item slider__slide b2b-hangtag"
+        data-media-id="{{ section.id }}-hangtag-{{ seite }}"
+      >
+        <div
+          class="product-media-container media-type-image media-fit-contain global-media-settings gradient"
+          style="--ratio: {{ bild.aspect_ratio | default: 1.0 }}; --preview-ratio: {{ bild.aspect_ratio | default: 1.0 }};"
+        >
+          <div class="product__media media media--transparent">
+            {%- if seite == 1 -%}
+              {%- assign beschreibung = 'Hangtag Vorderseite' -%}
+            {%- else -%}
+              {%- assign beschreibung = 'Hangtag Rückseite mit Pflegehinweisen' -%}
+            {%- endif -%}
+            {{
+              bild
+              | image_url: width: 1946
+              | image_tag:
+                loading: 'lazy',
+                alt: beschreibung,
+                sizes: '(min-width: 990px) 30vw, (min-width: 750px) 50vw, 100vw',
+                widths: '493, 713, 990, 1426, 1946'
+            }}
+          </div>
+        </div>
+      </li>
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}

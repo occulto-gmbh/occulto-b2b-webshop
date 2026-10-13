@@ -11,10 +11,6 @@
       <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
     {%- endif -%}
 
-    {%- unless settings.type_header_font.system? and settings.type_body_font.system? -%}
-      <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
-    {%- endunless -%}
-
     <title>
       {{ page_title }}
       {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
@@ -65,19 +61,13 @@
 
     {{ content_for_header }}
 
-    {%- liquid
-      assign body_font_bold = settings.type_body_font | font_modify: 'weight', 'bold'
-      assign body_font_italic = settings.type_body_font | font_modify: 'style', 'italic'
-      assign body_font_bold_italic = body_font_bold | font_modify: 'style', 'italic'
-    %}
-
+    {%- comment -%}
+      Keine Schriften aus den Theme-Einstellungen: die Hausschrift basic-sans kommt aus
+      snippets/brand-schrift und überschreibt die Schriftvariablen. Die Shopify-Schriften
+      hier zu laden hieße, Dateien zu laden, die nie dargestellt werden.
+    {%- endcomment -%}
+    {%- assign scheme_classes = '' -%}
     {% style %}
-      {{ settings.type_body_font | font_face: font_display: 'swap' }}
-      {{ body_font_bold | font_face: font_display: 'swap' }}
-      {{ body_font_italic | font_face: font_display: 'swap' }}
-      {{ body_font_bold_italic | font_face: font_display: 'swap' }}
-      {{ settings.type_header_font | font_face: font_display: 'swap' }}
-
       {% for scheme in settings.color_schemes -%}
         {% assign scheme_classes = scheme_classes | append: ', .color-' | append: scheme.id %}
         {% if forloop.index == 1 -%}
@@ -289,17 +279,6 @@
       {{ 'component-discounts.css' | asset_url | stylesheet_tag }}
     {%- endif -%}
 
-    {%- unless settings.type_body_font.system? -%}
-      {% comment %}theme-check-disable AssetPreload{% endcomment %}
-      <link rel="preload" as="font" href="{{ settings.type_body_font | font_url }}" type="font/woff2" crossorigin>
-      {% comment %}theme-check-enable AssetPreload{% endcomment %}
-    {%- endunless -%}
-    {%- unless settings.type_header_font.system? -%}
-      {% comment %}theme-check-disable AssetPreload{% endcomment %}
-      <link rel="preload" as="font" href="{{ settings.type_header_font | font_url }}" type="font/woff2" crossorigin>
-      {% comment %}theme-check-enable AssetPreload{% endcomment %}
-    {%- endunless -%}
-
     {%- if localization.available_countries.size > 1 or localization.available_languages.size > 1 -%}
       {{ 'component-localization-form.css' | asset_url | stylesheet_tag: preload: true }}
       <script src="{{ 'localization-form.js' | asset_url }}" defer="defer"></script>
@@ -319,6 +298,19 @@
         document.documentElement.classList.add('shopify-design-mode');
       }
     </script>
+
+    {%- comment -%}
+      Ganz am Ende des Kopfbereichs, damit die Schriftvariablen die aus dem
+      Theme-Stilblock darueber ueberschreiben.
+    {%- endcomment -%}
+    {% render 'brand-schrift' %}
+
+    {%- comment -%}
+      Markenwerte und Knopfverhalten fuer den ganzen Shop. Nach der Schrift,
+      damit beide zusammen am Ende des Kopfbereichs stehen und die Werte des
+      Themes ueberschreiben koennen.
+    {%- endcomment -%}
+    {{ 'b2b-stil.css' | asset_url | stylesheet_tag }}
   </head>
 
   <body class="gradient{% if settings.animations_hover_elements != 'none' %} animate--hover-{{ settings.animations_hover_elements }}{% endif %}">
@@ -401,5 +393,15 @@
     {%- if settings.cart_type == 'drawer' -%}
       <script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
     {%- endif -%}
+
+    {%- comment -%}
+      Der schwebende Kontaktknopf, auf jeder Seite des Shops – deshalb hier und
+      nicht in einer Vorlage; stuende er zusaetzlich in einer, laegen zwei Knoepfe
+      uebereinander.
+
+      Ganz am Ende des Koerpers, damit er ueber allem liegt, ohne dass es
+      eine hohe z-index-Nummer braucht.
+    {%- endcomment -%}
+    {% render 'b2b-kontakt' %}
   </body>
 </html>
