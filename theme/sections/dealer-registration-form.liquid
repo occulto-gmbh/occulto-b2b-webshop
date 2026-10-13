@@ -24,7 +24,52 @@
     <h1 class="title title-wrapper--no-top-margin inline-richtext{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
       {{ 'templates.dealer_registration.heading' | t }}
     </h1>
-    <p>{{ 'templates.dealer_registration.intro' | t }}</p>
+    {%- liquid
+      comment
+        Wer angemeldet ist, bekommt statt des Formulars seinen Stand:
+        freigeschaltet (dealer-approved) oder Anfrage in Pruefung
+        (dealer-pending, setzt b2b-webshop/app/routes/register.tsx). Nur
+        angemeldet ohne Anfrage - etwa nach Anmeldung per Code ohne
+        Formular - sieht den Hinweis UND das Formular.
+      endcomment
+      assign b2b_status = 'gast'
+      if customer
+        assign b2b_status = 'angemeldet'
+        if customer.tags contains 'dealer-approved'
+          assign b2b_status = 'freigeschaltet'
+        elsif customer.tags contains 'dealer-pending'
+          assign b2b_status = 'in-pruefung'
+        endif
+      endif
+    -%}
+
+    {%- case b2b_status -%}
+      {%- when 'freigeschaltet' -%}
+        <div class="b2b-status b2b-status--ok" role="status">
+          <p class="b2b-status__titel">Du bist angemeldet und als Händler freigeschaltet.</p>
+          <p class="b2b-status__text">Angemeldet als {{ customer.email | escape }}. Händlerpreise, Nachbestellung und Vororder stehen dir offen.</p>
+          <p class="b2b-status__knoepfe">
+            <a class="button button--primary" href="{{ routes.all_products_collection_url }}">Zum Sortiment</a>
+            <a class="button button--secondary" href="/pages/massenbestellung">Massenbestellung</a>
+            <a class="button button--secondary" href="/pages/vororder">Vororder</a>
+          </p>
+        </div>
+      {%- when 'in-pruefung' -%}
+        <div class="b2b-status" role="status">
+          <p class="b2b-status__titel">Du bist angemeldet – deine Freischaltung läuft.</p>
+          <p class="b2b-status__text">Angemeldet als {{ customer.email | escape }}. Wir haben deine Anfrage und prüfen sie. Sobald du freigeschaltet bist, siehst du Händlerpreise und kannst bestellen. Eilig? Ruf uns an: <a href="tel:+4980313506041">08031 350 60 41</a>.</p>
+        </div>
+      {%- when 'angemeldet' -%}
+        <div class="b2b-status" role="status">
+          <p class="b2b-status__titel">Du bist angemeldet, aber noch nicht als Händler freigeschaltet.</p>
+          <p class="b2b-status__text">Angemeldet als {{ customer.email | escape }}. Füll das Formular aus, dann prüfen wir deine Anfrage.</p>
+        </div>
+        <p>{{ 'templates.dealer_registration.intro' | t }}</p>
+      {%- else -%}
+        <p>{{ 'templates.dealer_registration.intro' | t }}</p>
+    {%- endcase -%}
+
+    {%- if b2b_status == 'gast' or b2b_status == 'angemeldet' -%}
 
     {%- comment -%}
       Der zweite Weg. Wer schon ein Haendlerkonto hat, kommt ueber die
@@ -359,6 +404,7 @@
         </button>
       </div>
     </form>
+    {%- endif -%}
   </div>
 </div>
 

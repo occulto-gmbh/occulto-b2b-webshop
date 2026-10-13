@@ -73,6 +73,10 @@ Nie im Live-Theme aufheben.
 - 5 % stehen in `snippets/b2b-preis.liquid` **und** `b2b-webshop/extensions/order-value-discount/src/run.ts` – gleich halten.
 - Vororder-Mengen stehen als Einstellungen in **zwei** Abschnitten (Maske und Warenkorb-Übersicht) und in deren
   Vorlagen (`page.b2b-vororder.json`, `cart.json`) – gleich halten. Texte dazu in `b2b-konditionen.liquid`.
+- **Mindestbestellwert Nachbestellung 300 € netto** – einzige Stelle `snippets/b2b-mindestwert.liquid`. Sperrt Kassen-Knopf im Kopf
+  (`b2b-korb-art`) und im Fuß (`main-cart-footer`, nach Änderungen per `b2bKasseNachMindestwert` in `assets/cart.js`); das Popup
+  hat keinen Kassen-Knopf. Nur im Browser: `/checkout` direkt geht durch, bis `extensions/minimum-order-value` (steht noch auf 500!)
+  auf 300 gesetzt und ausgerollt ist. Die Warenkorb-Schublade (`cart-drawer`, derzeit aus) ist nicht gesperrt.
 - Warenkorb-Kopf der Nachbestellung (`b2b-korb-art`) nennt immer nur die nächste offene Stufe: erst Versand (300 Packs), dann −5 % (500 Packs).
 - Vororder: `sections/b2b-vororder-maske.liquid` (Auswahl), `sections/b2b-vororder-korb.liquid` (Übersicht auf /cart),
   Logik in `assets/b2b-vororder.js`. Nachbestellung-Kopf: `snippets/b2b-korb-art.liquid`.

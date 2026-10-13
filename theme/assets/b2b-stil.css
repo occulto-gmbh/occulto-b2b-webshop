@@ -759,3 +759,88 @@ main .container {
   font-size: 13px;
   line-height: 1.4;
 }
+
+/* ------------------------------------------------- Kasse im Warenkorb-Kopf
+   "Zur Kasse" rechts in der Kopfzeile der Nachbestellung, damit er ohne
+   Scrollen erreichbar ist (snippets/b2b-korb-art.liquid). */
+.b2b-art__kasse {
+  min-width: 180px;
+  min-height: 48px;
+  margin-left: auto;
+}
+
+.b2b-art__kasse[disabled] {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+/* Mindestbestellwert noch nicht erreicht: deckend rot, weil es die Kasse
+   sperrt - anders als die offenen Rabattstufen. */
+.b2b-art__satz--fehlt {
+  background: rgb(var(--b2b-akzent, 199 42 9));
+  color: rgb(255 255 255);
+}
+
+.b2b-art__mindestwert {
+  margin: 10px 0 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+#main-cart-footer .b2b-art__mindestwert {
+  margin: 0 0 10px;
+  text-align: right;
+}
+
+@media screen and (max-width: 749px) {
+  .b2b-art__kasse {
+    width: 100%;
+    margin-left: 0;
+  }
+  #main-cart-footer .b2b-art__mindestwert {
+    text-align: center;
+  }
+}
+
+/* hidden muss auch gegen Dawns display-Regeln gewinnen (assets/cart.js). */
+#main-cart-footer [data-b2b-mindestwert-hinweis][hidden],
+#main-cart-footer .cart__dynamic-checkout-buttons[hidden] {
+  display: none;
+}
+
+/* ---------------------------------------------- Stand auf "Haendler werden"
+   Statt des Formulars fuer angemeldete Besucher
+   (sections/dealer-registration-form.liquid). Weiss, Linie links: rot bei
+   Freischaltung, sonst Schriftfarbe. */
+.b2b-status {
+  margin: 24px 0 32px;
+  padding: 22px 24px;
+  border: 1px solid rgb(var(--b2b-linie, 226 226 225));
+  border-left: 5px solid rgb(var(--b2b-tinte, 46 46 45));
+  border-radius: 8px;
+  background: rgb(255 255 255);
+}
+
+.b2b-status--ok {
+  border-left-color: rgb(var(--b2b-akzent, 199 42 9));
+}
+
+.b2b-status__titel {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.b2b-status__text {
+  margin: 8px 0 0;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.b2b-status__knoepfe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0 0;
+}

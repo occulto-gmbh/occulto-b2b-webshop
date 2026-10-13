@@ -59,7 +59,12 @@
       Vororder-Hinweis. Steht ueber den Positionen, weil er fuer alle gilt:
       ein Warenkorb ist entweder eine Vororder oder eine normale Bestellung.
     {%- endcomment -%}
-    {% render 'b2b-korb-art' %}
+    {%- comment -%}
+      #b2b-korb-kopf wird nach jeder Mengenaenderung neu gezeichnet
+      (assets/cart.js) - sonst stuenden Packs, Schwellen und Mindestwert
+      auf dem Stand des Seitenaufrufs.
+    {%- endcomment -%}
+    <div id="b2b-korb-kopf">{% render 'b2b-korb-art' %}</div>
 
     <form action="{{ routes.cart_url }}" class="cart__contents critical-hidden" method="post" id="cart" novalidate>
       <div class="cart__items" id="main-cart-items" data-id="{{ section.id }}">

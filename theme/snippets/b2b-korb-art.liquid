@@ -12,6 +12,16 @@
   300 Packs ist ein Rabatt "Kostenloser Versand" in der Shopify-Verwaltung -
   hier steht nur der Hinweis.
 
+  Mindestbestellwert aus snippets/b2b-mindestwert (300 € netto, gemessen an
+  cart.total_price - die Preise sind netto).
+  Darunter sind alle Kassen-Knöpfe gesperrt: hier im Kopf per Liquid, im
+  Fuß per assets/cart.js, das data-b2b-mindestwert-erreicht liest. Die
+  Function extensions/minimum-order-value steht noch auf 500 € und ist nicht
+  ausgerollt - vor dem Ausrollen auf 300 setzen.
+
+  Der Kopf steht in main-cart-items in #b2b-korb-kopf und wird nach jeder
+  Mengenänderung mit neu gezeichnet (assets/cart.js, getSectionsToRender).
+
   Zwei Stufen, immer nur die nächste offene wird genannt: erst "noch N Packs
   bis versandkostenfrei" (300), dann "noch N Packs bis −5 %" (500).
   Erreichtes steht als Abzeichen davor.
@@ -40,6 +50,16 @@
     assign satz = 5
     assign ab_packs = 500
     assign versandfrei_ab = 300
+    capture mindestwert_text
+      render 'b2b-mindestwert'
+    endcapture
+    assign mindestwert_euro = mindestwert_text | plus: 0
+    assign mindestwert = mindestwert_euro | times: 100
+    assign wert_fehlt = mindestwert | minus: cart.total_price
+    assign mindestwert_erreicht = true
+    if wert_fehlt > 0
+      assign mindestwert_erreicht = false
+    endif
 
     comment
       Packs ohne Einzelstuecke (Ausstellungsstaender), siehe b2b-packs.
@@ -72,7 +92,7 @@
     assign fehlende_versand = versandfrei_ab | minus: packs
   -%}
 
-  <div class="b2b-art{% if kompakt %} b2b-art--kompakt{% endif %}">
+  <div class="b2b-art{% if kompakt %} b2b-art--kompakt{% endif %}" data-b2b-mindestwert-erreicht="{{ mindestwert_erreicht }}">
     <p class="b2b-art__zeile">
       <span class="b2b-art__name">Nachbestellung</span>
 
@@ -83,6 +103,12 @@
         <span class="b2b-art__satz">&minus;{{ satz }}&nbsp;%</span>
         <span class="b2b-art__sparen">Du sparst {{ ersparnis | money }}</span>
       {%- endif -%}
+
+      {%- unless mindestwert_erreicht -%}
+        <span class="b2b-art__satz b2b-art__satz--fehlt">
+          noch {{ wert_fehlt | money }} bis zum Mindestbestellwert
+        </span>
+      {%- endunless -%}
 
       {%- unless versandfrei -%}
         <span class="b2b-art__satz b2b-art__satz--offen">
@@ -95,7 +121,28 @@
           </span>
         {%- endunless -%}
       {%- endunless -%}
+
+      {%- unless kompakt -%}
+        {%- comment -%}
+          Zur Kasse ohne Scrollen. Gehoert zum Formular #cart in
+          main-cart-items, wie der Knopf im Fuss.
+        {%- endcomment -%}
+        <button
+          type="submit"
+          form="cart"
+          name="checkout"
+          class="button button--primary b2b-art__kasse"
+          {% unless mindestwert_erreicht %}disabled aria-describedby="b2b-art-mindestwert"{% endunless %}
+        >
+          Zur Kasse
+        </button>
+      {%- endunless -%}
     </p>
+    {%- unless mindestwert_erreicht or kompakt -%}
+      <p class="b2b-art__mindestwert" id="b2b-art-mindestwert">
+        Nachbestellungen gehen ab {{ mindestwert_euro }} € netto. Es fehlen noch {{ wert_fehlt | money }}.
+      </p>
+    {%- endunless -%}
 
     {%- unless kompakt -%}
       <dl class="b2b-art__regeln">
@@ -112,8 +159,8 @@
           <dd>{{ satz }} % ab {{ ab_packs }} Packs im Warenkorb</dd>
         </div>
         <div>
-          <dt>Mindestmenge</dt>
-          <dd>keine</dd>
+          <dt>Mindestbestellwert</dt>
+          <dd>{{ mindestwert_euro }} € netto</dd>
         </div>
       </dl>
 

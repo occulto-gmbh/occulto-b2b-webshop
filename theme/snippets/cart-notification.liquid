@@ -39,15 +39,15 @@
         <a
           href="{{ routes.cart_url }}"
           id="cart-notification-button"
-          class="button button--secondary button--full-width"
+          class="button button--primary button--full-width"
         >
           {{- 'general.cart.view_empty_cart' | t -}}
         </a>
-        <form action="{{ routes.cart_url }}" method="post" id="cart-notification-form">
-          <button class="button button--primary button--full-width" name="checkout">
-            {{ 'sections.cart.checkout' | t }}
-          </button>
-        </form>
+        {%- comment -%}
+          B2B: kein Knopf direkt zur Kasse - der Mindestbestellwert wird im
+          Warenkorb geprueft (snippets/b2b-korb-art). Deshalb fuehrt der
+          Hauptknopf dorthin.
+        {%- endcomment -%}
         <button type="button" class="link button-label">{{ 'general.continue_shopping' | t }}</button>
       </div>
     </div>

@@ -155,8 +155,9 @@
         <p class="b2b-hb__mehr"><a href="{{ routes.account_url }}">Alle Bestellungen</a></p>
       {%- else -%}
         <p class="b2b-hb__leer">
-          Noch keine Bestellung. Leg los mit unserem Sortiment oder der
-          <a href="/pages/massenbestellung">Massenbestellung</a> – alle Artikel auf einer Seite.
+          Noch keine Bestellung. Leg los mit unserem
+          <a href="{{ routes.all_products_collection_url }}">Sortiment</a> oder lade deine Bestellliste in der
+          <a href="/pages/massenbestellung">Massenbestellung</a> hoch.
         </p>
       {%- endif -%}
     </section>
@@ -165,7 +166,7 @@
       <h2 class="b2b-hb__blockname">Schnellzugriff</h2>
       <ul class="b2b-hb__wege" role="list">
         <li><a href="{{ routes.all_products_collection_url }}"><strong>Sortiment</strong><span>Alle Socken mit Händlerpreis</span></a></li>
-        <li><a href="/pages/massenbestellung"><strong>Massenbestellung</strong><span>Alle Artikel und Größen auf einer Seite</span></a></li>
+        <li><a href="/pages/massenbestellung"><strong>Massenbestellung</strong><span>Bestellliste als CSV-Datei hochladen</span></a></li>
         <li><a href="{{ routes.collections_url }}/ausstellungsstander"><strong>Ausstellungsständer</strong><span>Für deine Verkaufsfläche</span></a></li>
         <li><a href="/pages/downloads"><strong>Downloads</strong><span>Produktdaten und Bilder</span></a></li>
         <li><a href="{{ konto_profil }}"><strong>Profil und Adressen</strong><span>Rechnungs- und Lieferadresse ändern</span></a></li>

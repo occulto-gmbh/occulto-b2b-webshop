@@ -109,13 +109,30 @@
                 </small>
               </div>
             {%- else -%}
+              {%- liquid
+                comment
+                  Mindestbestellwert der Nachbestellung, siehe snippets/b2b-mindestwert.
+                  Nach Mengenaenderungen zieht assets/cart.js den Stand nach.
+                endcomment
+                capture b2b_mindestwert_text
+                  render 'b2b-mindestwert'
+                endcapture
+                assign b2b_mindestwert = b2b_mindestwert_text | plus: 0 | times: 100
+                assign b2b_mindestwert_erreicht = true
+                if cart.total_price < b2b_mindestwert
+                  assign b2b_mindestwert_erreicht = false
+                endif
+              -%}
+              <p class="b2b-art__mindestwert" data-b2b-mindestwert-hinweis{% if b2b_mindestwert_erreicht or cart == empty %} hidden{% endif %}>
+                Mindestbestellwert {{ b2b_mindestwert_text | strip }} € netto noch nicht erreicht.
+              </p>
               <div class="cart__ctas" {{ block.shopify_attributes }}>
                 <button
                   type="submit"
                   id="checkout"
                   class="cart__checkout-button button"
                   name="checkout"
-                  {% if cart == empty %}
+                  {% if cart == empty or b2b_mindestwert_erreicht == false %}
                     disabled
                   {% endif %}
                   form="cart"
@@ -125,7 +142,7 @@
               </div>
 
               {%- if additional_checkout_buttons -%}
-                <div class="cart__dynamic-checkout-buttons additional-checkout-buttons">
+                <div class="cart__dynamic-checkout-buttons additional-checkout-buttons"{% unless b2b_mindestwert_erreicht %} hidden{% endunless %}>
                   {{ content_for_additional_checkout_buttons }}
                 </div>
               {%- endif -%}
