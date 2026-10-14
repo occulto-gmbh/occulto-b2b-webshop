@@ -26,8 +26,9 @@
   @param vorsatz   Text vor dem Preis, z. B. "ab" bei mehreren Varianten
   @param ohne_hinweis  true -> nur der Preis, ohne "-5 % ab …" und "Du sparst"
                        (fuer Summen: der Hinweis steht schon am Einzelpreis)
-  @param uvp       unverbindliche Preisempfehlung in Cent (aus der Wawi, in
-                   Shopify der Vergleichspreis). Steht klein darunter, nicht
+  @param uvp       unverbindliche Preisempfehlung in Cent NETTO (aus der Wawi,
+                   in Shopify der Vergleichspreis). Angezeigt wird sie brutto,
+                   so wie sie im Laden am Regal steht. Klein darunter, nicht
                    als Streichpreis - sonst saehe sie wie ein Rabatt aus.
   @param uvp_ab    true -> "UVP ab", wenn die Varianten verschiedene UVPs haben
   @param einzelstueck  true -> Artikel mit Tag "einzelstueck" (Ausstellungs-
@@ -121,6 +122,16 @@
   {%- endif -%}
 
   {%- if uvp != blank and uvp > preis -%}
-    <span class="b2b-preis__uvp">UVP {% if uvp_ab %}ab {% endif %}{{ uvp | money }}</span>
+    {%- liquid
+      comment
+        Netto -> brutto mit 19 %. Die Wawi rundet den Nettowert auf Cent, aus
+        7,99 brutto wird 6,71 netto - und 6,71 x 1,19 waere 7,98. Deshalb der
+        groesste Bruttopreis, der netto wieder genau den Wawi-Wert ergibt:
+        ceil((2 x netto + 1) x 119 / 200) - 1, ganzzahlig in Cent.
+        6,71 -> 7,99 / 8,39 -> 9,99 / 12,60 -> 14,99 / 16,80 -> 19,99 / 42,01 -> 49,99.
+      endcomment
+      assign uvp_brutto = uvp | times: 2 | plus: 1 | times: 119 | plus: 199 | divided_by: 200 | minus: 1
+    -%}
+    <span class="b2b-preis__uvp">UVP {% if uvp_ab %}ab {% endif %}{{ uvp_brutto | money }} inkl. MwSt.</span>
   {%- endif -%}
 </span>
