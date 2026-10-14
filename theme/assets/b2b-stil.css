@@ -962,3 +962,12 @@ main .container {
 .product__info-container .b2b-preis__bedingung {
   display: none;
 }
+
+/* Ziel-Zaehler im Kopf der Nachbestellung (snippets/b2b-korb-art.liquid). */
+.b2b-art__ziel {
+  margin: 14px 0 0;
+}
+
+.b2b-art__ziel .b2b-gb__ziel-text {
+  font-size: 18px;
+}

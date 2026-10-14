@@ -110,17 +110,23 @@
         </span>
       {%- endunless -%}
 
-      {%- unless versandfrei -%}
-        <span class="b2b-art__satz b2b-art__satz--offen">
-          noch {{ fehlende_versand }} Packs bis versandkostenfrei
-        </span>
-      {%- else -%}
-        {%- unless greift -%}
+      {%- comment -%}
+        Die naechste Stufe als Abzeichen nur noch in der kompakten Schublade.
+        Auf der Warenkorbseite steht sie gross darunter (Ziel-Zaehler).
+      {%- endcomment -%}
+      {%- if kompakt -%}
+        {%- unless versandfrei -%}
           <span class="b2b-art__satz b2b-art__satz--offen">
-            noch {{ fehlende_packs }} Packs bis &minus;{{ satz }}&nbsp;%
+            noch {{ fehlende_versand }} Packs bis versandkostenfrei
           </span>
+        {%- else -%}
+          {%- unless greift -%}
+            <span class="b2b-art__satz b2b-art__satz--offen">
+              noch {{ fehlende_packs }} Packs bis &minus;{{ satz }}&nbsp;%
+            </span>
+          {%- endunless -%}
         {%- endunless -%}
-      {%- endunless -%}
+      {%- endif -%}
 
       {%- unless kompakt -%}
         {%- comment -%}
@@ -138,6 +144,40 @@
         </button>
       {%- endunless -%}
     </p>
+    {%- unless kompakt -%}
+      {%- comment -%}
+        Ziel-Zaehler wie in der Kaufbox der Produktseite (gleiche Klassen,
+        Stil in b2b-stil.css): rot, mit Balken bis {{ ab_packs }} und Marke bei
+        {{ versandfrei_ab }}. Hier per Liquid - der Kopf wird nach jeder
+        Mengenaenderung neu gezeichnet.
+      {%- endcomment -%}
+      {%- liquid
+        assign ziel_marke = versandfrei_ab | times: 100 | divided_by: ab_packs
+        assign ziel_breite = packs | at_most: ab_packs | times: 100 | divided_by: ab_packs
+      -%}
+      <div class="b2b-gb__ziel b2b-art__ziel{% if greift %} ist-erreicht{% endif %}">
+        <p class="b2b-gb__ziel-text">
+          {%- if versandfrei == false -%}
+            Noch <strong>{{ fehlende_versand }} {% if fehlende_versand == 1 %}Pack{% else %}Packs{% endif %}</strong> bis versandkostenfrei
+            <span>danach noch {{ ab_packs | minus: versandfrei_ab }} Packs bis &minus;{{ satz }}&nbsp;%</span>
+          {%- elsif greift == false -%}
+            Versandkostenfrei ✓ · noch <strong>{{ fehlende_packs }} {% if fehlende_packs == 1 %}Pack{% else %}Packs{% endif %}</strong> bis &minus;{{ satz }}&nbsp;%
+          {%- else -%}
+            <strong>Versandkostenfrei und &minus;{{ satz }}&nbsp;%</strong> auf die ganze Bestellung ✓
+          {%- endif -%}
+        </p>
+        <div class="b2b-gb__balken" aria-hidden="true">
+          <span class="b2b-gb__balken-korb" style="width: {{ ziel_breite }}%"></span>
+          <span class="b2b-gb__marke" style="left: {{ ziel_marke }}%"></span>
+        </div>
+        <p class="b2b-gb__skala" aria-hidden="true">
+          <span style="left: {{ ziel_marke }}%">{{ versandfrei_ab }} · versandkostenfrei</span>
+          <span style="left: 100%">{{ ab_packs }} · &minus;{{ satz }}&nbsp;%</span>
+        </p>
+        <p class="b2b-gb__ziel-stand">{{ packs }} {% if packs == 1 %}Pack{% else %}Packs{% endif %} im Warenkorb</p>
+      </div>
+    {%- endunless -%}
+
     {%- unless mindestwert_erreicht or kompakt -%}
       <p class="b2b-art__mindestwert" id="b2b-art-mindestwert">
         Nachbestellungen gehen ab {{ mindestwert_euro }} € netto. Es fehlen noch {{ wert_fehlt | money }}.
