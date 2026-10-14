@@ -23,18 +23,24 @@
           Welcome back, {{ welcome_name }}
         {%- endif -%}
       </h2>
+      {%- comment -%}
+        Die Wege, die ein wiederkehrender Haendler braucht. Bestellungen und
+        Konto laufen ueber den Haendlerbereich (/pages/haendlerbereich): der
+        zeigt die letzten Bestellungen mit "Nochmal bestellen" und verlinkt
+        selbst auf Shopifys Kontoseite fuer Profil und Adressen.
+      {%- endcomment -%}
       <div class="customer-welcome-strip__links">
         <a href="{{ routes.all_products_collection_url }}" class="button button--secondary">
           {%- if is_german -%}Produkte ansehen{%- else -%}Browse products{%- endif -%}
         </a>
-        <a href="{{ routes.all_products_collection_url }}" class="button button--secondary">
-          {%- if is_german -%}Schnellbestellung{%- else -%}Quick order{%- endif -%}
+        <a href="/pages/massenbestellung" class="button button--secondary">
+          {%- if is_german -%}Massenbestellung{%- else -%}Bulk order{%- endif -%}
         </a>
-        <a href="{{ routes.account_url }}" class="button button--secondary">
-          {%- if is_german -%}Meine Bestellungen{%- else -%}My orders{%- endif -%}
+        <a href="/pages/vororder" class="button button--secondary">
+          {%- if is_german -%}Vororder{%- else -%}Pre-order{%- endif -%}
         </a>
-        <a href="{{ routes.account_url }}" class="button button--secondary">
-          {%- if is_german -%}Mein Konto{%- else -%}My account{%- endif -%}
+        <a href="/pages/haendlerbereich" class="button button--secondary">
+          {%- if is_german -%}Meine Bestellungen &amp; Konto{%- else -%}My orders &amp; account{%- endif -%}
         </a>
       </div>
     </div>
