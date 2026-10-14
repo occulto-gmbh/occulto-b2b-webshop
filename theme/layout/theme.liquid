@@ -403,5 +403,7 @@
       eine hohe z-index-Nummer braucht.
     {%- endcomment -%}
     {% render 'b2b-kontakt' %}
+    {%- comment -%} Warenkorb leeren, wenn sich im selben Browser ein anderer Kunde anmeldet. {%- endcomment -%}
+    {% render 'b2b-korb-besitzer' %}
   </body>
 </html>
