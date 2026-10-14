@@ -395,6 +395,23 @@
             </a>
           {%- endif -%}
         </p>
+
+        {%- comment -%}
+          Hinweis fuer Werbung an Bestandskunden (§ 7 Abs. 3 UWG). Muss beim
+          Erheben der Adresse sichtbar stehen, nicht nur in der
+          Datenschutzerklaerung. Gilt erst nach einer Bestellung, nur fuer
+          eigene aehnliche Produkte, und jede Mail braucht einen Abmeldelink.
+          Kein Kaestchen: die Ausnahme braucht keine Einwilligung, nur den
+          Hinweis und die Moeglichkeit zu widersprechen.
+        {%- endcomment -%}
+        <p class="b2b-haken__werbung">
+          Nach einer Bestellung nutzen wir deine E-Mail-Adresse auch, um dich
+          über ähnliche Occulto-Produkte zu informieren – etwa neue Modelle,
+          Saisonware und Vororder-Termine. Du kannst dem jederzeit
+          widersprechen, über den Abmeldelink in jeder Mail oder an
+          <a href="mailto:b2b@occulto.de">b2b@occulto.de</a>. Dafür entstehen
+          dir nur die Übermittlungskosten nach den Basistarifen.
+        </p>
       </div>
 
       <div class="b2b-absenden">
@@ -676,6 +693,20 @@
   /* Die Verweise auf die Texte selbst. Gross genug zum Treffen mit dem
      Daumen (44px Zeilenhoehe) und unterstrichen, damit sie nicht wie
      Fliesstext aussehen. */
+  .b2b-haken__werbung {
+    margin: 6px 0 0;
+    padding: 12px 0 0 30px;
+    border-top: 1px solid rgb(var(--b2b-linie, 226 226 225));
+    color: rgb(var(--b2b-tinte, 46 46 45) / 0.75);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .b2b-haken__werbung a {
+    color: inherit;
+    text-decoration: underline;
+  }
+
   .b2b-haken__quellen {
     display: flex;
     flex-wrap: wrap;
