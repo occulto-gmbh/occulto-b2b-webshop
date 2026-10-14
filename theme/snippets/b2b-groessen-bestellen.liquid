@@ -32,7 +32,13 @@
     </p>
 
     <ul class="b2b-gb__liste">
-      {%- for variant in product.variants -%}
+      {%- comment -%} Groessen aufsteigend, siehe snippets/b2b-groessen. {%- endcomment -%}
+      {%- capture b2b_reihe -%}{% render 'b2b-groessen', product: product %}{%- endcapture -%}
+      {%- assign b2b_reihe = b2b_reihe | split: ',' -%}
+      {%- for b2b_position in b2b_reihe -%}
+        {%- assign b2b_index = b2b_position | plus: 0 -%}
+        {%- assign variant = product.variants[b2b_index] -%}
+        {%- capture b2b_groesse -%}{% render 'b2b-groessen', product: product, variant: variant, teil: 'name' %}{%- endcapture -%}
         {%- liquid
           assign lager = nil
           if variant.inventory_management == 'shopify' and variant.inventory_policy != 'continue'
@@ -57,7 +63,7 @@
           elsif product.has_only_default_variant
             assign name = 'Einheitsgröße'
           else
-            assign name = variant.title
+            assign name = b2b_groesse | strip
           endif
         -%}
         <li class="b2b-gb__zeile{% if aus %} ist-aus{% endif %}">
