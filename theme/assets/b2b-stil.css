@@ -844,3 +844,121 @@ main .container {
   gap: 10px;
   margin: 18px 0 0;
 }
+
+/* ------------------------------------------------------ Ziel-Zaehler
+   In der Kaufbox (snippets/b2b-groessen-bestellen.liquid): wie viele Packs
+   noch bis versandkostenfrei und bis -5 %. Rot, weil es zum Weiterbestellen
+   bewegen soll. Der Balken: voll = schon im Warenkorb, gestreift = gerade
+   ausgewaehlt. */
+.b2b-gb__ziel {
+  margin: 0 0 18px;
+  padding: 14px 16px 12px;
+  border: 1px solid rgb(var(--b2b-linie, 226 226 225));
+  border-left: 4px solid rgb(var(--b2b-akzent, 199 42 9));
+  border-radius: 8px;
+  background: rgb(255 255 255);
+}
+
+.b2b-gb__ziel-text {
+  margin: 0 0 10px;
+  color: rgb(var(--b2b-akzent, 199 42 9));
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+.b2b-gb__ziel-text strong {
+  font-weight: 700;
+}
+
+.b2b-gb__ziel-text span {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.b2b-gb__balken {
+  position: relative;
+  height: 10px;
+  border-radius: 999px;
+  background: rgb(var(--b2b-hell, 246 246 246));
+  box-shadow: inset 0 0 0 1px rgb(var(--b2b-linie, 226 226 225));
+}
+
+.b2b-gb__balken-korb,
+.b2b-gb__balken-auswahl {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  transition: width 0.25s ease, left 0.25s ease;
+}
+
+.b2b-gb__balken-korb {
+  border-radius: 999px 0 0 999px;
+  background: rgb(var(--b2b-akzent, 199 42 9));
+}
+
+.b2b-gb__balken-auswahl {
+  background: repeating-linear-gradient(
+    -45deg,
+    rgb(var(--b2b-akzent, 199 42 9)) 0 4px,
+    rgb(255 255 255) 4px 7px
+  );
+}
+
+/* Die Marke bei 300 Packs. */
+.b2b-gb__marke {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  margin-left: -1px;
+  background: rgb(var(--b2b-tinte, 46 46 45));
+}
+
+.b2b-gb__skala {
+  position: relative;
+  height: 18px;
+  margin: 4px 0 0;
+  color: rgb(var(--b2b-tinte, 46 46 45) / 0.7);
+  font-size: 12px;
+}
+
+/* Beide Beschriftungen enden an ihrer Marke - mittig unter 300 stiessen
+   sie auf dem Handy an die 500er. */
+.b2b-gb__skala span {
+  position: absolute;
+  top: 0;
+  padding-right: 4px;
+  transform: translateX(-100%);
+  white-space: nowrap;
+}
+
+.b2b-gb__skala span:last-child {
+  padding-right: 0;
+}
+
+.b2b-gb__ziel-stand {
+  margin: 4px 0 0;
+  color: rgb(var(--b2b-tinte, 46 46 45) / 0.7);
+  font-size: 13px;
+}
+
+.b2b-gb__ziel.ist-erreicht .b2b-gb__ziel-text {
+  color: rgb(var(--b2b-tinte, 46 46 45));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .b2b-gb__balken-korb,
+  .b2b-gb__balken-auswahl {
+    transition: none;
+  }
+}
+
+/* Der kleine graue Hinweis "noch N Packs bis -5 %" am Preis steht auf der
+   Produktseite doppelt - dort sagt es der Ziel-Zaehler. */
+.product__info-container .b2b-preis__bedingung {
+  display: none;
+}

@@ -24,8 +24,47 @@
       assign schritt = 1
       assign einheit = 'Stück'
     endif
+
+    comment
+      Ziel-Zaehler: Packs im Warenkorb (ohne Einzelstuecke, b2b-packs) plus
+      die gerade gewaehlten. Die Schwellen muessen zu b2b-korb-art (300 / 500)
+      und b2b-preis (500) passen.
+    endcomment
+    capture b2b_packs_text
+      render 'b2b-packs'
+    endcapture
+    assign b2b_im_korb = b2b_packs_text | plus: 0
+    assign b2b_versand_ab = 300
+    assign b2b_rabatt_ab = 500
+    assign b2b_marke = b2b_versand_ab | times: 100 | divided_by: b2b_rabatt_ab
   -%}
   <div class="b2b-gb" data-b2b-gb>
+    {%- comment -%}
+      Der Zaehler, der zum Weiterbestellen bewegen soll: wie viele Packs noch
+      bis versandkostenfrei und bis -5 %. Rechnet live mit, waehrend man
+      Mengen waehlt (Skript unten, ziel()).
+    {%- endcomment -%}
+    <div
+      class="b2b-gb__ziel"
+      data-gb-ziel
+      data-im-korb="{{ b2b_im_korb }}"
+      data-versand="{{ b2b_versand_ab }}"
+      data-rabatt="{{ b2b_rabatt_ab }}"
+      data-zaehlt="{% if schritt == 1 %}nein{% else %}ja{% endif %}"
+    >
+      <p class="b2b-gb__ziel-text" data-gb-ziel-text role="status"></p>
+      <div class="b2b-gb__balken" aria-hidden="true">
+        <span class="b2b-gb__balken-korb" data-gb-balken-korb></span>
+        <span class="b2b-gb__balken-auswahl" data-gb-balken-auswahl></span>
+        <span class="b2b-gb__marke" style="left: {{ b2b_marke }}%"></span>
+      </div>
+      <p class="b2b-gb__skala" aria-hidden="true">
+        <span style="left: {{ b2b_marke }}%">{{ b2b_versand_ab }} · versandkostenfrei</span>
+        <span style="left: 100%">{{ b2b_rabatt_ab }} · &minus;5&nbsp;%</span>
+      </p>
+      <p class="b2b-gb__ziel-stand" data-gb-ziel-stand></p>
+    </div>
+
     <p class="b2b-gb__kopf">
       {%- if product.has_only_default_variant -%}Menge{%- else -%}Menge je Größe{%- endif -%}
       <span>{% if schritt == 1 %}einzeln bestellbar{% else %}in 5er-Packs{% endif %}</span>
@@ -129,6 +168,38 @@
         return Math.max(0, Math.min(menge, max));
       }
 
+      /* Ziel-Zaehler: Warenkorb + Auswahl gegen die Schwellen. */
+      var zielEl = wurzel.querySelector('[data-gb-ziel]');
+      var imKorb = parseInt(zielEl.dataset.imKorb, 10) || 0;
+      var VERSAND = parseInt(zielEl.dataset.versand, 10);
+      var RABATT = parseInt(zielEl.dataset.rabatt, 10);
+      var ZAEHLT = zielEl.dataset.zaehlt === 'ja';
+      function zahl(n) { return n.toLocaleString('de-DE'); }
+      function ziel(auswahl) {
+        if (!ZAEHLT) auswahl = 0;
+        var gesamt = imKorb + auswahl;
+        var text;
+        if (gesamt < VERSAND) {
+          text = 'Noch <strong>' + zahl(VERSAND - gesamt) + ' Packs</strong> bis versandkostenfrei'
+            + '<span>danach noch ' + zahl(RABATT - VERSAND) + ' Packs bis &minus;5&nbsp;%</span>';
+        } else if (gesamt < RABATT) {
+          text = 'Versandkostenfrei ✓ · noch <strong>' + zahl(RABATT - gesamt) + ' Packs</strong> bis &minus;5&nbsp;%';
+        } else {
+          text = '<strong>Versandkostenfrei und &minus;5&nbsp;%</strong> auf die ganze Bestellung ✓';
+        }
+        zielEl.querySelector('[data-gb-ziel-text]').innerHTML = text;
+        zielEl.classList.toggle('ist-erreicht', gesamt >= RABATT);
+        var korbAnteil = Math.min(imKorb, RABATT) / RABATT * 100;
+        var auswahlAnteil = Math.min(gesamt, RABATT) / RABATT * 100 - korbAnteil;
+        zielEl.querySelector('[data-gb-balken-korb]').style.width = korbAnteil + '%';
+        var ba = zielEl.querySelector('[data-gb-balken-auswahl]');
+        ba.style.left = korbAnteil + '%';
+        ba.style.width = Math.max(0, auswahlAnteil) + '%';
+        zielEl.querySelector('[data-gb-ziel-stand]').textContent = auswahl > 0
+          ? zahl(imKorb) + ' Packs im Warenkorb + ' + zahl(auswahl) + ' ausgewählt'
+          : zahl(imKorb) + ' Packs im Warenkorb';
+      }
+
       function zeigen() {
         var packs = 0;
         var wert = 0;
@@ -143,6 +214,7 @@
         });
         summe.textContent = packs ? packs.toLocaleString('de-DE') + ' ' + EINHEIT + ' · ' + euro(wert) + ' netto' : 'Noch keine Größe gewählt.';
         knopf.disabled = packs === 0;
+        ziel(packs);
       }
 
       felder.forEach(function (feld) {
@@ -195,11 +267,13 @@
             if (popup && r.d.sections && r.d.items && r.d.items.length) {
               meldung.hidden = true;
               popup.renderContents(Object.assign({}, r.d, { key: r.d.items[0].key }));
+              if (ZAEHLT) imKorb += posten.reduce(function (s, p) { return s + p.quantity; }, 0);
               felder.forEach(function (f) { f.value = ''; });
               zeigen();
               return;
             }
             var packs = posten.reduce(function (s, p) { return s + p.quantity; }, 0);
+            if (ZAEHLT) imKorb += packs;
             meldung.classList.remove('ist-fehler');
             meldung.innerHTML = '✓ ' + packs.toLocaleString('de-DE') + ' ' + EINHEIT + ' im Warenkorb · <a href="{{ routes.cart_url }}">Zum Warenkorb</a>';
             /* Die Zahl am Warenkorb-Symbol mitziehen. */
