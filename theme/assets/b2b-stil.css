@@ -749,9 +749,47 @@ main .container {
    Der feste Artikel vorneweg (sections/b2b-vorschlaege.liquid) mit eigenem
    Knopf unter der Karte. */
 .b2b-vorschlaege__knopf {
-  margin-top: 10px;
   min-height: 42px;
   font-size: 14px;
+}
+
+/* Gleich hohe Karten: Dawn streckt das Listenelement, die Karte darin aber
+   nicht - sie war so hoch wie ihr Inhalt (Bildformat, Titellaenge). */
+.b2b-vorschlaege .grid__item {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Shopify legt <product-component> zwischen Listenelement und Karte. */
+.b2b-vorschlaege .grid__item > product-component {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+.b2b-vorschlaege .grid__item .card-wrapper {
+  flex: 1 1 auto;
+}
+
+.b2b-vorschlaege .card-wrapper > .card {
+  height: 100%;
+}
+
+/* Der Knopf des festen Artikels sitzt unten in seiner Karte; die Karte
+   haelt ihm dafuer Platz frei. */
+.b2b-vorschlaege__fest {
+  position: relative;
+}
+
+.b2b-vorschlaege__fest:has(.b2b-vorschlaege__unten) .card {
+  padding-bottom: 60px;
+}
+
+.b2b-vorschlaege__unten {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  left: 12px;
 }
 
 .b2b-vorschlaege__meldung {
