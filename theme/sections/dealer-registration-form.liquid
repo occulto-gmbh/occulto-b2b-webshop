@@ -167,7 +167,36 @@
               <button type="button" class="b2b-feld__hilfe" aria-describedby="hilfe-street" aria-label="Erklärung einblenden">?</button>
               <span class="b2b-feld__erklaerung" id="hilfe-street" role="tooltip">Deine Geschäftsadresse. Wir liefern dorthin, solange du uns keine andere nennst.</span>
             </div>
-            <input class="b2b-feld__eingabe" type="text" id="street" name="street" required autocomplete="street-address">
+            {%- comment -%}
+              Hausnummer Pflicht: Am 14.10.2026 kam eine Testbestellung ohne
+              Hausnummer beim Lager an. pattern verlangt mindestens einen
+              Buchstaben und eine Ziffer ("Musterstraße 12", "Am Hang 3a").
+              Den Hinweistext setzt das Skript darunter.
+            {%- endcomment -%}
+            <input
+              class="b2b-feld__eingabe"
+              type="text"
+              id="street"
+              name="street"
+              required
+              autocomplete="street-address"
+              placeholder="z. B. Musterstraße 12"
+              pattern="(?=.*[A-Za-zÄÖÜäöüß])(?=.*\d).+"
+              data-hausnummer
+            >
+            <script>
+              (function () {
+                var feld = document.querySelector('[data-hausnummer]');
+                if (!feld) return;
+                var text = 'Bitte gib Straße und Hausnummer an, z. B. Musterstraße 12.';
+                feld.addEventListener('invalid', function () {
+                  if (feld.validity.patternMismatch) feld.setCustomValidity(text);
+                });
+                feld.addEventListener('input', function () {
+                  feld.setCustomValidity('');
+                });
+              })();
+            </script>
           </div>
           <div class="b2b-feld">
             <div class="b2b-feld__kopf">
