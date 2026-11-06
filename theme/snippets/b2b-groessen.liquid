@@ -1,0 +1,69 @@
+{%- comment -%}
+  Groessen aus der Wawi lesbar machen.
+
+  Die Wawi legt die Varianten in beliebiger Reihenfolge an (31-34, 35-38,
+  23-26, 27-30) und manche Produkte tragen eine zweite Option "Style" mit
+  nur einem Wert - dann hiesse die Groesse "001 / 31-34". Am 14.10.2026 war
+  das bei 37 von 105 Produkten unsortiert und bei 8 mit Style. Im Theme
+  geloest, weil der naechste Wawi-Abgleich Aenderungen in Shopify wieder
+  ueberschreiben wuerde.
+
+  Gibt Text aus (render hat einen eigenen Gueltigkeitsbereich):
+
+  teil: 'reihenfolge' (Standard)
+    Die Positionen von product.variants, nach der ersten Zahl der Groesse
+    aufsteigend sortiert, mit Komma getrennt: "2,3,0,1". Ohne Zahl
+    (z. B. "One Size") bleibt die Reihenfolge der Wawi.
+    Aufrufer: capture, split: ',' und product.variants[position].
+
+  teil: 'name'
+    Nur der Wert der Groessen-Option einer Variante ("31-34"). Hat das
+    Produkt keine Groessen-Option, der Variantenname.
+
+  @param product
+  @param variant  nur fuer teil: 'name'
+  @param teil
+{%- endcomment -%}
+
+{%- liquid
+  assign groessen_pos = 0
+  for option in product.options_with_values
+    assign optionsname = option.name | downcase
+    if optionsname contains 'größe' or optionsname contains 'groesse' or optionsname contains 'size'
+      assign groessen_pos = forloop.index0 | plus: 1
+    endif
+  endfor
+
+  if teil == 'name'
+    if groessen_pos > 0
+      assign stelle = groessen_pos | minus: 1
+      echo variant.options[stelle]
+    else
+      echo variant.title
+    endif
+  else
+    comment
+      Schluessel je Variante: Groessenzahl und Position, je um 1000 versetzt,
+      damit beide vierstellig sind und die Textsortierung stimmt.
+    endcomment
+    assign schluessel = ''
+    for v in product.variants
+      assign zahl = 0
+      if groessen_pos > 0
+        assign stelle = groessen_pos | minus: 1
+        assign zahl = v.options[stelle] | split: '-' | first | strip | plus: 0
+      endif
+      assign zahl = zahl | at_least: 0 | at_most: 8999 | plus: 1000
+      assign position = forloop.index0 | plus: 1000
+      assign schluessel = schluessel | append: zahl | append: position | append: ','
+    endfor
+    assign sortiert = schluessel | split: ',' | sort
+    for s in sortiert
+      assign position = s | slice: 4, 4 | plus: 0 | minus: 1000
+      echo position
+      unless forloop.last
+        echo ','
+      endunless
+    endfor
+  endif
+-%}

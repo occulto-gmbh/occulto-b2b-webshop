@@ -1,9 +1,9 @@
 query RunInput {
   cart {
-    cost {
-      subtotalAmount {
-        amount
-      }
+    # Die Gesamtmenge in Packs. Der Haendlerrabatt haengt seit dem 29.09.2026
+    # daran, nicht mehr an der Bestellsumme.
+    lines {
+      quantity
     }
   }
 }

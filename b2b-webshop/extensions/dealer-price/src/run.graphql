@@ -1,0 +1,35 @@
+query RunInput {
+  cart {
+    # Nur freigegebene Haendler bekommen ihren Preis. Der Tag ist derselbe,
+    # an dem im Theme price.liquid und die Kaufknoepfe haengen.
+    buyerIdentity {
+      customer {
+        hasTags(tags: ["dealer-approved"]) {
+          tag
+          hasTag
+        }
+      }
+    }
+    lines {
+      id
+      quantity
+      cost {
+        amountPerQuantity {
+          amount
+        }
+      }
+      merchandise {
+        __typename
+        ... on ProductVariant {
+          id
+          # Der Haendlerpreis je Variante. Steht bewusst in einem Metafeld
+          # ohne Storefront-Zugriff: so liefert ihn weder /products.json noch
+          # die Storefront-API an nicht angemeldete Besucher.
+          metafield(namespace: "occulto", key: "dealer_price") {
+            value
+          }
+        }
+      }
+    }
+  }
+}

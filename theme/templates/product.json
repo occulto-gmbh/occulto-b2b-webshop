@@ -86,9 +86,9 @@
         "enable_video_looping": false,
         "padding_top": 36,
         "padding_bottom": 36,
-        "b2b_hangtag_vorne": "shopify://shop_images/Hangtag_Vorderseite.png",
+        "b2b_hangtag_vorne": "shopify://shop_images/HangtagV.png",
         "b2b_hangtag_ohne": "Mütze, Adventskalender, Zusatzpaket",
-        "b2b_hangtag_hinten": "shopify://shop_images/Hangtag_Hinterseite.png"
+        "b2b_hangtag_hinten": "shopify://shop_images/HantagR.png"
       }
     },
     "disclosures": {
@@ -123,7 +123,7 @@
         "products_to_show": 5,
         "columns_desktop": 5,
         "columns_mobile": "2",
-        "image_ratio": "adapt",
+        "image_ratio": "square",
         "color_scheme": "scheme-1",
         "padding_top": 36,
         "padding_bottom": 44

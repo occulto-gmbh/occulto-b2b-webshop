@@ -15,6 +15,12 @@ import type {
 // (see app/routes/webhooks.inventory_levels.update.tsx).
 const PACK_STEP = 5;
 
+// Hier stand bis zum 30.09.2026 eine Sonderregel fuer Vorordern: 500 Packs je
+// Position, und keine Bestandspruefung. Beides ist entfallen, weil eine
+// Vororder seit diesem Tag gar nicht mehr durch den Warenkorb geht - sie ist
+// eine E-Mail-Anfrage aus der Maske im Theme. Damit bleibt hier nur noch die
+// 5er-Gebinde-Regel, und den Bestand setzt Shopify selbst durch.
+
 export function cartValidationsGenerateRun(
   input: CartValidationsGenerateRunInput,
 ): CartValidationsGenerateRunResult {

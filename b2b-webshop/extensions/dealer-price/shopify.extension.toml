@@ -1,0 +1,23 @@
+api_version = "2026-07"
+
+[[extensions]]
+name = "t:name"
+handle = "dealer-price"
+type = "function"
+description = "t:description"
+
+  # Anderes Ziel als order-value-discount: dort wird die Bestellsumme
+  # rabattiert, hier jede Position einzeln - nur so laesst sich je Variante
+  # ein eigener Betrag abziehen.
+  [[extensions.targeting]]
+  target = "purchase.product-discount.run"
+  input_query = "src/run.graphql"
+  export = "run"
+
+  [extensions.build]
+  command = ""
+  path = "dist/function.wasm"
+
+  [extensions.ui.paths]
+  create = "/"
+  details = "/"

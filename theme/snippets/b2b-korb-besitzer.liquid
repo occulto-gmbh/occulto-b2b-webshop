@@ -1,0 +1,95 @@
+{%- comment -%}
+  Ein Warenkorb gehoert einem Kunden, nicht dem Browser.
+
+  Shopify haengt den Warenkorb an ein Browser-Cookie. Meldet sich im selben
+  Browser ein anderer Haendler an, saehe er den Warenkorb des vorigen - mit
+  dessen Mengen und Filialen. Gefunden am 14.10.2026 beim Test mit zwei
+  Konten.
+
+  Deshalb steht im Warenkorb das unsichtbare Merkmal _kunde (Unterstrich:
+  Shopify zeigt es an der Kasse nicht an). Ist ein Kunde angemeldet und
+  passt es nicht zu ihm, wird der Warenkorb geleert und das Merkmal auf ihn
+  gesetzt. Ein leerer Warenkorb bekommt das Merkmal einfach. Derselbe
+  Haendler an zwei Geraeten verliert nichts.
+
+  Der Vororder-Korb liegt im Browser-Speicher (assets/b2b-vororder.js,
+  Schluessel b2b-vororder) und wird beim Kontowechsel ebenso geleert.
+
+  Beim Wechsel werden auch die Merkmale des Vorgaengers geloescht, die
+  /cart/clear.js stehen laesst: Lieferaufteilung (assets/cart-branch-split.js,
+  mit dessen Filialen), Vororder und die Bestellnotiz. Sonst gingen sie mit
+  in die Bestellung des Naechsten.
+
+  Gaeste: nichts. Sie koennen ohnehin nichts in den Warenkorb legen.
+{%- endcomment -%}
+
+{%- if customer -%}
+  {%- liquid
+    assign besitzer = cart.attributes._kunde | append: ''
+    assign ich = customer.id | append: ''
+    assign leeren = false
+    assign markieren = false
+    if besitzer != ich
+      if cart.item_count > 0
+        assign leeren = true
+      else
+        assign markieren = true
+      endif
+    endif
+  -%}
+  <script>
+    (function () {
+      var ich = {{ ich | json }};
+
+      /* Vororder-Korb: gehoert er jemand anderem, weg damit. */
+      try {
+        var vo = localStorage.getItem('b2b-vororder-kunde');
+        if (vo && vo !== ich) localStorage.removeItem('b2b-vororder');
+        localStorage.setItem('b2b-vororder-kunde', ich);
+      } catch (e) {}
+
+      {%- unless leeren %}
+      /* Der Korb gehoert (jetzt) diesem Kunden: Sperre gegen Endlosladen
+         freigeben, sonst griffe sie bei einem spaeteren Wechsel zurueck. */
+      try { sessionStorage.removeItem('b2b-korb-geleert'); } catch (e) {}
+      {%- endunless %}
+
+      {%- if leeren or markieren %}
+      var leeren = {{ leeren }};
+      /* Hoechstens ein Versuch je Sitzung: schlaegt das Leeren fehl, soll
+         die Seite nicht endlos neu laden. */
+      try {
+        if (leeren && sessionStorage.getItem('b2b-korb-geleert') === ich) return;
+        if (leeren) sessionStorage.setItem('b2b-korb-geleert', ich);
+      } catch (e) {}
+      var kopf = { 'Content-Type': 'application/json', Accept: 'application/json' };
+      /* Schlaegt ein Schritt fehl, wird abgebrochen - sonst bekaeme der
+         fremde Korb das Merkmal und gaelte danach als eigener. */
+      function geprueft(antwort) {
+        if (!antwort.ok) throw new Error('Warenkorb ' + antwort.status);
+        return antwort;
+      }
+      var schritt = leeren
+        ? fetch('{{ routes.cart_clear_url }}.js', { method: 'POST', headers: kopf }).then(geprueft)
+        : Promise.resolve();
+      schritt
+        .then(function () {
+          return fetch('{{ routes.cart_update_url }}.js', {
+            method: 'POST',
+            headers: kopf,
+            body: JSON.stringify({
+              attributes: { _kunde: ich, Lieferaufteilung: '', Vororder: '' },
+              note: ''
+            })
+          }).then(geprueft);
+        })
+        .then(function () {
+          /* Nur nach dem Leeren neu laden, damit Warenkorb-Zaehler und
+             Seite den leeren Stand zeigen. */
+          if (leeren) location.reload();
+        })
+        .catch(function () {});
+      {%- endif %}
+    })();
+  </script>
+{%- endif -%}

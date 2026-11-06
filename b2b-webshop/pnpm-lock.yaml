@@ -122,6 +122,19 @@ importers:
         specifier: ^3.2.4
         version: 3.2.7(@types/node@22.20.1)(jiti@2.7.0)(supports-color@7.2.0)(yaml@2.9.0)
 
+  extensions/dealer-price:
+    dependencies:
+      '@shopify/shopify_function':
+        specifier: ^2.0.1
+        version: 2.0.1(@parcel/watcher@2.6.0)(@types/node@22.20.1)(supports-color@7.2.0)
+    devDependencies:
+      '@shopify/shopify-function-test-helpers':
+        specifier: ^1.0.0
+        version: 1.1.0
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.7(@types/node@22.20.1)(jiti@2.7.0)(supports-color@7.2.0)(yaml@2.9.0)
+
   extensions/minimum-order-value:
     dependencies:
       '@shopify/shopify_function':

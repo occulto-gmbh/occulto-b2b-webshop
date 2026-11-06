@@ -168,10 +168,17 @@
               </div>
 
               <ul class="b2b-vo-varianten">
-                {%- for variant in product.variants -%}
+                {%- comment -%} Groessen aufsteigend, siehe snippets/b2b-groessen. {%- endcomment -%}
+                {%- capture b2b_reihe -%}{% render 'b2b-groessen', product: product %}{%- endcapture -%}
+                {%- assign b2b_reihe = b2b_reihe | split: ',' -%}
+                {%- for b2b_position in b2b_reihe -%}
+                  {%- assign b2b_index = b2b_position | plus: 0 -%}
+                  {%- assign variant = product.variants[b2b_index] -%}
+                  {%- capture b2b_groesse -%}{% render 'b2b-groessen', product: product, variant: variant, teil: 'name' %}{%- endcapture -%}
+                  {%- assign b2b_groesse = b2b_groesse | strip -%}
                   <li class="b2b-vo-variante">
                     <span class="b2b-vo-variante__name">
-                      {{ variant.title | escape }}
+                      {{ b2b_groesse | escape }}
                       {%- if variant.sku != blank -%}
                         <span class="b2b-vo-variante__sku">{{ variant.sku | escape }}</span>
                       {%- endif -%}
@@ -186,7 +193,7 @@
                       data-variante="{{ variant.id }}"
                       data-artikel="{{ product.id }}"
                       data-artikel-name="{{ product.title | escape }}"
-                      data-bezeichnung="{{ product.title | escape }} / {{ variant.title | escape }}"
+                      data-bezeichnung="{{ product.title | escape }} / {{ b2b_groesse | escape }}"
                       data-sku="{{ variant.sku | escape }}"
                       data-preis="{{ variant.price }}"
                       data-bild="{{ bild_url }}"
@@ -199,7 +206,7 @@
                         step="5"
                         value=""
                         placeholder="0"
-                        aria-label="Menge in Packs für {{ product.title | escape }} {{ variant.title | escape }}"
+                        aria-label="Menge in Packs für {{ product.title | escape }} {{ b2b_groesse | escape }}"
                       >
                       <button type="button" class="b2b-vo-zahl__knopf" data-plus aria-label="Mehr">+</button>
                     </div>

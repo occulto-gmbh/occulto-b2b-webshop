@@ -147,3 +147,61 @@
     font-size: 3.2rem;
   }
 }
+
+/* ====================================================================
+   Gewichtung (14.10.2026): Die linke Seite ist die Hauptaussage des
+   Shops, der Saisonware-Kasten rechts ein Hinweis daneben. Links deshalb
+   groesser und schwerer, rechts eine Stufe ruhiger.
+   ==================================================================== */
+
+.hero-split .hero-split__text-inner {
+  max-width: 62rem;
+}
+
+.hero-split .hero-split__heading {
+  margin-bottom: 2rem;
+  font-size: clamp(4.4rem, 11vw, 5.6rem);
+  font-weight: 900;
+  line-height: 1;
+  /* "Haendlerportal" nicht mitten im Wort trennen. */
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
+}
+
+.hero-split .hero-split__body {
+  margin-bottom: 3.2rem;
+  font-size: 1.8rem;
+  line-height: 1.5;
+  opacity: 0.95;
+}
+
+.hero-split__text-inner > .hero-split__overline {
+  font-size: 1.4rem;
+}
+
+.hero-split__text-inner .button {
+  min-height: 5.6rem;
+  padding-inline: 3.6rem;
+  font-size: 1.7rem;
+}
+
+@media screen and (min-width: 750px) {
+  .hero-split .hero-split__heading {
+    font-size: clamp(6rem, 5.6vw, 9rem);
+  }
+
+  .hero-split .hero-split__body {
+    max-width: 54rem;
+    font-size: 2.1rem;
+  }
+
+  .hero-split .hero-split__media-overlay {
+    max-width: 44rem;
+    padding: 2.4rem 3.2rem;
+  }
+
+  .hero-split .hero-split__media-heading {
+    font-size: 2.6rem;
+  }
+}

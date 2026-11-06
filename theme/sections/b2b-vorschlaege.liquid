@@ -163,14 +163,20 @@
                   Neuladen. Hier wird im Warenkorb neu geladen, anderswo
                   bleibt man auf der Seite.
                 {%- endcomment -%}
-                <button
-                  type="button"
-                  class="button button--secondary button--full-width b2b-vorschlaege__knopf"
-                  data-vorschlag-variante="{{ fest.selected_or_first_available_variant.id }}"
-                >
-                  In den Warenkorb
-                </button>
-                <p class="b2b-vorschlaege__meldung" role="status" hidden></p>
+                {%- comment -%}
+                  Unten in der Karte statt darunter (b2b-stil.css), damit die
+                  Karte so hoch ist wie die anderen.
+                {%- endcomment -%}
+                <div class="b2b-vorschlaege__unten">
+                  <button
+                    type="button"
+                    class="button button--secondary button--full-width b2b-vorschlaege__knopf"
+                    data-vorschlag-variante="{{ fest.selected_or_first_available_variant.id }}"
+                  >
+                    In den Warenkorb
+                  </button>
+                  <p class="b2b-vorschlaege__meldung" role="status" hidden></p>
+                </div>
               {%- endif -%}
             </li>
           {%- endif -%}
