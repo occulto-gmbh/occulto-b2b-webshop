@@ -86,16 +86,7 @@
                 -%}
               {%- else -%}
                 {%- for variant in product.variants -%}
-                  {%- render 'quick-order-list-row',
-                    item: variant,
-                    product_title: product.title,
-                    image: variant.image | default: product.featured_media,
-                    sku: variant.sku,
-                    variant: variant,
-                    show_image: show_image,
-                    show_sku: show_sku,
-                    is_modal: is_modal
-                  -%}
+                  {%- render 'quick-order-list-row', item: variant, product_title: product.title, image: variant.image, default: product.featured_media, sku: variant.sku, variant: variant, show_image: show_image, show_sku: show_sku, is_modal: is_modal -%}
                 {%- endfor -%}
               {%- endif -%}
             </tbody>
@@ -300,3 +291,25 @@
     <span class="quick-order-list-error-message caption-large" role="alert"></span>
   </template>
 </div>
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: |-
+    {%- render 'quick-order-list-row',
+                        item: variant,
+                        product_title: product.title,
+                        image: variant.image | default: product.featured_media,
+                        sku: variant.sku,
+                        variant: variant,
+                        show_image: show_image,
+                        show_sku: show_sku,
+                        is_modal: is_modal
+                      -%}
+  to: "{%- render 'quick-order-list-row', item: variant, product_title: product.title,
+    image: variant.image, default: product.featured_media, sku: variant.sku, variant:
+    variant, show_image: show_image, show_sku: show_sku, is_modal: is_modal -%}"
+  position: 3777..4014
+{% endcomment %}
