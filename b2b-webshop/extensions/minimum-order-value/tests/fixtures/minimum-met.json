@@ -4,12 +4,17 @@
     "target": "cart.validations.generate.run",
     "input": {
       "cart": {
-        "cost": {
-          "subtotalAmount": {
-            "amount": "500.00",
-            "currencyCode": "EUR"
+        "lines": [
+          {
+            "quantity": 100,
+            "merchandise": {
+              "__typename": "ProductVariant",
+              "product": {
+                "isSingleItem": false
+              }
+            }
           }
-        }
+        ]
       },
       "buyerJourney": {
         "step": "CHECKOUT_INTERACTION"

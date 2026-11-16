@@ -44,6 +44,11 @@ export function cartValidationsGenerateRun(
       return;
     }
 
+    // Einzelstücke wie Ständer dürfen in beliebigen 1er-Schritten bestellt werden.
+    if (merchandise.product.isSingleItem) {
+      return;
+    }
+
     const availableRaw = merchandise.availableQuantityMetafield?.value;
     const available = availableRaw != null ? Number(availableRaw) : null;
 

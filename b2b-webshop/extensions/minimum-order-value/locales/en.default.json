@@ -1,4 +1,4 @@
 {
   "name": "Minimum order value",
-  "description": "Blocks checkout below the required minimum order value (net)."
+  "description": "Mindestens 100 Packs pro Bestellung. Einzelstücke zählen nicht mit und sind allein erlaubt."
 }

@@ -1,4 +1,4 @@
 {
   "name": "Pack quantity rule",
-  "description": "Requires orders to be placed in steps of 5 packs, except when buying out the last remaining stock of a variant."
+  "description": "Packs in 5er-Schritten oder als exakter Restbestand; Einzelstücke in 1er-Schritten."
 }
