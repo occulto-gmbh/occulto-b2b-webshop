@@ -60,24 +60,27 @@ Nie im Live-Theme aufheben.
 |              | Nachbestellung                       | Vororder                                            |
 |--------------|--------------------------------------|-----------------------------------------------------|
 | Korb         | Shopify-Warenkorb                    | eigener Korb im Browser (`localStorage` `b2b-vororder`) |
-| Menge        | 5er-Schritte, Lagerbestand als Grenze | je Größe 0 oder ab 5, in 5er; je Artikel (alle Größen) ab 100; gesamt ab 1.500 € nach Rabatt; **keine** Lagergrenze |
-| Rabatt       | 5 % ab 500 Packs im Korb             | immer 10 %                                          |
-| Versand      | kostenlos ab 300 Packs (Rabatt „Kostenloser Versand“ in der Verwaltung) | immer kostenlos   |
+| Menge        | **mindestens 100 Packs pro Bestellung**; 5er-Schritte, Lagerbestand als Grenze | 100 Packs je Artikel/Design, Größen frei kombiniert; je Größe 0 oder ab 5 in 5er (nur Logik, nie im Text); **kein** Mindestbestellwert; **keine** Lagergrenze |
+| Rabatt       | 5 % ab 500 Packs im Korb             | 10 % auf die gesamte Vororder                       |
+| Versand      | kostenlos ab **250** Packs (Rabatt „Kostenloser Versand“ in der Verwaltung) – Zahl nur in `snippets/b2b-packs.liquid` (`teil: 'versandfrei-ab'`) | immer kostenlos   |
+| Länder       | nur Deutschland und Österreich (USt-IdNr. bzw. UID je Land) | |
+
+Stand Besprechung 16.11.2026. Kein Skonto. „Order Deadline“ ist auf der Vororder-Seite gewollt (Feldname der Mail bleibt `Annahmeschluss`).
 | Abschluss    | Shopify-Kasse                        | E-Mail über Kontaktformular, Rechnung von Hand      |
 
 - **Einzelstücke** (Tag `einzelstueck`, z. B. Ausstellungsständer): Menge in 1er-Schritten, zählen nicht zu 300/500 Packs
   (`snippets/b2b-packs.liquid` zählt die Packs ohne sie), kein −5 %-Hinweis, keine Hangtag-Bilder, nicht in der Vororder.
   Vorgeschlagen über `sections/b2b-vorschlaege.liquid` (Einstellung „Immer vorschlagen“) auf Produktseite und Warenkorb.
-  Die Functions `order-value-discount` und `pack-quantity-rule` kennen die Ausnahme noch nicht – vor dem Ausrollen nachziehen.
+  Die Functions kennen die Ausnahme seit 16.11. (getestet, noch nicht ausgerollt).
 - Stichtage 15.06 und 15.12, Auslieferung drei Monate später. Einzige Quelle: `snippets/b2b-vororder-termin.liquid`.
 - 5 % stehen in `snippets/b2b-preis.liquid` **und** `b2b-webshop/extensions/order-value-discount/src/run.ts` – gleich halten.
 - Vororder-Mengen stehen als Einstellungen in **zwei** Abschnitten (Maske und Warenkorb-Übersicht) und in deren
   Vorlagen (`page.b2b-vororder.json`, `cart.json`) – gleich halten. Texte dazu in `b2b-konditionen.liquid`.
-- **Mindestbestellwert Nachbestellung 300 € netto** – einzige Stelle `snippets/b2b-mindestwert.liquid`. Sperrt Kassen-Knopf im Kopf
+- **Mindestmenge Nachbestellung 100 Packs** (Einzelstücke zählen nicht) – einzige Stelle `snippets/b2b-mindestwert.liquid`. Sperrt Kassen-Knopf im Kopf
   (`b2b-korb-art`) und im Fuß (`main-cart-footer`, nach Änderungen per `b2bKasseNachMindestwert` in `assets/cart.js`); das Popup
-  hat keinen Kassen-Knopf. Nur im Browser: `/checkout` direkt geht durch, bis `extensions/minimum-order-value` (steht noch auf 500!)
-  auf 300 gesetzt und ausgerollt ist. Die Warenkorb-Schublade (`cart-drawer`, derzeit aus) ist nicht gesperrt.
-- Warenkorb-Kopf der Nachbestellung (`b2b-korb-art`) nennt immer nur die nächste offene Stufe: erst Versand (300 Packs), dann −5 % (500 Packs).
+  hat keinen Kassen-Knopf. Nur im Browser: `/checkout` direkt geht durch, bis `extensions/minimum-order-value` (seit 16.11. auf
+  100 Packs umgebaut, getestet) ausgerollt ist. Die Warenkorb-Schublade (`cart-drawer`, derzeit aus) ist nicht gesperrt.
+- Warenkorb-Kopf der Nachbestellung (`b2b-korb-art`) nennt immer nur die nächste offene Stufe: erst Versand (250 Packs), dann −5 % (500 Packs).
 - Vororder: `sections/b2b-vororder-maske.liquid` (Auswahl), `sections/b2b-vororder-korb.liquid` (Übersicht auf /cart),
   Logik in `assets/b2b-vororder.js`. Nachbestellung-Kopf: `snippets/b2b-korb-art.liquid`.
 
