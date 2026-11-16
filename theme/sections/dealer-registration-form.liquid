@@ -404,6 +404,15 @@
           <input type="checkbox" id="terms_accepted" name="terms_accepted" required>
           <span>{{ 'templates.dealer_registration.terms_accepted' | t }} <span class="b2b-feld__stern" aria-hidden="true">*</span></span>
         </label>
+        {%- comment -%}
+          Freiwillig und nie vorbelegt (Einwilligung). Die App traegt den
+          Kunden bei Haken fuer E-Mail-Marketing ein und setzt die Markierung
+          haendler-newsletter (b2b-webshop/app/routes/register.tsx).
+        {%- endcomment -%}
+        <label class="b2b-haken__zeile" for="newsletter">
+          <input type="checkbox" id="newsletter" name="newsletter">
+          <span>{{ 'templates.dealer_registration.newsletter' | t }}</span>
+        </label>
 
         {%- comment -%}
           Die Texte zum Lesen, nicht nur zum Abhaken. Bewusst unter den

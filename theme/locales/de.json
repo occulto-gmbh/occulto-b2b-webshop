@@ -311,6 +311,7 @@
       "message": "Nachricht an Occulto",
       "privacy_accepted": "Ich habe die Datenschutzerklärung gelesen und akzeptiere sie.",
       "terms_accepted": "Ich akzeptiere die AGB/B2B-Bedingungen.",
+      "newsletter": "Ja, schickt mir den OCCULTO-Händler-Newsletter mit Neuheiten und Sonderangeboten per E-Mail. Abmelden geht jederzeit über den Link in jeder Mail.",
       "submit": "Händleranfrage senden",
       "error_missing_fields": "Bitte fülle alle Pflichtfelder aus.",
       "error_create_failed": "Deine Anfrage konnte nicht gespeichert werden. Bitte versuche es später erneut.",
