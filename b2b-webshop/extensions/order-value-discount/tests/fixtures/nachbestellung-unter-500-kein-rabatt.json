@@ -6,10 +6,24 @@
       "cart": {
         "lines": [
           {
-            "quantity": 250
+            "quantity": 250,
+            "merchandise": {
+              "__typename": "ProductVariant",
+              "id": "gid://shopify/ProductVariant/1",
+              "product": {
+                "isSingleItem": false
+              }
+            }
           },
           {
-            "quantity": 245
+            "quantity": 249,
+            "merchandise": {
+              "__typename": "ProductVariant",
+              "id": "gid://shopify/ProductVariant/2",
+              "product": {
+                "isSingleItem": false
+              }
+            }
           }
         ]
       }

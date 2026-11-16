@@ -1,0 +1,42 @@
+{
+  "payload": {
+    "export": "cart-validations-generate-run",
+    "target": "cart.validations.generate.run",
+    "input": {
+      "cart": {
+        "lines": [
+          {
+            "quantity": 45,
+            "merchandise": {
+              "__typename": "ProductVariant",
+              "product": {
+                "isSingleItem": false
+              }
+            }
+          },
+          {
+            "quantity": 55,
+            "merchandise": {
+              "__typename": "ProductVariant",
+              "product": {
+                "isSingleItem": false
+              }
+            }
+          }
+        ]
+      },
+      "buyerJourney": {
+        "step": "CHECKOUT_INTERACTION"
+      }
+    },
+    "output": {
+      "operations": [
+        {
+          "validationAdd": {
+            "errors": []
+          }
+        }
+      ]
+    }
+  }
+}

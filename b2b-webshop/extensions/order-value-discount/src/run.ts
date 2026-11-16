@@ -12,7 +12,8 @@ const KEIN_RABATT: FunctionRunResult = {
  * Bestellsumme ab (ab 2.500 € 5 %, ab 5.000 € 10 %, abgestimmt am 2026-09-02).
  *
  * Die 500 Packs zählen über den ganzen Warenkorb: eine Schwelle für die
- * Bestellung, kein Mindestposten.
+ * Bestellung, kein Mindestposten. Produkte mit dem Tag einzelstueck zählen
+ * nicht mit und werden vom Rabatt ausgeschlossen.
  *
  * Hier steht bewusst NICHTS über Vorordern. Seit dem 30.09.2026 laufen die
  * nicht mehr über den Warenkorb, sondern als E-Mail-Anfrage aus der Maske im
@@ -29,7 +30,18 @@ const SATZ = 5;
 const AB_PACKS = 500;
 
 export function run(input: RunInput): FunctionRunResult {
-  const packs = input.cart.lines.reduce((summe, zeile) => summe + zeile.quantity, 0);
+  let packs = 0;
+  const excludedVariantIds: string[] = [];
+  for (const { quantity, merchandise } of input.cart.lines) {
+    if (merchandise.__typename !== "ProductVariant") {
+      continue;
+    }
+    if (merchandise.product.isSingleItem) {
+      excludedVariantIds.push(merchandise.id);
+    } else {
+      packs += quantity;
+    }
+  }
 
   if (packs < AB_PACKS) {
     return KEIN_RABATT;
@@ -40,7 +52,7 @@ export function run(input: RunInput): FunctionRunResult {
     discounts: [
       {
         message: `${SATZ}% Händlerrabatt`,
-        targets: [{ orderSubtotal: { excludedVariantIds: [] } }],
+        targets: [{ orderSubtotal: { excludedVariantIds: [...new Set(excludedVariantIds)] } }],
         value: { percentage: { value: SATZ.toString() } },
       },
     ],

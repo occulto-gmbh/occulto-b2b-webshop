@@ -1,9 +1,17 @@
 query RunInput {
   cart {
-    # Die Gesamtmenge in Packs. Der Haendlerrabatt haengt seit dem 29.09.2026
-    # daran, nicht mehr an der Bestellsumme.
+    # Einzelstücke zählen nicht zur Packmenge und werden nicht rabattiert.
     lines {
       quantity
+      merchandise {
+        __typename
+        ... on ProductVariant {
+          id
+          product {
+            isSingleItem: hasAnyTag(tags: ["einzelstueck"])
+          }
+        }
+      }
     }
   }
 }

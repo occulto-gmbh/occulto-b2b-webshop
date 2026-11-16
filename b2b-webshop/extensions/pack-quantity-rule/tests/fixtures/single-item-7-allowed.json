@@ -1,0 +1,38 @@
+{
+  "payload": {
+    "export": "cart-validations-generate-run",
+    "target": "cart.validations.generate.run",
+    "input": {
+      "cart": {
+        "lines": [
+          {
+            "quantity": 7,
+            "merchandise": {
+              "__typename": "ProductVariant",
+              "title": "Standard",
+              "availableQuantityMetafield": {
+                "value": "20"
+              },
+              "product": {
+                "title": "Occulto Ständer",
+                "isSingleItem": true
+              }
+            }
+          }
+        ]
+      },
+      "buyerJourney": {
+        "step": "CHECKOUT_INTERACTION"
+      }
+    },
+    "output": {
+      "operations": [
+        {
+          "validationAdd": {
+            "errors": []
+          }
+        }
+      ]
+    }
+  }
+}
