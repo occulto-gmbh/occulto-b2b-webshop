@@ -9,19 +9,6 @@
  */
 {
   "sections": {
-    "dealer_discount": {
-      "type": "dealer-discount-banner",
-      "settings": {
-        "color_scheme": "scheme-5",
-        "badge": "-5 %",
-        "overline": "Exklusiv für Handelspartner",
-        "heading": "5 % Rabatt ab 500 Packs",
-        "text": "Ab 500 Packs pro Bestellung ziehen wir automatisch 5 % vom gesamten Warenwert ab – sichtbar im Checkout.",
-        "note": "Vororderware ausgeschlossen.",
-        "button_label": "Jetzt bestellen",
-        "button_link": "shopify://collections/all"
-      }
-    },
     "hero_split": {
       "type": "hero-split",
       "settings": {
@@ -30,27 +17,14 @@
         "media_heading": "Halloween, Weihnachten & Silvester",
         "media_button_label": "Jetzt Saisonware bestellen",
         "media_link": "shopify://collections/herbst-winter",
-        "text_image": "shopify://shop_images/occulto-hero-lookbook-cover.jpg",
-        "overline": "Willkommen, Handelspartner",
+        "text_image": "",
+        "overline": "Willkommen",
         "heading": "Occulto Händlerportal",
-        "text": "<p>Entdecke das aktuelle Occulto-Sortiment und bestell direkt zu deinen Händlerkonditionen.</p>",
-        "button_label": "Produkte ansehen",
+        "text": "<p>Entdecke das aktuelle Occulto-Sortiment und bestelle direkt zu deinen Händlerkonditionen.</p>",
+        "button_label": "Jetzt bestellen",
         "button_link": "shopify://collections/all",
         "button_style_secondary": false,
-        "color_scheme": "scheme-5"
-      }
-    },
-    "customer_welcome": {
-      "type": "customer-welcome-strip",
-      "settings": {
-        "color_scheme": "scheme-2"
-      }
-    },
-    "rich_text": {
-      "type": "b2b-abschnitt",
-      "settings": {
-        "custom_liquid": "<section class=\"b2b-versprechen\" aria-label=\"Was du bei Occulto bekommst\">\n  <ul class=\"b2b-versprechen__liste\">\n    <li class=\"b2b-versprechen__punkt\">\n      <span class=\"b2b-versprechen__symbol\" aria-hidden=\"true\">\n        <svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z\"/><circle cx=\"7.5\" cy=\"7.5\" r=\"1.5\"/></svg>\n      </span>\n      <span class=\"b2b-versprechen__text\">\n        <strong>Attraktive H&auml;ndlermargen</strong>\n        <span>H&auml;ndlerpreis deutlich unter UVP, &minus;5&nbsp;% ab 500 Packs</span>\n      </span>\n    </li>\n    <li class=\"b2b-versprechen__punkt\">\n      <span class=\"b2b-versprechen__symbol\" aria-hidden=\"true\">\n        <svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.24 11.4 11.4 0 0 0 3.6.58 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.46.57 3.6a1 1 0 0 1-.25 1z\"/></svg>\n      </span>\n      <span class=\"b2b-versprechen__text\">\n        <strong>Pers&ouml;nliche Betreuung</strong>\n        <span>Direkt erreichbar: <a href=\"tel:+4980313506041\">08031 350 60 41</a></span>\n      </span>\n    </li>\n    <li class=\"b2b-versprechen__punkt\">\n      <span class=\"b2b-versprechen__symbol\" aria-hidden=\"true\">\n        <svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 7h11v9H3zM14 10h4l3 3v3h-7z\"/><circle cx=\"7\" cy=\"18\" r=\"1.6\"/><circle cx=\"17.5\" cy=\"18\" r=\"1.6\"/></svg>\n      </span>\n      <span class=\"b2b-versprechen__text\">\n        <strong>Schneller Versand</strong>\n        <span>Ab Lager, versandkostenfrei ab 300 Packs</span>\n      </span>\n    </li>\n  </ul>\n</section>\n<style>\n  /* Drei Versprechen unter dem Hero als weisse Leiste, durch feine Linien\n     geteilt. Rot nur im Symbol; die Zeile darunter traegt eine belegbare\n     Angabe statt nur ein Schlagwort (Zahlen wie in b2b-korb-art). */\n  .b2b-versprechen {\n    padding-block: 32px;\n  }\n\n  .b2b-versprechen__liste {\n    display: grid;\n    grid-template-columns: repeat(3, minmax(0, 1fr));\n    margin: 0;\n    padding: 0;\n    list-style: none;\n    border: 1px solid rgb(var(--b2b-linie, 226 226 225));\n    border-radius: 8px;\n    background: rgb(255 255 255);\n  }\n\n  .b2b-versprechen__punkt {\n    display: flex;\n    align-items: center;\n    gap: 16px;\n    padding: 22px 26px;\n  }\n\n  .b2b-versprechen__punkt + .b2b-versprechen__punkt {\n    border-left: 1px solid rgb(var(--b2b-linie, 226 226 225));\n  }\n\n  .b2b-versprechen__symbol {\n    display: flex;\n    flex: 0 0 auto;\n    align-items: center;\n    justify-content: center;\n    width: 48px;\n    height: 48px;\n    border-radius: 50%;\n    background: rgb(var(--b2b-hell, 246 246 246));\n    color: rgb(var(--b2b-akzent, 199 42 9));\n  }\n\n  .b2b-versprechen__text {\n    display: flex;\n    flex-direction: column;\n    gap: 3px;\n    min-width: 0;\n  }\n\n  .b2b-versprechen__text strong {\n    font-size: 18px;\n    font-weight: 700;\n    line-height: 1.25;\n  }\n\n  .b2b-versprechen__text span {\n    color: rgb(var(--b2b-tinte, 46 46 45) / 0.7);\n    font-size: 14px;\n    line-height: 1.4;\n  }\n\n  .b2b-versprechen__text a {\n    color: inherit;\n    font-weight: 700;\n    text-decoration: none;\n    white-space: nowrap;\n  }\n\n  @media screen and (max-width: 989px) {\n    .b2b-versprechen__punkt {\n      padding: 18px;\n      gap: 12px;\n    }\n    .b2b-versprechen__text strong {\n      font-size: 16px;\n    }\n  }\n\n  @media screen and (max-width: 749px) {\n    .b2b-versprechen {\n      padding-block: 20px;\n    }\n    .b2b-versprechen__liste {\n      grid-template-columns: minmax(0, 1fr);\n    }\n    .b2b-versprechen__punkt + .b2b-versprechen__punkt {\n      border-left: 0;\n      border-top: 1px solid rgb(var(--b2b-linie, 226 226 225));\n    }\n    .b2b-versprechen__punkt {\n      padding: 14px 16px;\n    }\n    .b2b-versprechen__symbol {\n      width: 40px;\n      height: 40px;\n    }\n  }\n</style>",
-        "wrapper_classes": "container"
+        "color_scheme": "scheme-1"
       }
     },
     "collection_list": {
@@ -103,116 +77,32 @@
     "konditionen": {
       "type": "b2b-konditionen",
       "settings": {
-        "vororder_link": "/pages/vororder"
+        "vororder_link": "/pages/vororder",
+        "vororder_text": "auf die gesamte Vororder",
+        "mindestmenge_text": "je Design, Größen frei kombinierbar",
+        "versand_text": "jede Vororder",
+        "hinweis": ""
       }
-    },
-    "multicolumn": {
-      "type": "multicolumn",
-      "blocks": {
-        "column1": {
-          "type": "column",
-          "settings": {
-            "title": "Mindestbestellwert 300 € netto",
-            "text": "<p>Keine Mindestmenge pro Artikel – bestell frei, solange der Warenkorb insgesamt 300 € netto erreicht.</p>",
-            "link_label": "",
-            "link": ""
-          }
-        },
-        "column2": {
-          "type": "column",
-          "settings": {
-            "title": "Schneller Versand DACH",
-            "text": "<p>Zuverlässige Lieferung nach Deutschland, Österreich und in die Schweiz.</p>",
-            "link_label": "",
-            "link": ""
-          }
-        },
-        "column3": {
-          "type": "column",
-          "settings": {
-            "title": "Rechnung oder Vorkasse",
-            "text": "<p>Zahl per Rechnung oder Vorkasse – ganz ohne Kreditkarte.</p>",
-            "link_label": "",
-            "link": ""
-          }
-        },
-        "column4": {
-          "type": "column",
-          "settings": {
-            "title": "Persönliche Betreuung",
-            "text": "<p>Dein Ansprechpartner im Vertrieb ist bei Fragen für dich da.</p>",
-            "link_label": "",
-            "link": ""
-          }
-        },
-        "column5": {
-          "type": "column",
-          "settings": {
-            "title": "Geprüfte Handelspartner",
-            "text": "<p>Jede Registrierung wird von uns persönlich geprüft und freigeschaltet – für ein exklusives Händlernetzwerk statt offenem Marktplatz.</p>",
-            "link_label": "",
-            "link": ""
-          }
-        },
-        "column6": {
-          "type": "column",
-          "settings": {
-            "title": "Direkt vom Hersteller",
-            "text": "<p>Ohne Zwischenhändler zu deinen Handelskonditionen.</p>",
-            "link_label": "",
-            "link": ""
-          }
-        }
-      },
-      "block_order": [
-        "column1",
-        "column2",
-        "column3",
-        "column4",
-        "column5",
-        "column6"
-      ],
-      "settings": {
-        "title": "Warum Occulto?",
-        "heading_size": "h2",
-        "image_width": "full",
-        "image_ratio": "adapt",
-        "columns_desktop": 3,
-        "column_alignment": "left",
-        "background_style": "none",
-        "button_label": "",
-        "button_link": "",
-        "color_scheme": "scheme-3",
-        "columns_mobile": "1",
-        "swipe_on_mobile": false,
-        "padding_top": 48,
-        "padding_bottom": 56
-      },
-      "disabled": true
     },
     "vorteile": {
       "type": "b2b-abschnitt",
       "settings": {
-        "custom_liquid": "<section class=\"b2b-vorteile\">\n  <h2 class=\"b2b-vorteile__titel\">Warum Occulto?</h2>\n  <ul class=\"b2b-vorteile__raster\">\n    <li class=\"b2b-vorteil\">\n      <span class=\"b2b-vorteil__symbol\" aria-hidden=\"true\">\n        <svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.5L21 8H6\" /><circle cx=\"10\" cy=\"20\" r=\"1.3\"/><circle cx=\"18\" cy=\"20\" r=\"1.3\"/></svg>\n      </span>\n      <p class=\"b2b-vorteil__titel\">Mindestbestellwert 300 &euro; netto</p>\n      <p class=\"b2b-vorteil__text\">Keine Mindestmenge pro Artikel &ndash; bestell frei, solange der Warenkorb insgesamt 300 &euro; netto erreicht.</p>\n    </li>\n    <li class=\"b2b-vorteil\">\n      <span class=\"b2b-vorteil__symbol\" aria-hidden=\"true\">\n        <svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 7h11v9H3zM14 10h4l3 3v3h-7z\"/><circle cx=\"7\" cy=\"18\" r=\"1.6\"/><circle cx=\"17.5\" cy=\"18\" r=\"1.6\"/></svg>\n      </span>\n      <p class=\"b2b-vorteil__titel\">Versandkostenfrei ab 300 Packs</p>\n      <p class=\"b2b-vorteil__text\">F&uuml;r Nachbestellungen ab 300 Packs, schnell geliefert nach Deutschland, &Ouml;sterreich und in die Schweiz. Vororder immer versandkostenfrei.</p>\n    </li>\n    <li class=\"b2b-vorteil\">\n      <span class=\"b2b-vorteil__symbol\" aria-hidden=\"true\">\n        <svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M6 3h9l4 4v14H6z\"/><path d=\"M15 3v4h4\"/><path d=\"M9.5 12h5M9.5 16h5\"/></svg>\n      </span>\n      <p class=\"b2b-vorteil__titel\">Rechnung oder Vorkasse</p>\n      <p class=\"b2b-vorteil__text\">Zahl per Rechnung oder Vorkasse &ndash; ganz ohne Kreditkarte.</p>\n    </li>\n    <li class=\"b2b-vorteil\">\n      <span class=\"b2b-vorteil__symbol\" aria-hidden=\"true\">\n        <svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 13a8 8 0 0 1 16 0\"/><path d=\"M4 13v3a2 2 0 0 0 2 2h1v-5H6a2 2 0 0 0-2 2zM20 13v3a2 2 0 0 1-2 2h-1v-5h1a2 2 0 0 1 2 2z\"/><path d=\"M17 18v1a2 2 0 0 1-2 2h-2\"/></svg>\n      </span>\n      <p class=\"b2b-vorteil__titel\">Pers&ouml;nliche Betreuung</p>\n      <p class=\"b2b-vorteil__text\">Dein Ansprechpartner im Vertrieb ist bei Fragen f&uuml;r dich da.</p>\n    </li>\n    <li class=\"b2b-vorteil\">\n      <span class=\"b2b-vorteil__symbol\" aria-hidden=\"true\">\n        <svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 3l7 3v5.5c0 4.3-2.9 8.2-7 9.5-4.1-1.3-7-5.2-7-9.5V6z\"/><path d=\"M9 12l2.2 2.2L15.5 10\"/></svg>\n      </span>\n      <p class=\"b2b-vorteil__titel\">Gepr&uuml;fte Handelspartner</p>\n      <p class=\"b2b-vorteil__text\">Jede Registrierung wird von uns pers&ouml;nlich gepr&uuml;ft und freigeschaltet &ndash; f&uuml;r ein exklusives H&auml;ndlernetzwerk statt offenem Marktplatz.</p>\n    </li>\n    <li class=\"b2b-vorteil\">\n      <span class=\"b2b-vorteil__symbol\" aria-hidden=\"true\">\n        <svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 21V10l5.5 3.5V10L14 13.5V7l7 4v10z\"/><path d=\"M7 17.5h2M13 17.5h2M18 17.5h1\"/></svg>\n      </span>\n      <p class=\"b2b-vorteil__titel\">Ohne Zwischenh&auml;ndler</p>\n      <p class=\"b2b-vorteil__text\">Ohne Zwischenh&auml;ndler zu deinen Handelskonditionen.</p>\n    </li>\n  </ul>\n</section>\n<style>\n  .b2b-vorteile {\n    max-width: 1240px;\n    margin: 0 auto;\n    padding-block: 56px;\n  }\n\n  .b2b-vorteile__titel {\n    margin: 0 0 36px;\n    font-size: clamp(2.8rem, 3.4vw, 4.6rem);\n    line-height: 1.02;\n    text-align: center;\n    text-wrap: balance;\n  }\n\n  .b2b-vorteile__raster {\n    display: grid;\n    /* Feste Stufen statt auto-fit: bei sechs Karten ergaeben vier Spalten\n       eine Reihe zu vier und eine zu zwei. Drei und drei sieht ruhiger aus. */\n    grid-template-columns: 1fr;\n    gap: 18px;\n    margin: 0;\n    padding: 0;\n    list-style: none;\n  }\n\n  .b2b-vorteil {\n    padding: 26px 24px;\n    border: 1px solid rgb(var(--b2b-linie, 226 226 225));\n    border-radius: 10px;\n    background: rgb(255 255 255);\n    transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease;\n  }\n\n  /* Der Kasten hebt sich beim Ueberfahren leicht an - dieselbe Geste wie\n     bei den Knoepfen der Landingpage, damit sich der Shop einheitlich\n     anfuehlt. Nur fuer Zeiger: auf dem Handy gibt es kein Ueberfahren,\n     dort bliebe der Zustand nach dem Tippen haengen. */\n  @media (hover: hover) and (pointer: fine) {\n    .b2b-vorteil:hover {\n      border-color: rgb(var(--b2b-akzent, 199 42 9));\n      transform: translateY(-3px);\n      box-shadow: 0 10px 26px rgb(0 0 0 / .08);\n    }\n  }\n\n  .b2b-vorteil__symbol {\n    display: grid;\n    place-items: center;\n    width: 48px;\n    height: 48px;\n    margin-bottom: 16px;\n    border-radius: 50%;\n    background: rgb(var(--b2b-akzent, 199 42 9) / 0.1);\n    color: rgb(var(--b2b-akzent, 199 42 9));\n  }\n\n  .b2b-vorteil__titel {\n    margin: 0 0 8px;\n    font-size: 17px;\n    font-weight: 700;\n    line-height: 1.3;\n  }\n\n  .b2b-vorteil__text {\n    margin: 0;\n    font-size: 15px;\n    line-height: 1.6;\n    opacity: .82;\n  }\n\n  @media screen and (min-width: 600px) {\n    .b2b-vorteile__raster { grid-template-columns: repeat(2, minmax(0, 1fr)); }\n  }\n\n  @media screen and (min-width: 1000px) {\n    .b2b-vorteile__raster { grid-template-columns: repeat(3, minmax(0, 1fr)); }\n  }\n\n  @media screen and (max-width: 599px) {\n    .b2b-vorteile { padding-block: 40px; }\n    .b2b-vorteile__titel { margin-bottom: 24px; }\n    .b2b-vorteile__raster { gap: 12px; }\n    .b2b-vorteil { padding: 20px 18px; }\n    .b2b-vorteil__symbol { width: 42px; height: 42px; margin-bottom: 12px; }\n  }\n</style>",
+        "custom_liquid": "<section class=\"b2b-vorteile\">\n  <h2 class=\"b2b-vorteile__titel\">Warum Occulto?</h2>\n  <ul class=\"b2b-vorteile__raster\">\n    <li class=\"b2b-vorteil\">\n      <span class=\"b2b-vorteil__symbol\" aria-hidden=\"true\">\n        <svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.5L21 8H6\" /><circle cx=\"10\" cy=\"20\" r=\"1.3\"/><circle cx=\"18\" cy=\"20\" r=\"1.3\"/></svg>\n      </span>\n      <p class=\"b2b-vorteil__titel\">Mindestmenge {% render 'b2b-mindestwert' %} Packs</p>\n    </li>\n    <li class=\"b2b-vorteil\">\n      <span class=\"b2b-vorteil__symbol\" aria-hidden=\"true\">\n        <svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 7h11v9H3zM14 10h4l3 3v3h-7z\"/><circle cx=\"7\" cy=\"18\" r=\"1.6\"/><circle cx=\"17.5\" cy=\"18\" r=\"1.6\"/></svg>\n      </span>\n      <p class=\"b2b-vorteil__titel\">Versandkostenfrei ab {% render 'b2b-packs', teil: 'versandfrei-ab' %} Packs</p>\n      <p class=\"b2b-vorteil__text\">Lieferzeit 3–5 Werktage</p>\n    </li>\n    <li class=\"b2b-vorteil\">\n      <span class=\"b2b-vorteil__symbol\" aria-hidden=\"true\">\n        <svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z\"/><circle cx=\"7.5\" cy=\"7.5\" r=\"1.4\"/></svg>\n      </span>\n      <p class=\"b2b-vorteil__titel\">−5 % ab 500 Packs</p>\n    </li>\n    <li class=\"b2b-vorteil\">\n      <span class=\"b2b-vorteil__symbol\" aria-hidden=\"true\">\n        <svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 13a8 8 0 0 1 16 0\"/><path d=\"M4 13v3a2 2 0 0 0 2 2h1v-5H6a2 2 0 0 0-2 2zM20 13v3a2 2 0 0 1-2 2h-1v-5h1a2 2 0 0 1 2 2z\"/><path d=\"M17 18v1a2 2 0 0 1-2 2h-2\"/></svg>\n      </span>\n      <p class=\"b2b-vorteil__titel\">Persönliche Betreuung</p>\n    </li>\n    <li class=\"b2b-vorteil\">\n      <span class=\"b2b-vorteil__symbol\" aria-hidden=\"true\">\n        <svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 3l7 3v5.5c0 4.3-2.9 8.2-7 9.5-4.1-1.3-7-5.2-7-9.5V6z\"/><path d=\"M9 12l2.2 2.2L15.5 10\"/></svg>\n      </span>\n      <p class=\"b2b-vorteil__titel\">Geprüfte Handelspartner</p>\n    </li>\n    <li class=\"b2b-vorteil\">\n      <span class=\"b2b-vorteil__symbol\" aria-hidden=\"true\">\n        <svg viewBox=\"0 0 24 24\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 21V10l5.5 3.5V10L14 13.5V7l7 4v10z\"/><path d=\"M7 17.5h2M13 17.5h2M18 17.5h1\"/></svg>\n      </span>\n      <p class=\"b2b-vorteil__titel\">Ohne Zwischenhändler</p>\n    </li>\n  </ul>\n</section>\n<style>\n  .b2b-vorteile {\n    max-width: 1240px;\n    margin: 0 auto;\n    padding-block: 56px;\n  }\n\n  .b2b-vorteile__titel {\n    margin: 0 0 36px;\n    font-size: clamp(2.8rem, 3.4vw, 4.6rem);\n    line-height: 1.02;\n    text-align: center;\n    text-wrap: balance;\n  }\n\n  .b2b-vorteile__raster {\n    display: grid;\n    /* Feste Stufen statt auto-fit: bei sechs Karten ergaeben vier Spalten\n       eine Reihe zu vier und eine zu zwei. Drei und drei sieht ruhiger aus. */\n    grid-template-columns: 1fr;\n    gap: 18px;\n    margin: 0;\n    padding: 0;\n    list-style: none;\n  }\n\n  .b2b-vorteil {\n    padding: 26px 24px;\n    border: 1px solid rgb(var(--b2b-linie, 226 226 225));\n    border-radius: 10px;\n    background: rgb(255 255 255);\n    transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease;\n  }\n\n  /* Der Kasten hebt sich beim Ueberfahren leicht an - dieselbe Geste wie\n     bei den Knoepfen der Landingpage, damit sich der Shop einheitlich\n     anfuehlt. Nur fuer Zeiger: auf dem Handy gibt es kein Ueberfahren,\n     dort bliebe der Zustand nach dem Tippen haengen. */\n  @media (hover: hover) and (pointer: fine) {\n    .b2b-vorteil:hover {\n      border-color: rgb(var(--b2b-akzent, 199 42 9));\n      transform: translateY(-3px);\n      box-shadow: 0 10px 26px rgb(0 0 0 / .08);\n    }\n  }\n\n  .b2b-vorteil__symbol {\n    display: grid;\n    place-items: center;\n    width: 48px;\n    height: 48px;\n    margin-bottom: 16px;\n    border-radius: 50%;\n    background: rgb(var(--b2b-hell, 246 246 246));\n    color: rgb(var(--b2b-akzent, 199 42 9));\n  }\n\n  .b2b-vorteil__titel {\n    margin: 0 0 8px;\n    font-size: 17px;\n    font-weight: 700;\n    line-height: 1.3;\n  }\n\n  .b2b-vorteil__text {\n    margin: 0;\n    font-size: 15px;\n    line-height: 1.6;\n    opacity: .82;\n  }\n\n  @media screen and (min-width: 600px) {\n    .b2b-vorteile__raster { grid-template-columns: repeat(2, minmax(0, 1fr)); }\n  }\n\n  @media screen and (min-width: 1000px) {\n    .b2b-vorteile__raster { grid-template-columns: repeat(3, minmax(0, 1fr)); }\n  }\n\n  @media screen and (max-width: 599px) {\n    .b2b-vorteile { padding-block: 40px; }\n    .b2b-vorteile__titel { margin-bottom: 24px; }\n    .b2b-vorteile__raster { gap: 12px; }\n    .b2b-vorteil { padding: 20px 18px; }\n    .b2b-vorteil__symbol { width: 42px; height: 42px; margin-bottom: 12px; }\n  }\n  @media (prefers-reduced-motion: reduce) { .b2b-vorteil { transition: none; transform: none !important; } }\n</style>",
         "wrapper_classes": "container"
       }
     },
     "abschluss": {
       "type": "b2b-abschnitt",
       "settings": {
-        "custom_liquid": "<section class=\"b2b-abschluss\">\n  <div class=\"b2b-abschluss__karte\">\n    <p class=\"b2b-abschluss__titel\">Noch kein H&auml;ndlerkonto?</p>\n    <p class=\"b2b-abschluss__text\">Wir pr&uuml;fen jede Registrierung pers&ouml;nlich und schalten dich frei.</p>\n    <a class=\"b2b-abschluss__knopf\" href=\"/pages/haendler-werden\">H&auml;ndler werden</a>\n  </div>\n  <div class=\"b2b-abschluss__karte b2b-abschluss__karte--hell\">\n    <p class=\"b2b-abschluss__titel\">Fragen zum Sortiment?</p>\n    <div class=\"b2b-abschluss__wege\">\n      <a class=\"b2b-abschluss__weg\" href=\"tel:+4980313506041\">\n        <svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" aria-hidden=\"true\"><path d=\"M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.24 11.4 11.4 0 0 0 3.6.58 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.46.57 3.6a1 1 0 0 1-.25 1z\" fill=\"currentColor\"/></svg>\n        <span>08031 350 60 41</span>\n      </a>\n      <a class=\"b2b-abschluss__weg\" href=\"mailto:b2b@occulto.de\">\n        <svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" aria-hidden=\"true\"><path d=\"M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5z\" fill=\"currentColor\"/></svg>\n        <span>b2b@occulto.de</span>\n      </a>\n    </div>\n  </div>\n</section>\n<style>\n  .b2b-abschluss {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));\n    gap: 18px;\n    max-width: 1240px;\n    margin: 0 auto;\n    padding-block: 56px;\n  }\n\n  .b2b-abschluss__karte {\n    display: flex;\n    flex-direction: column;\n    align-items: flex-start;\n    gap: 10px;\n    padding: 32px 30px;\n    border-radius: 12px;\n    background: rgb(var(--b2b-akzent, 199 42 9));\n    color: rgb(255 255 255);\n  }\n\n  .b2b-abschluss__karte--hell {\n    border: 1px solid rgb(var(--b2b-linie, 226 226 225));\n    background: rgb(255 255 255);\n    color: inherit;\n  }\n\n  .b2b-abschluss__titel {\n    margin: 0;\n    font-size: 22px;\n    font-weight: 700;\n    line-height: 1.2;\n  }\n\n  .b2b-abschluss__text {\n    margin: 0;\n    font-size: 15px;\n    line-height: 1.6;\n    opacity: .9;\n  }\n\n  .b2b-abschluss__knopf {\n    margin-top: 8px;\n    padding: 13px 26px;\n    border-radius: 6px;\n    background: rgb(255 255 255);\n    color: rgb(var(--b2b-akzent, 199 42 9));\n    font-size: 15px;\n    font-weight: 700;\n    text-decoration: none;\n    transition: transform .18s ease, box-shadow .18s ease;\n  }\n\n  @media (hover: hover) and (pointer: fine) {\n    .b2b-abschluss__knopf:hover {\n      transform: translateY(-2px);\n      box-shadow: 0 8px 20px rgb(0 0 0 / .2);\n    }\n  }\n\n  .b2b-abschluss__wege {\n    display: flex;\n    flex-direction: column;\n    gap: 10px;\n    margin-top: 6px;\n  }\n\n  .b2b-abschluss__weg {\n    display: inline-flex;\n    align-items: center;\n    gap: 10px;\n    font-size: 17px;\n    font-weight: 700;\n    color: inherit;\n    text-decoration: none;\n    overflow-wrap: anywhere;\n  }\n\n  .b2b-abschluss__weg svg {\n    flex: 0 0 auto;\n    color: rgb(var(--b2b-akzent, 199 42 9));\n  }\n\n  .b2b-abschluss__weg:hover,\n  .b2b-abschluss__weg:focus-visible {\n    color: rgb(var(--b2b-akzent, 199 42 9));\n    text-decoration: underline;\n  }\n\n  @media screen and (max-width: 599px) {\n    .b2b-abschluss { padding-block: 40px; gap: 12px; }\n    .b2b-abschluss__karte { padding: 24px 20px; }\n    .b2b-abschluss__titel { font-size: 19px; }\n  }\n</style>",
+        "custom_liquid": "<section class=\"b2b-abschluss\">\n  <div class=\"b2b-abschluss__karte\">\n    <p class=\"b2b-abschluss__titel\">Noch kein H&auml;ndlerkonto?</p>\n    <p class=\"b2b-abschluss__text\">Wir pr&uuml;fen jede Registrierung pers&ouml;nlich und schalten dich frei.</p>\n    <a class=\"b2b-abschluss__knopf\" href=\"/pages/haendler-werden\">H&auml;ndler werden</a>\n  </div>\n  <div class=\"b2b-abschluss__karte b2b-abschluss__karte--hell\">\n    <p class=\"b2b-abschluss__titel\">Fragen zum Sortiment?</p>\n    <div class=\"b2b-abschluss__wege\">\n      <a class=\"b2b-abschluss__weg\" href=\"tel:+4980313506041\">\n        <svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" aria-hidden=\"true\"><path d=\"M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.24 11.4 11.4 0 0 0 3.6.58 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.46.57 3.6a1 1 0 0 1-.25 1z\" fill=\"currentColor\"/></svg>\n        <span>08031 350 60 41</span>\n      </a>\n      <a class=\"b2b-abschluss__weg\" href=\"mailto:b2b@occulto.de\">\n        <svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" aria-hidden=\"true\"><path d=\"M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5z\" fill=\"currentColor\"/></svg>\n        <span>b2b@occulto.de</span>\n      </a>\n    </div>\n  </div>\n</section>\n<style>\n  .b2b-abschluss {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));\n    gap: 18px;\n    max-width: 1240px;\n    margin: 0 auto;\n    padding-block: 56px;\n  }\n\n  .b2b-abschluss__karte {\n    display: flex;\n    flex-direction: column;\n    align-items: flex-start;\n    gap: 10px;\n    padding: 32px 30px;\n    border-radius: 12px;\n    background: rgb(255 255 255);\n    border-top: 3px solid rgb(var(--b2b-akzent, 199 42 9));\n    color: inherit;\n  }\n\n  .b2b-abschluss__karte--hell {\n    border: 1px solid rgb(var(--b2b-linie, 226 226 225));\n    background: rgb(255 255 255);\n    color: inherit;\n  }\n\n  .b2b-abschluss__titel {\n    margin: 0;\n    font-size: 22px;\n    font-weight: 700;\n    line-height: 1.2;\n  }\n\n  .b2b-abschluss__text {\n    margin: 0;\n    font-size: 15px;\n    line-height: 1.6;\n    opacity: .9;\n  }\n\n  .b2b-abschluss__knopf {\n    margin-top: 8px;\n    padding: 13px 26px;\n    border-radius: 6px;\n    background: rgb(255 255 255);\n    color: rgb(var(--b2b-akzent, 199 42 9));\n    font-size: 15px;\n    font-weight: 700;\n    text-decoration: none;\n    transition: transform .18s ease, box-shadow .18s ease;\n  }\n\n  @media (hover: hover) and (pointer: fine) {\n    .b2b-abschluss__knopf:hover {\n      transform: translateY(-2px);\n      box-shadow: 0 8px 20px rgb(0 0 0 / .2);\n    }\n  }\n\n  .b2b-abschluss__wege {\n    display: flex;\n    flex-direction: column;\n    gap: 10px;\n    margin-top: 6px;\n  }\n\n  .b2b-abschluss__weg {\n    display: inline-flex;\n    align-items: center;\n    gap: 10px;\n    font-size: 17px;\n    font-weight: 700;\n    color: inherit;\n    text-decoration: none;\n    overflow-wrap: anywhere;\n  }\n\n  .b2b-abschluss__weg svg {\n    flex: 0 0 auto;\n    color: rgb(var(--b2b-akzent, 199 42 9));\n  }\n\n  .b2b-abschluss__weg:hover,\n  .b2b-abschluss__weg:focus-visible {\n    color: rgb(var(--b2b-akzent, 199 42 9));\n    text-decoration: underline;\n  }\n\n  @media screen and (max-width: 599px) {\n    .b2b-abschluss { padding-block: 40px; gap: 12px; }\n    .b2b-abschluss__karte { padding: 24px 20px; }\n    .b2b-abschluss__titel { font-size: 19px; }\n  }\n</style>",
         "wrapper_classes": "container"
       }
     }
   },
   "order": [
-    "dealer_discount",
     "hero_split",
-    "customer_welcome",
-    "rich_text",
     "collection_list",
     "konditionen",
-    "multicolumn",
     "vorteile",
     "abschluss"
   ]

@@ -28,13 +28,12 @@
         "share": {
           "type": "share",
           "settings": {
-            "share_label": "Share"
+            "share_label": "Teilen"
           }
         },
         "content": {
           "type": "content",
-          "settings": {
-          }
+          "settings": {}
         }
       },
       "block_order": [
@@ -43,8 +42,7 @@
         "share",
         "content"
       ],
-      "settings": {
-      }
+      "settings": {}
     }
   },
   "order": [

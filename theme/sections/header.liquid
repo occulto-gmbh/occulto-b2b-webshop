@@ -54,6 +54,17 @@
     bei 1366 ueber, obwohl die Rechnung sie fuer passend hielt.
   endcomment
   assign b2b_noetig = b2b_menue | plus: 559
+
+  comment
+    Mittiges Logo (wie im Hauptshop): Das Menue hat nur die linke Haelfte
+    neben dem Logo. Beide Seitenspalten sind gleich breit, also braucht die
+    Zeile das Menue zweimal plus Raender 80, Logospalte 224, zwei Abstaende
+    je 20 und Scrollleiste 15. Umbrechen bleibt verboten, darunter kommt
+    die Schublade.
+  endcomment
+  if section.settings.logo_position == 'middle-center'
+    assign b2b_noetig = b2b_menue | times: 2 | plus: 359
+  endif
   assign b2b_schwelle = b2b_noetig | times: 100 | divided_by: 94 | round
   assign b2b_schwelle_minus = b2b_schwelle | minus: 1
   if b2b_schwelle_minus < 990
@@ -80,17 +91,11 @@
       }
     }
 
-    /* Zwischen 990 und 1200 bleibt es beim Schubladenmenue.
-
-       Das Theme schaltet bei 990 auf die Zeile um. Mit acht Eintraegen
-       passt die dort aber nicht mehr neben Logo und Symbolen - gemessen bei
-       1024 brauchte das Menue 623 Bildpunkte, verfuegbar waren 439.
-       Umbrechen lassen war die Vorgabe ausdruecklich nicht, also bleibt
-       in diesem Band der Hamburger.
-
-       Die Grenze steht nicht fest, sie wird oben aus den Beschriftungen
-       gerechnet - aktuell {{ b2b_schwelle }} Bildpunkte. Faellt ein
-       Menuepunkt weg, ruecht sie von selbst nach unten. */
+    /* Zwischen 990 und der gerechneten Schwelle bleibt es beim
+       Schubladenmenue. Umbrechen lassen war die Vorgabe ausdruecklich nicht.
+       Die Grenze wird oben aus den Beschriftungen gerechnet - aktuell
+       {{ b2b_schwelle }} Bildpunkte. Faellt ein Menuepunkt weg, rueckt sie
+       von selbst nach unten. */
     @media screen and (min-width: 990px) and (max-width: {{ b2b_schwelle_minus }}px) {
       header-drawer {
         display: block;
@@ -261,6 +266,30 @@
   .menu-drawer__menu-item {
     font-weight: 700;
   }
+  @media screen and (min-width: 990px) {
+    .header--middle-center .header__inline-menu { min-width: 0; }
+    .header--middle-center .list-menu--inline { justify-content: flex-start; flex-wrap: nowrap; }
+  }
+  .b2b-konto { position: relative; }
+  .b2b-konto__inhalt {
+    position: absolute; right: 0; top: 100%; z-index: 10;
+    width: min(32rem, calc(100vw - 3rem)); padding: 20px;
+    background: #fff; color: #2e2e2d; border: 1px solid #e2e2e1;
+    box-shadow: 0 8px 24px rgb(0 0 0 / .12);
+  }
+  .b2b-konto__inhalt .button { display: flex; margin-top: 10px; }
+  .b2b-header-vororder {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-height: 44px; margin-left: 8px; padding: 0 12px;
+    border: 1px solid currentColor; border-radius: 4px;
+    font-size: 14px; font-weight: 700; color: inherit; text-decoration: none;
+  }
+  @media screen and (max-width: 749px) {
+    .header { padding-inline: 12px; grid-template-columns: 44px minmax(0, 1fr) auto; }
+    .header__icons .header__search { display: none; }
+    .header__heading-logo-wrapper { max-width: 70px; }
+    .b2b-header-vororder { margin-left: 2px; padding-inline: 7px; font-size: 12px; }
+  }
 {%- endstyle -%}
 
 <script src="{{ 'cart-notification.js' | asset_url }}" defer="defer"></script>
@@ -423,6 +452,7 @@
       {% render 'header-search', input_id: 'Search-In-Modal' %}
 
       {%- if shop.customer_accounts_enabled -%}
+        {%- if customer and customer.tags contains 'dealer-approved' -%}
         <shopify-account
           menu="{{ settings.customer_account_menu | default: 'customer-account-main-menu' }}"
           class="header__icon header__icon--account link focus-inset"
@@ -430,6 +460,25 @@
           <span slot="signed-out-avatar" class="svg-wrapper">{{ 'icon-account.svg' | inline_asset_content }}</span>
           <span slot="signed-out-avatar" class="visually-hidden">{{ 'customer.log_in' | t }}</span>
         </shopify-account>
+        {%- else -%}
+          <details class="b2b-konto">
+            <summary class="header__icon header__icon--account link focus-inset" aria-label="Händlerkonto">
+              <span class="svg-wrapper">{{ 'icon-account.svg' | inline_asset_content }}</span>
+            </summary>
+            <div class="b2b-konto__inhalt">
+              {%- if customer -%}
+                <p>Dein Konto ist noch nicht als Händlerkonto freigeschaltet.</p>
+              {%- else -%}
+                <p>Melde dich mit deinem Händlerkonto an oder bewirb dich als Handelspartner.</p>
+                <a class="button button--primary" href="{{ routes.account_login_url }}">Anmelden</a>
+              {%- endif -%}
+              <a class="button button--secondary" href="/pages/haendler-werden">Händler werden</a>
+              {%- if customer -%}
+                <a class="button button--tertiary" href="{{ routes.account_logout_url }}">Abmelden</a>
+              {%- endif -%}
+            </div>
+          </details>
+        {%- endif -%}
       {%- endif -%}
 
       {%- for block in section.blocks -%}
@@ -455,6 +504,9 @@
           </div>
         {%- endif -%}
       </a>
+      {%- if customer and customer.tags contains 'dealer-approved' -%}
+        <a class="b2b-header-vororder" href="/pages/vororder">Vororder</a>
+      {%- endif -%}
     </div>
   </header>
 </{{ header_tag }}>

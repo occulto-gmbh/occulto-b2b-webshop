@@ -48,13 +48,13 @@
         "share": {
           "type": "share",
           "settings": {
-            "share_label": "Share"
+            "share_label": "Teilen"
           }
         },
         "b2b-hinweis": {
           "type": "custom_liquid",
           "settings": {
-            "custom_liquid": "{%- if customer and customer.tags contains 'dealer-approved' -%}\n{%- if product.tags contains 'einzelstueck' -%}\n<p class=\"b2b-pdp-hinweis\">Händlerpreis zzgl. MwSt. · einzeln bestellbar</p>\n{%- else -%}\n<p class=\"b2b-pdp-hinweis\">Händlerpreise zzgl. MwSt. · versandkostenfrei ab 300 Packs · bestellbar in 5er-Packs</p>\n{%- endif -%}\n{%- endif -%}"
+            "custom_liquid": "{%- if customer and customer.tags contains 'dealer-approved' -%}\n{%- if product.tags contains 'einzelstueck' -%}\n<p class=\"b2b-pdp-hinweis\">Händlerpreis zzgl. MwSt. · einzeln bestellbar</p>\n{%- else -%}\n<p class=\"b2b-pdp-hinweis\">Händlerpreise zzgl. MwSt. · versandkostenfrei ab {% render 'b2b-packs', teil: 'versandfrei-ab' %} Packs · bestellbar in 5er-Packs</p>\n{%- endif -%}\n{%- endif -%}"
           }
         },
         "groessen": {

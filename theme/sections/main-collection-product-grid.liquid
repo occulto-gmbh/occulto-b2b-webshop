@@ -1,6 +1,7 @@
 {{ 'template-collection.css' | asset_url | stylesheet_tag }}
 {{ 'component-card.css' | asset_url | stylesheet_tag }}
 {{ 'component-price.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'b2b-katalog.js' | asset_url }}" defer="defer"></script>
 
 {% if section.settings.image_shape == 'blob' %}
   {{ 'mask-blobs.css' | asset_url | stylesheet_tag }}
@@ -42,65 +43,6 @@
 >
   <div class="section-{{ section.id }}-padding gradient color-{{ section.settings.color_scheme }}">
     {%- paginate collection.products by section.settings.products_per_page -%}
-      {% comment %} Sort is the first tabbable element when filter type is vertical {% endcomment %}
-      {%- if section.settings.enable_sorting and section.settings.filter_type == 'vertical' -%}
-        <facet-filters-form class="facets facets-vertical-sort page-width small-hide">
-          <form class="facets-vertical-form" id="FacetSortForm">
-            <div class="facet-filters sorting caption">
-              <div class="facet-filters__field">
-                <h2 class="facet-filters__label caption-large text-body">
-                  <label for="SortBy">{{ 'products.facets.sort_by_label' | t }}</label>
-                </h2>
-                <div class="select">
-                  {%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}
-                  <select
-                    name="sort_by"
-                    class="facet-filters__sort select__select caption-large"
-                    id="SortBy"
-                    aria-describedby="a11y-refresh-page-message"
-                  >
-                    {%- for option in collection.sort_options -%}
-                      <option
-                        value="{{ option.value | escape }}"
-                        {% if option.value == sort_by %}
-                          selected="selected"
-                        {% endif %}
-                      >
-                        {{ option.name | escape }}
-                      </option>
-                    {%- endfor -%}
-                  </select>
-                  <span class="svg-wrapper">
-                    {{- 'icon-caret.svg' | inline_asset_content -}}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div class="product-count-vertical light" role="status">
-              <h2 class="product-count__text text-body">
-                <span id="ProductCountDesktop">
-                  {%- if collection.results_count -%}
-                    {{
-                      'templates.search.results_with_count'
-                      | t: terms: collection.terms, count: collection.results_count
-                    }}
-                  {%- elsif collection.products_count == collection.all_products_count -%}
-                    {{ 'products.facets.product_count_simple' | t: count: collection.products_count }}
-                  {%- else -%}
-                    {{
-                      'products.facets.product_count'
-                      | t: product_count: collection.products_count, count: collection.all_products_count
-                    }}
-                  {%- endif -%}
-                </span>
-              </h2>
-              {%- render 'loading-spinner' -%}
-            </div>
-          </form>
-        </facet-filters-form>
-      {%- endif -%}
-
       <div class="{% if section.settings.filter_type == 'vertical' %} facets-vertical page-width{% endif %}">
         {{ 'component-facets.css' | asset_url | stylesheet_tag }}
         <script src="{{ 'facets.js' | asset_url }}" defer="defer"></script>
@@ -114,7 +56,7 @@
             {% render 'facets',
               results: collection,
               enable_filtering: section.settings.enable_filtering,
-              enable_sorting: section.settings.enable_sorting,
+              enable_sorting: false,
               filter_type: section.settings.filter_type,
               paginate: paginate
             %}
@@ -128,6 +70,12 @@
             data-cascade
           {% endif %}
         >
+          <b2b-katalog data-abschnitt="{{ section.id }}" data-seiten="{{ paginate.pages }}" data-seite="{{ paginate.current_page }}" data-sortierung="{{ collection.sort_by | default: collection.default_sort_by }}">
+            <div class="b2b-katalog-suche page-width">
+              <label for="B2bKatalogSuche-{{ section.id }}">Produkte durchsuchen</label>
+              <input id="B2bKatalogSuche-{{ section.id }}" type="search" placeholder="Name oder Art.-Nr." autocomplete="off" data-katalog-suche>
+              <p data-katalog-status role="status"></p>
+            </div>
           {%- if collection.products.size == 0 -%}
             <div class="collection collection--empty page-width" id="product-grid" data-id="{{ section.id }}">
               <div class="loading-overlay gradient"></div>
@@ -158,13 +106,7 @@
               >
                 {% assign skip_card_product_styles = false %}
                 {%- liquid
-                  # Bei Standardsortierung (kein vom Händler gewähltes sort_by) stehen ausverkaufte
-                  # Artikel am Ende: Durchlauf 1 = verfügbar, Durchlauf 2 = ausverkauft.
-                  # Wirkt pro Seite (products_per_page), nicht über Seitengrenzen hinweg.
                   assign card_passes = 2
-                  if collection.sort_by != blank
-                    assign card_passes = 1
-                  endif
                   assign card_index = 0
                 -%}
                 {%- for card_pass in (1..card_passes) -%}
@@ -181,6 +123,10 @@
                     {%- assign lazy_load = true -%}
                   {%- endif -%}
                   <li
+                    data-produkt="{{ product.id }}"
+                    data-verfuegbar="{{ product.available }}"
+                    data-rang="{{ paginate.current_offset | plus: forloop.index0 }}"
+                    data-suche="{{ product.title | append: ' ' | escape }}{% for variant in product.variants %} {{ variant.sku | escape }}{% endfor %}"
                     class="grid__item{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
                     {% if settings.animations_reveal_on_scroll %}
                       data-cascade
@@ -210,50 +156,11 @@
                 <div id="CollectionAutoLoad-{{ section.id }}">
                   {% render 'pagination', paginate: paginate, anchor: '' %}
                 </div>
-                <script>
-                  (function () {
-                    var grid = document.getElementById('product-grid');
-                    var wrapper = document.getElementById('CollectionAutoLoad-{{ section.id }}');
-                    if (!grid || !wrapper) return;
 
-                    function loadNext(url) {
-                      fetch(url)
-                        .then(function (res) {
-                          return res.text();
-                        })
-                        .then(function (html) {
-                          var doc = new DOMParser().parseFromString(html, 'text/html');
-                          var newGrid = doc.getElementById('product-grid');
-                          if (newGrid) {
-                            // Snapshot into a static array first: newGrid.children is a
-                            // live HTMLCollection, and appendChild() below moves each node
-                            // out of it, which would otherwise shift indices mid-iteration
-                            // and silently skip every other item.
-                            Array.from(newGrid.children).forEach(function (item) {
-                              grid.appendChild(item);
-                            });
-                          }
-                          var newWrapper = doc.getElementById('CollectionAutoLoad-{{ section.id }}');
-                          var nextLink = newWrapper ? newWrapper.querySelector('.pagination__item--prev') : null;
-                          if (nextLink && nextLink.href) {
-                            loadNext(nextLink.href);
-                          } else {
-                            wrapper.remove();
-                          }
-                        })
-                        .catch(function () {});
-                    }
-
-                    var firstNext = wrapper.querySelector('.pagination__item--prev');
-                    if (firstNext && firstNext.href) {
-                      wrapper.style.display = 'none';
-                      loadNext(firstNext.href);
-                    }
-                  })();
-                </script>
               {%- endif -%}
             </div>
           {%- endif -%}
+          </b2b-katalog>
         </div>
       </div>
     {%- endpaginate -%}

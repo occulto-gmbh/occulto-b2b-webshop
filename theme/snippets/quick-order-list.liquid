@@ -86,10 +86,11 @@
                 -%}
               {%- else -%}
                 {%- for variant in product.variants -%}
+                  {%- assign zeilen_bild = variant.image | default: product.featured_media -%}
                   {%- render 'quick-order-list-row',
                     item: variant,
                     product_title: product.title,
-                    image: variant.image | default: product.featured_media,
+                    image: zeilen_bild,
                     sku: variant.sku,
                     variant: variant,
                     show_image: show_image,

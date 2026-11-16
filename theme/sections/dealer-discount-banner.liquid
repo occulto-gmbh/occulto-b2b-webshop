@@ -1,3 +1,4 @@
+{%- capture b2b_versand -%}{% render 'b2b-packs', teil: 'versandfrei-ab' %}{%- endcapture -%}
 {% comment %}
   Prominent volume-discount banner at the top of the homepage, only for
   logged-in customers (the discount itself is the Shopify Function
@@ -133,7 +134,7 @@
           {%- if section.settings.versand != blank -%}
             <p class="dealer-discount-banner__versand">
               <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.6"/><circle cx="17.5" cy="18" r="1.6"/></svg>
-              {{ section.settings.versand | escape }}
+              {{ section.settings.versand | replace: '[versandfrei-ab]', b2b_versand | escape }}
             </p>
           {%- endif -%}
         </div>
@@ -192,7 +193,7 @@
       "type": "text",
       "id": "versand",
       "label": "Versand",
-      "default": "Versandkostenfrei ab 300 Packs",
+      "default": "Versandkostenfrei ab [versandfrei-ab] Packs",
       "info": "Gilt für Nachbestellungen. Leer lassen, um die Zeile auszublenden."
     },
     {

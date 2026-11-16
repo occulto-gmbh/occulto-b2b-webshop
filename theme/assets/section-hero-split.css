@@ -3,6 +3,9 @@
   grid-template-columns: 1fr;
 }
 
+.hero-split__buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.hero-split__overline { text-transform: none; letter-spacing: normal; }
+
 .hero-split__text {
   position: relative;
   display: flex;

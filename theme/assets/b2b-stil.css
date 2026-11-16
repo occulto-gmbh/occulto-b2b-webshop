@@ -34,6 +34,32 @@
   --b2b-takt: 0.18s;
 }
 
+.b2b-freigabe-hinweis {
+  padding-block: 16px;
+  border-left: 4px solid rgb(var(--b2b-akzent));
+  background: #fff;
+}
+.b2b-freigabe-hinweis a { display: inline-block; margin-left: 12px; color: inherit; text-decoration: underline; }
+
+b2b-katalog { display: block; }
+.b2b-katalog-suche { margin-bottom: 24px; }
+.b2b-katalog-suche label { display: block; font-weight: 700; }
+.b2b-katalog-suche input {
+  width: 100%; min-height: 44px; padding: 10px 14px;
+  border: 1px solid #d0d0d0; border-radius: 4px; background: #fff; color: inherit;
+  font: inherit;
+}
+#product-grid > [hidden] { display: none !important; }
+
+.b2b-gb > .button--secondary { margin-top: 12px; }
+.b2b-lageranfrage { margin-top: 12px; }
+.b2b-lageranfrage label { display: block; margin-top: 12px; }
+.b2b-lageranfrage input[type="email"], .b2b-lageranfrage select {
+  width: 100%; min-height: 44px; padding: 10px; font: inherit;
+  background: #fff; color: inherit; border: 1px solid #d0d0d0;
+}
+.b2b-lageranfrage button { margin-top: 12px; }
+
 /* ====================================================================
    KNOEPFE
 

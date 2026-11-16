@@ -323,6 +323,14 @@
     {%- endif -%}
 
     {% sections 'header-group' %}
+    {%- if customer -%}
+      {%- unless customer.tags contains 'dealer-approved' -%}
+        <div class="b2b-freigabe-hinweis page-width" role="status">
+          <strong>Dein Konto ist noch nicht als Händlerkonto freigeschaltet.</strong>
+          <a href="/pages/haendler-werden">Zum Händlerformular</a>
+        </div>
+      {%- endunless -%}
+    {%- endif -%}
 
     <main
       id="MainContent"

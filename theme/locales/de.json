@@ -285,7 +285,7 @@
     },
     "dealer_registration": {
       "heading": "Händler werden",
-      "intro": "Werde Occulto Handelspartner und bestell zu deinen Händlerkonditionen.",
+      "intro": "Werde Occulto Handelspartner und bestelle zu deinen Händlerkonditionen.",
       "section_company": "Unternehmen",
       "company_name": "Firmenname",
       "legal_form": "Rechtsform",
@@ -543,7 +543,7 @@
       "guest_continue": "Fortfahren",
       "guest_title": "Als Gast fortsetzen",
       "password": "Passwort",
-      "title": "Login",
+      "title": "Anmelden",
       "sign_in": "Anmelden",
       "submit": "Senden",
       "alternate_provider_separator": "oder"

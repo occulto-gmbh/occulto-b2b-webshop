@@ -28,6 +28,9 @@
 
 {%- liquid
   assign sort_by = results.sort_by | default: results.default_sort_by
+  if results == collection
+    assign sort_by = 'best-selling'
+  endif
   assign total_active_values = 0
   assign default_presentation = 'text'
   if results.url
@@ -50,6 +53,7 @@
         id="FacetFiltersForm"
         class="{% if filter_type == 'horizontal' %}facets__form{% else %}facets__form-vertical{% endif %}"
       >
+        {%- if results == collection -%}<input type="hidden" name="sort_by" value="best-selling">{%- endif -%}
         {%- if results.terms -%}
           <input type="hidden" name="q" value="{{ results.terms | escape }}">
           <input name="options[prefix]" type="hidden" value="last">
@@ -93,7 +97,7 @@
                     <facet-remove>
                       <a href="{{ value.url_to_remove }}" class="active-facets__button active-facets__button--light">
                         <span class="active-facets__button-inner button button--tertiary">
-                          {{ filter.label | escape }}: {{ value.label | escape }}
+                          {{ filter.label | replace: 'Availability', 'Verfügbarkeit' | replace: 'Price', 'Preis' | replace: 'Product type', 'Produktart' | replace: 'Brand', 'Marke' | replace: 'Size', 'Größe' | replace: 'Color', 'Farbe' | escape }}: {{ value.label | replace: 'In stock', 'Auf Lager' | replace: 'Out of stock', 'Ausverkauft' | replace: 'Default Title', 'Einheitsgröße' | escape }}
                           <span class="svg-wrapper">
                             {{- 'icon-close-small.svg' | inline_asset_content -}}
                           </span>
@@ -152,11 +156,11 @@
                   >
                     <summary
                       class="facets__summary caption-large focus-offset"
-                      aria-label="{{ filter.label | escape }} ({{ 'products.facets.filters_selected.one' | t: count: filter.active_values.size }})"
+                      aria-label="{{ filter.label | replace: 'Availability', 'Verfügbarkeit' | replace: 'Price', 'Preis' | replace: 'Product type', 'Produktart' | replace: 'Brand', 'Marke' | replace: 'Size', 'Größe' | replace: 'Color', 'Farbe' | escape }} ({{ 'products.facets.filters_selected.one' | t: count: filter.active_values.size }})"
                     >
                       <div>
                         <span class="facets__summary-label">
-                          {{- filter.label | escape }}
+                          {{ filter.label | replace: 'Availability', 'Verfügbarkeit' | replace: 'Price', 'Preis' | replace: 'Product type', 'Produktart' | replace: 'Brand', 'Marke' | replace: 'Size', 'Größe' | replace: 'Color', 'Farbe' | escape }}
                           {%- if filter_type == 'vertical' -%}
                             <span class="facets__selected{% if filter.active_values.size == 0 %} hidden{% endif %}">
                               ({{ filter.active_values.size }})</span
@@ -195,7 +199,7 @@
                         </div>
                       {%- endif -%}
                       <fieldset class="facets-wrap parent-wrap {% if filter_type == 'vertical' %} facets-wrap-vertical{% endif %}">
-                        <legend class="visually-hidden">{{ filter.label | escape }}</legend>
+                        <legend class="visually-hidden">{{ filter.label | replace: 'Availability', 'Verfügbarkeit' | replace: 'Price', 'Preis' | replace: 'Product type', 'Produktart' | replace: 'Brand', 'Marke' | replace: 'Size', 'Größe' | replace: 'Color', 'Farbe' | escape }}</legend>
                         {%- liquid
                           assign sorted_values = filter.values
                           # Keep the selected values grouped together when operator is AND
@@ -223,10 +227,10 @@
 
                             {%- capture text_value -%}
                               <span class="facet-checkbox__text" aria-hidden="true">
-                                <span class="facet-checkbox__text-label">{{- value.label | escape }}</span> ({{- value.count -}})
+                                <span class="facet-checkbox__text-label">{{ value.label | replace: 'In stock', 'Auf Lager' | replace: 'Out of stock', 'Ausverkauft' | replace: 'Default Title', 'Einheitsgröße' | escape }}</span> ({{- value.count -}})
                               </span>
                               <span class="visually-hidden">
-                                {{- value.label | escape }} (
+                                {{ value.label | replace: 'In stock', 'Auf Lager' | replace: 'Out of stock', 'Ausverkauft' | replace: 'Default Title', 'Einheitsgröße' | escape }} (
                                 {%- if value.count == 1 -%}
                                   {{- 'products.facets.product_count_simple.one' | t: count: value.count -}}
                                 {%- else -%}
@@ -323,7 +327,7 @@
                   >
                     <summary class="facets__summary caption-large focus-offset">
                       <div>
-                        <span>{{ filter.label | escape }}</span>
+                        <span>{{ filter.label | replace: 'Availability', 'Verfügbarkeit' | replace: 'Price', 'Preis' | replace: 'Product type', 'Produktart' | replace: 'Brand', 'Marke' | replace: 'Size', 'Größe' | replace: 'Color', 'Farbe' | escape }}</span>
                         {{- 'icon-caret.svg' | inline_asset_content -}}
                       </div>
                     </summary>
@@ -361,7 +365,7 @@
                   <facet-remove>
                     <a href="{{ value.url_to_remove }}" class="active-facets__button active-facets__button--light">
                       <span class="active-facets__button-inner button button--tertiary">
-                        {{ filter.label | escape }}: {{ value.label | escape }}
+                        {{ filter.label | replace: 'Availability', 'Verfügbarkeit' | replace: 'Price', 'Preis' | replace: 'Product type', 'Produktart' | replace: 'Brand', 'Marke' | replace: 'Size', 'Größe' | replace: 'Color', 'Farbe' | escape }}: {{ value.label | replace: 'In stock', 'Auf Lager' | replace: 'Out of stock', 'Ausverkauft' | replace: 'Default Title', 'Einheitsgröße' | escape }}
                         <span class="svg-wrapper">
                           {{- 'icon-close-small.svg' | inline_asset_content -}}
                         </span>
@@ -490,6 +494,7 @@
       </summary>
       <facet-filters-form>
         <form id="FacetFiltersFormMobile" class="mobile-facets">
+        {%- if results == collection -%}<input type="hidden" name="sort_by" value="best-selling">{%- endif -%}
           <div class="mobile-facets__inner gradient">
             <div class="mobile-facets__header">
               <div class="mobile-facets__header-inner">
@@ -546,7 +551,7 @@
                       >
                         <summary class="mobile-facets__summary focus-inset">
                           <div>
-                            <span>{{ filter.label | escape }}</span>
+                            <span>{{ filter.label | replace: 'Availability', 'Verfügbarkeit' | replace: 'Price', 'Preis' | replace: 'Product type', 'Produktart' | replace: 'Brand', 'Marke' | replace: 'Size', 'Größe' | replace: 'Color', 'Farbe' | escape }}</span>
                             <span class="mobile-facets__arrow">
                               {{- 'icon-arrow.svg' | inline_asset_content -}}
                             </span>
@@ -562,7 +567,7 @@
                             type="button"
                           >
                             {{- 'icon-arrow.svg' | inline_asset_content -}}
-                            <span>{{ filter.label | escape }}</span>
+                            <span>{{ filter.label | replace: 'Availability', 'Verfügbarkeit' | replace: 'Price', 'Preis' | replace: 'Product type', 'Produktart' | replace: 'Brand', 'Marke' | replace: 'Size', 'Größe' | replace: 'Color', 'Farbe' | escape }}</span>
                             {%- if filter.operator == 'AND' -%}
                               <span class="facets__and-helptext">
                                 {{ 'products.facets.filter_and_operator_subtitle' | t }}
@@ -594,10 +599,10 @@
 
                               {%- capture text_value -%}
                                 <span class="facet-checkbox__text" aria-hidden="true">
-                                  <span class="facet-checkbox__text-label">{{- value.label | escape }}</span> ({{- value.count -}})
+                                  <span class="facet-checkbox__text-label">{{ value.label | replace: 'In stock', 'Auf Lager' | replace: 'Out of stock', 'Ausverkauft' | replace: 'Default Title', 'Einheitsgröße' | escape }}</span> ({{- value.count -}})
                                 </span>
                                 <span class="visually-hidden">
-                                  {{- value.label | escape }} (
+                                  {{ value.label | replace: 'In stock', 'Auf Lager' | replace: 'Out of stock', 'Ausverkauft' | replace: 'Default Title', 'Einheitsgröße' | escape }} (
                                   {%- if value.count == '1' -%}
                                     {{- 'products.facets.product_count_simple.one' | t: count: value.count -}}
                                   {%- else -%}
@@ -688,7 +693,7 @@
                       >
                         <summary class="mobile-facets__summary focus-inset">
                           <div>
-                            <span>{{ filter.label | escape }}</span>
+                            <span>{{ filter.label | replace: 'Availability', 'Verfügbarkeit' | replace: 'Price', 'Preis' | replace: 'Product type', 'Produktart' | replace: 'Brand', 'Marke' | replace: 'Size', 'Größe' | replace: 'Color', 'Farbe' | escape }}</span>
                             <span class="mobile-facets__arrow">
                               {{- 'icon-arrow.svg' | inline_asset_content -}}
                             </span>
@@ -704,7 +709,7 @@
                             type="button"
                           >
                             {{- 'icon-arrow.svg' | inline_asset_content -}}
-                            {{ filter.label | escape }}
+                            {{ filter.label | replace: 'Availability', 'Verfügbarkeit' | replace: 'Price', 'Preis' | replace: 'Product type', 'Produktart' | replace: 'Brand', 'Marke' | replace: 'Size', 'Größe' | replace: 'Color', 'Farbe' | escape }}
                           </button>
 
                           {%- assign max_price_amount = filter.range_max | money | strip_html | escape -%}
@@ -808,7 +813,7 @@
         <facet-remove>
           <a href="{{ value.url_to_remove }}" class="active-facets__button active-facets__button--light">
             <span class="active-facets__button-inner button button--tertiary">
-              {{ filter.label | escape }}: {{ value.label | escape }}
+              {{ filter.label | replace: 'Availability', 'Verfügbarkeit' | replace: 'Price', 'Preis' | replace: 'Product type', 'Produktart' | replace: 'Brand', 'Marke' | replace: 'Size', 'Größe' | replace: 'Color', 'Farbe' | escape }}: {{ value.label | replace: 'In stock', 'Auf Lager' | replace: 'Out of stock', 'Ausverkauft' | replace: 'Default Title', 'Einheitsgröße' | escape }}
               <span class="svg-wrapper">
                 {{- 'icon-close-small.svg' | inline_asset_content -}}
               </span>
@@ -846,6 +851,7 @@
   {%- if enable_sorting and filter_type == 'drawer' -%}
     <facet-filters-form class="facets small-hide">
       <form id="FacetSortDrawerForm" class="facets__form">
+        {%- if results == collection -%}<input type="hidden" name="sort_by" value="best-selling">{%- endif -%}
         <div class="facet-filters sorting caption small-hide">
           <div class="facet-filters__field">
             <h2 class="facet-filters__label caption-large text-body">
@@ -915,6 +921,7 @@
   {%- if filter_type == 'drawer' -%}
     <facet-filters-form class="facets facets-pill small-hide">
       <form id="FacetFiltersPillsForm" class="facets__form">
+        {%- if results == collection -%}<input type="hidden" name="sort_by" value="best-selling">{%- endif -%}
         <div class="active-facets active-facets-desktop">
           {%- for filter in results.filters -%}
   {%- if filter.type == 'price_range' and b2b_preisfilter == false -%}{%- continue -%}{%- endif -%}
@@ -922,7 +929,7 @@
               <facet-remove>
                 <a href="{{ value.url_to_remove }}" class="active-facets__button active-facets__button--light">
                   <span class="active-facets__button-inner button button--tertiary">
-                    {{ filter.label | escape }}: {{ value.label | escape }}
+                    {{ filter.label | replace: 'Availability', 'Verfügbarkeit' | replace: 'Price', 'Preis' | replace: 'Product type', 'Produktart' | replace: 'Brand', 'Marke' | replace: 'Size', 'Größe' | replace: 'Color', 'Farbe' | escape }}: {{ value.label | replace: 'In stock', 'Auf Lager' | replace: 'Out of stock', 'Ausverkauft' | replace: 'Default Title', 'Einheitsgröße' | escape }}
                     <span class="svg-wrapper">
                       {{- 'icon-close-small.svg' | inline_asset_content -}}
                     </span>

@@ -9,21 +9,17 @@
 
   Die 5 % müssen zu theme/snippets/b2b-preis.liquid und zu
   extensions/order-value-discount/src/run.ts passen. Versandkostenfrei ab
-  300 Packs ist ein Rabatt "Kostenloser Versand" in der Shopify-Verwaltung -
+  Die Versandschwelle aus b2b-packs ist ein Rabatt "Kostenloser Versand" in der Shopify-Verwaltung -
   hier steht nur der Hinweis.
 
-  Mindestbestellwert aus snippets/b2b-mindestwert (300 € netto, gemessen an
-  cart.total_price - die Preise sind netto).
-  Darunter sind alle Kassen-Knöpfe gesperrt: hier im Kopf per Liquid, im
-  Fuß per assets/cart.js, das data-b2b-mindestwert-erreicht liest. Die
-  Function extensions/minimum-order-value steht noch auf 500 € und ist nicht
-  ausgerollt - vor dem Ausrollen auf 300 setzen.
+  Mindestmenge aus snippets/b2b-mindestwert, gezählt ohne Einzelstücke.
+  Die Shopify-Function wird separat angepasst.
 
   Der Kopf steht in main-cart-items in #b2b-korb-kopf und wird nach jeder
   Mengenänderung mit neu gezeichnet (assets/cart.js, getSectionsToRender).
 
   Zwei Stufen, immer nur die nächste offene wird genannt: erst "noch N Packs
-  bis versandkostenfrei" (300), dann "noch N Packs bis −5 %" (500).
+  bis versandkostenfrei" (aus b2b-packs), dann "noch N Packs bis −5 %" (500).
   Erreichtes steht als Abzeichen davor.
 
   @param kompakt  true für die Warenkorb-Schublade
@@ -49,17 +45,14 @@
   {%- liquid
     assign satz = 5
     assign ab_packs = 500
-    assign versandfrei_ab = 300
+    capture versand_text
+      render 'b2b-packs', teil: 'versandfrei-ab'
+    endcapture
+    assign versandfrei_ab = versand_text | plus: 0
     capture mindestwert_text
       render 'b2b-mindestwert'
     endcapture
-    assign mindestwert_euro = mindestwert_text | plus: 0
-    assign mindestwert = mindestwert_euro | times: 100
-    assign wert_fehlt = mindestwert | minus: cart.total_price
-    assign mindestwert_erreicht = true
-    if wert_fehlt > 0
-      assign mindestwert_erreicht = false
-    endif
+    assign mindestmenge = mindestwert_text | plus: 0
 
     comment
       Packs ohne Einzelstuecke (Ausstellungsstaender), siehe b2b-packs.
@@ -68,6 +61,11 @@
       render 'b2b-packs'
     endcapture
     assign packs = packs_text | plus: 0
+    assign wert_fehlt = mindestmenge | minus: packs
+    assign mindestwert_erreicht = true
+    if packs < mindestmenge
+      assign mindestwert_erreicht = false
+    endif
 
     assign greift = false
     if packs >= ab_packs
@@ -106,7 +104,7 @@
 
       {%- unless mindestwert_erreicht -%}
         <span class="b2b-art__satz b2b-art__satz--fehlt">
-          noch {{ wert_fehlt | money }} bis zum Mindestbestellwert
+          noch {{ wert_fehlt }} Packs bis zur Mindestmenge
         </span>
       {%- endunless -%}
 
@@ -163,7 +161,7 @@
           {%- elsif greift == false -%}
             Versandkostenfrei ✓ · noch <strong>{{ fehlende_packs }} {% if fehlende_packs == 1 %}Pack{% else %}Packs{% endif %}</strong> bis &minus;{{ satz }}&nbsp;%
           {%- else -%}
-            <strong>Versandkostenfrei und &minus;{{ satz }}&nbsp;%</strong> auf die ganze Bestellung ✓
+            <strong>Versandkostenfrei und &minus;{{ satz }}&nbsp;%</strong> auf alle Packs ✓
           {%- endif -%}
         </p>
         <div class="b2b-gb__balken" aria-hidden="true">
@@ -180,7 +178,7 @@
 
     {%- unless mindestwert_erreicht or kompakt -%}
       <p class="b2b-art__mindestwert" id="b2b-art-mindestwert">
-        Nachbestellungen gehen ab {{ mindestwert_euro }} € netto. Es fehlen noch {{ wert_fehlt | money }}.
+        Mindestmenge {{ mindestmenge }} Packs. Bei abweichenden Liefermengen schreib uns an <a href="mailto:b2b@occulto.de">b2b@occulto.de</a>.
       </p>
     {%- endunless -%}
 
@@ -199,8 +197,8 @@
           <dd>{{ satz }} % ab {{ ab_packs }} Packs im Warenkorb</dd>
         </div>
         <div>
-          <dt>Mindestbestellwert</dt>
-          <dd>{{ mindestwert_euro }} € netto</dd>
+          <dt>Mindestmenge</dt>
+          <dd>{{ mindestmenge }} Packs pro Bestellung</dd>
         </div>
       </dl>
 

@@ -38,6 +38,8 @@
     if groessen_pos > 0
       assign stelle = groessen_pos | minus: 1
       echo variant.options[stelle]
+    elsif variant.title == 'Default Title'
+      echo 'Einheitsgröße'
     else
       echo variant.title
     endif

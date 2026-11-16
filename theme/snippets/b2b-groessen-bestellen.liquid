@@ -27,14 +27,17 @@
 
     comment
       Ziel-Zaehler: Packs im Warenkorb (ohne Einzelstuecke, b2b-packs) plus
-      die gerade gewaehlten. Die Schwellen muessen zu b2b-korb-art (300 / 500)
+      die gerade gewaehlten. Die Schwellen muessen zu b2b-korb-art (Versand / 500)
       und b2b-preis (500) passen.
     endcomment
     capture b2b_packs_text
       render 'b2b-packs'
     endcapture
     assign b2b_im_korb = b2b_packs_text | plus: 0
-    assign b2b_versand_ab = 300
+    capture b2b_versand_text
+      render 'b2b-packs', teil: 'versandfrei-ab'
+    endcapture
+    assign b2b_versand_ab = b2b_versand_text | plus: 0
     assign b2b_rabatt_ab = 500
     assign b2b_marke = b2b_versand_ab | times: 100 | divided_by: b2b_rabatt_ab
   -%}
@@ -143,6 +146,10 @@
     <button type="button" class="button button--primary button--full-width b2b-gb__knopf" data-gb-knopf disabled>
       In den Warenkorb
     </button>
+    {%- unless product.tags contains 'einzelstueck' -%}
+      <a class="button button--secondary button--full-width" href="/pages/vororder?produkt={{ product.id }}">Zur Vororder</a>
+    {%- endunless -%}
+    {% render 'b2b-lagerbenachrichtigung', product: product, section_id: section.id %}
     <p class="b2b-gb__meldung" data-gb-meldung role="status" hidden></p>
   </div>
 
@@ -185,7 +192,7 @@
         } else if (gesamt < RABATT) {
           text = 'Versandkostenfrei ✓ · noch <strong>' + zahl(RABATT - gesamt) + ' Packs</strong> bis &minus;5&nbsp;%';
         } else {
-          text = '<strong>Versandkostenfrei und &minus;5&nbsp;%</strong> auf die ganze Bestellung ✓';
+          text = '<strong>Versandkostenfrei und &minus;5&nbsp;%</strong> auf alle Packs ✓';
         }
         zielEl.querySelector('[data-gb-ziel-text]').innerHTML = text;
         zielEl.classList.toggle('ist-erreicht', gesamt >= RABATT);

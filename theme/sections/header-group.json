@@ -16,7 +16,7 @@
         "announcement-bar-0": {
           "type": "announcement",
           "settings": {
-            "text": "Willkommen in unserem B2B Shop",
+            "text": "Versandkostenfrei ab [versandfrei-ab] Packs | −5 % ab 500 Packs",
             "link": ""
           }
         }
@@ -27,7 +27,7 @@
       "settings": {
         "auto_rotate": false,
         "change_slides_speed": 5,
-        "color_scheme": "scheme-5",
+        "color_scheme": "scheme-3",
         "show_line_separator": false,
         "show_social": false,
         "enable_country_selector": false,
@@ -37,7 +37,7 @@
     "header": {
       "type": "header",
       "settings": {
-        "logo_position": "middle-left",
+        "logo_position": "middle-center",
         "mobile_logo_position": "center",
         "menu": "main-menu",
         "menu_type_desktop": "mega",
@@ -45,8 +45,8 @@
         "show_line_separator": true,
         "color_scheme": "scheme-2",
         "menu_color_scheme": "",
-        "enable_country_selector": true,
-        "enable_language_selector": true,
+        "enable_country_selector": false,
+        "enable_language_selector": false,
         "margin_bottom": 0,
         "padding_top": 8,
         "padding_bottom": 8,

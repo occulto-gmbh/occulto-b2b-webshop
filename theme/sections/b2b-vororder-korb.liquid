@@ -39,6 +39,7 @@
       data-groesse="{{ groesse }}"
       data-mindestwert="{{ mindestwert }}"
       data-satz="{{ satz }}"
+      data-land="{{ customer.default_address.country_code | default: 'DE' | escape }}"
       aria-labelledby="b2b-vk-titel"
       hidden
     >
@@ -52,8 +53,9 @@
       <div data-vk-fertig hidden class="b2b-vk-fertig">
         <h2>Deine Vororder ist angekommen.</h2>
         <p>
-          Wir prüfen sie und schicken dir eine Rechnung. Produziert wird nach dem
-          Annahmeschluss {% render 'b2b-vororder-termin' %}, ausgeliefert
+          Sie wird jetzt geprüft. Wir melden uns schnellstmöglich bei dir.</p>
+        <p>Produziert wird nach der
+          Order Deadline {% render 'b2b-vororder-termin' %}, ausgeliefert
           voraussichtlich ab dem {% render 'b2b-vororder-termin', teil: 'lieferung' %}.
         </p>
       </div>
@@ -71,16 +73,12 @@
               <dd>ab {% render 'b2b-vororder-termin', teil: 'lieferung' %}, aus der Produktion</dd>
             </div>
             <div>
-              <dt>Annahmeschluss</dt>
+              <dt>Order Deadline</dt>
               <dd>{% render 'b2b-vororder-termin' %}</dd>
             </div>
             <div>
               <dt>Mindestmenge</dt>
-              <dd>{{ mindestmenge }} Packs je Artikel, je Größe ab {{ groesse }}</dd>
-            </div>
-            <div>
-              <dt>Mindestbestellwert</dt>
-              <dd>{{ mindestwert | times: 100 | money_without_trailing_zeros }} nach Rabatt</dd>
+              <dd>{{ mindestmenge }} Packs je Design, Größen frei kombinierbar</dd>
             </div>
             <div>
               <dt>Versand</dt>
@@ -140,7 +138,7 @@
   "settings": [
     { "type": "number", "id": "mindestmenge", "default": 100, "label": "Mindestmenge je Artikel (Packs, alle Größen zusammen)" },
     { "type": "number", "id": "mindestmenge_groesse", "default": 5, "label": "Mindestmenge je Größe (Packs)" },
-    { "type": "number", "id": "mindestwert", "default": 1500, "label": "Mindestbestellwert in Euro (nach Rabatt)" },
+    { "type": "number", "id": "mindestwert", "label": "Mindestbestellwert in Euro (nach Rabatt)" },
     { "type": "number", "id": "rabatt_prozent", "default": 10, "label": "Rabatt in Prozent" }
   ]
 }
