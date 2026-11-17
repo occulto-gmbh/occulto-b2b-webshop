@@ -11,9 +11,18 @@
 
   Keine dunkle Ueberlagerung (Marke: Flaechen neutral grau oder weiss):
   links ein heller Verlauf, damit der Text auf jedem Videobild lesbar bleibt.
+
+  Ohne Video (seit 17.11. so eingestellt - das Video kam bei Jana nicht an):
+  geteilt, links weisse Flaeche mit Text und Knoepfen, rechts das Bild der
+  Saisonware. Auf dem Handy das Bild oben, der Text darunter.
 {%- endcomment -%}
 
 {%- liquid
+  assign hat_video = false
+  if section.settings.video != blank or section.settings.video_url != blank
+    assign hat_video = true
+  endif
+
   assign poster = section.settings.poster_url
   if section.settings.video != blank and section.settings.video.preview_image != blank
     assign poster = section.settings.video.preview_image | image_url: width: 1800
@@ -102,10 +111,32 @@
       padding: 6rem min(4.8rem, 3vw);
     }
     .b2b-hero__knoepfe .button { flex: 0 0 auto; min-width: 24rem; }
+
+    /* Geteilt (ohne Video): Text links auf Weiss, Bild rechts. */
+    .b2b-hero--bild {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: stretch;
+    }
+    .b2b-hero--bild .b2b-hero__medien {
+      position: relative;
+      inset: auto;
+      grid-column: 2;
+      grid-row: 1;
+      min-height: clamp(48rem, 62vh, 68rem);
+    }
+    .b2b-hero--bild .b2b-hero__medien::after { content: none; }
+    .b2b-hero--bild .b2b-hero__medien img { object-position: 50% 50%; }
+    .b2b-hero--bild .b2b-hero__inhalt {
+      grid-column: 1;
+      grid-row: 1;
+      align-self: center;
+      width: auto;
+      padding: 6rem min(6rem, 4vw) 6rem min(4.8rem, 3vw);
+    }
   }
 {%- endstyle -%}
 
-<section class="b2b-hero color-{{ section.settings.color_scheme }}">
+<section class="b2b-hero{% unless hat_video %} b2b-hero--bild{% endunless %} color-{{ section.settings.color_scheme }}">
   <div class="b2b-hero__medien" aria-hidden="true">
     {%- if section.settings.video != blank -%}
       {{
