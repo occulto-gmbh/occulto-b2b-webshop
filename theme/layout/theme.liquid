@@ -7,8 +7,15 @@
     <meta name="theme-color" content="">
     <link rel="canonical" href="{{ canonical_url }}">
 
+    {%- comment -%}
+      Favicon wie im Hauptshop (17.11.): dieselbe Datei BM_creme.jpg, in drei
+      Groessen fuer Tab, Lesezeichen und Startbildschirm. Vorher nur eine
+      32px-Fassung mit rel="icon", die nicht ueberall angezeigt wurde.
+    {%- endcomment -%}
     {%- if settings.favicon != blank -%}
-      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+      <link rel="shortcut icon" href="{{ settings.favicon | image_url: width: 96 }}">
+      <link rel="icon" type="image/jpeg" sizes="144x144" href="{{ settings.favicon | image_url: width: 144 }}">
+      <link rel="apple-touch-icon" href="{{ settings.favicon | image_url: width: 180 }}">
     {%- endif -%}
 
     <title>
