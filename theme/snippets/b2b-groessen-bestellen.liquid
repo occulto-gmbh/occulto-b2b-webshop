@@ -208,7 +208,15 @@
         }
         zielEl.querySelector('[data-gb-ziel-text]').innerHTML = text;
         zielEl.classList.toggle('ist-erreicht', gesamt >= RABATT);
-        var korbAnteil = Math.min(imKorb, RABATT) / RABATT * 100;
+        /* Vorgabe 17.11.: Erreichte Ziele zeigt der Balken voll. Voll bis zum
+           Warenkorb oder zur hoechsten erreichten Stufe (100 / 250 / 500),
+           gestreift nur die Auswahl darueber hinaus. */
+        var erreicht = 0;
+        [MINDEST, VERSAND, RABATT].forEach(function (stufe) {
+          if (stufe > 0 && gesamt >= stufe) erreicht = stufe;
+        });
+        var voll = Math.min(Math.max(imKorb, erreicht), RABATT);
+        var korbAnteil = voll / RABATT * 100;
         var auswahlAnteil = Math.min(gesamt, RABATT) / RABATT * 100 - korbAnteil;
         zielEl.querySelector('[data-gb-balken-korb]').style.width = korbAnteil + '%';
         var ba = zielEl.querySelector('[data-gb-balken-auswahl]');
