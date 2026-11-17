@@ -1,0 +1,96 @@
+{%- comment -%}
+  Brotkrumen ueber der Produktseite (Vorgabe 17.11.): "Zurueck" plus
+  Startseite / Sammlung / Produkt.
+
+  Sammlung: die aus der Adresse (/collections/x/products/y), sonst die erste
+  des Produkts, die keine Sammel-Sammlung ist. "Zurueck" springt im Verlauf
+  zurueck, wenn man aus dem Shop kam (Filter und Scrollstand bleiben), sonst
+  zur Sammlung.
+{%- endcomment -%}
+{%- liquid
+  comment
+    Ohne Sammlung in der Adresse: zuerst die Hauptkategorien, dann jede
+    andere ausser den Sammel-Sammlungen.
+  endcomment
+  assign ausnahmen = 'frontpage,alle-produkte,all,sortiment-highlights,abverkauf' | split: ','
+  assign vorrang = 'tennissocken,sneaker,kinder' | split: ','
+  assign pfad_sammlung = collection
+  if pfad_sammlung == blank
+    assign eigene = product.collections | map: 'handle'
+    for h in vorrang
+      if eigene contains h
+        assign pfad_sammlung = collections[h]
+        break
+      endif
+    endfor
+  endif
+  if pfad_sammlung == blank
+    for c in product.collections
+      unless ausnahmen contains c.handle
+        assign pfad_sammlung = c
+        break
+      endunless
+    endfor
+  endif
+  assign zurueck_url = routes.all_products_collection_url
+  if pfad_sammlung != blank
+    assign zurueck_url = pfad_sammlung.url
+  endif
+-%}
+
+{%- style -%}
+  .b2b-pfad { padding-top: 1.6rem; font-size: 1.3rem; }
+  .b2b-pfad__zeile { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 1.6rem; }
+  .b2b-pfad__zurueck {
+    display: inline-flex; align-items: center; gap: 0.6rem; min-height: 4.4rem;
+    color: rgb(var(--color-foreground)); font-weight: 700; text-decoration: none;
+  }
+  .b2b-pfad__zurueck:hover { text-decoration: underline; }
+  .b2b-pfad ol { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0; padding: 0; list-style: none; color: rgba(var(--color-foreground), 0.7); }
+  .b2b-pfad li + li::before { content: '/'; margin-right: 0.4rem; opacity: 0.6; }
+  .b2b-pfad ol a { color: inherit; text-decoration: none; }
+  .b2b-pfad ol a:hover { color: rgb(var(--color-foreground)); text-decoration: underline; }
+  .b2b-pfad [aria-current] { color: rgb(var(--color-foreground)); }
+  @media screen and (max-width: 749px) {
+    .b2b-pfad ol li:last-child { display: none; }
+  }
+{%- endstyle -%}
+
+<nav class="b2b-pfad page-width" aria-label="Brotkrumen">
+  <div class="b2b-pfad__zeile">
+    <a class="b2b-pfad__zurueck" href="{{ zurueck_url }}" data-b2b-zurueck>
+      <span aria-hidden="true">←</span> Zurück
+    </a>
+    <ol>
+      <li><a href="{{ routes.root_url }}">Startseite</a></li>
+      {%- if pfad_sammlung != blank -%}
+        <li><a href="{{ pfad_sammlung.url }}">{{ pfad_sammlung.title | escape }}</a></li>
+      {%- else -%}
+        <li><a href="{{ routes.all_products_collection_url }}">Produkte</a></li>
+      {%- endif -%}
+      <li><span aria-current="page">{{ product.title | escape }}</span></li>
+    </ol>
+  </div>
+</nav>
+
+<script>
+  (function () {
+    var link = document.querySelector('#shopify-section-{{ section.id }} [data-b2b-zurueck]');
+    if (!link) return;
+    link.addEventListener('click', function (e) {
+      var ausDemShop = false;
+      try { ausDemShop = document.referrer && new URL(document.referrer).origin === location.origin; } catch (err) {}
+      if (ausDemShop && history.length > 1) {
+        e.preventDefault();
+        history.back();
+      }
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "B2B Brotkrumen",
+  "settings": []
+}
+{% endschema %}

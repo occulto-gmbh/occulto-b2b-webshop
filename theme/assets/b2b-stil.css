@@ -1052,3 +1052,15 @@ main .container {
 .b2b-art__ziel .b2b-gb__ziel-text {
   font-size: 18px;
 }
+
+/* Abzeichen fuer Abverkaufs-Artikel auf der Produktkarte (17.11.,
+   snippets/b2b-abverkauf-hinweis). Rot deckend, wie die Marke es erlaubt. */
+.badge.b2b-abzeichen-abverkauf {
+  border-color: rgb(var(--b2b-akzent, 199 42 9));
+  background: rgb(var(--b2b-akzent, 199 42 9));
+  color: rgb(255 255 255);
+  font-weight: 700;
+}
+.card__badge .b2b-abzeichen-abverkauf + .badge {
+  margin-left: 0.4rem;
+}

@@ -324,6 +324,10 @@
     max-width: none;
   }
   .header__heading-logo-wrapper:has(.b2b-bildmarke) { width: auto; }
+  /* Konto-Symbol: Die Klasse .link unterstreicht Text - beim angemeldeten
+     Konto stand deshalb ein Strich unter dem Initial (17.11.). */
+  .header__icon--account,
+  .header__icon--account:hover { text-decoration: none; }
   /* Kopfhoehe wie im Hauptshop (70px): Bildmarke 58 plus 2 x 6. */
   .header__heading-link:has(.b2b-bildmarke) { padding: 0; }
   @media screen and (min-width: 990px) {
@@ -387,8 +391,33 @@
         assign render_search_left = true
       endif
 
+      comment
+        Abverkauf (17.11.): Angemeldete Haendler sehen statt "Haendler werden"
+        den Menuepunkt "Abverkauf -10 %" - aber nur, wenn die Sammlung aus
+        snippets/b2b-abverkauf Produkte hat. Sonst faellt "Haendler werden"
+        fuer sie einfach weg. Gaeste sehen weiter "Haendler werden".
+      endcomment
+      assign b2b_haendler = false
+      if customer and customer.tags contains 'dealer-approved'
+        assign b2b_haendler = true
+      endif
+      capture b2b_abv_handle
+        render 'b2b-abverkauf', teil: 'sammlung'
+      endcapture
+      capture b2b_abv_prozent
+        render 'b2b-abverkauf', teil: 'prozent'
+      endcapture
+      assign b2b_abv_handle = b2b_abv_handle | strip
+      assign b2b_abv_prozent = b2b_abv_prozent | strip
+      assign b2b_abv = collections[b2b_abv_handle]
+      assign b2b_abv_zeigen = false
+      if b2b_haendler and b2b_abv.products_count > 0
+        assign b2b_abv_zeigen = true
+      endif
+      assign b2b_abv_label = 'Abverkauf −' | append: b2b_abv_prozent | append: ' %'
+
       if section.settings.menu != blank
-        render 'header-drawer', show_country_selector: country_selector, show_language_selector: language_selector, show_social_links: social_links
+        render 'header-drawer', show_country_selector: country_selector, show_language_selector: language_selector, show_social_links: social_links, b2b_haendler: b2b_haendler, b2b_abv_zeigen: b2b_abv_zeigen, b2b_abv_url: b2b_abv.url, b2b_abv_label: b2b_abv_label
       endif
 
       if render_search_left
@@ -432,9 +461,9 @@
     {%- liquid
       if section.settings.menu != blank
         if section.settings.menu_type_desktop == 'dropdown'
-          render 'header-dropdown-menu'
+          render 'header-dropdown-menu', b2b_haendler: b2b_haendler, b2b_abv_zeigen: b2b_abv_zeigen, b2b_abv_url: b2b_abv.url, b2b_abv_label: b2b_abv_label
         elsif section.settings.menu_type_desktop != 'drawer'
-          render 'header-mega-menu'
+          render 'header-mega-menu', b2b_haendler: b2b_haendler, b2b_abv_zeigen: b2b_abv_zeigen, b2b_abv_url: b2b_abv.url, b2b_abv_label: b2b_abv_label
         endif
       endif
     %}
@@ -560,6 +589,90 @@
     </div>
   </header>
 </{{ header_tag }}>
+
+{%- comment -%}
+  Abverkauf-Popup (17.11.): fuer angemeldete Haendler einmal je Sitzung
+  (sessionStorage), nur wenn die Abverkaufs-Sammlung Produkte hat und man
+  nicht schon auf ihr steht. Natives <dialog>: Escape und Fokus erledigt der
+  Browser.
+{%- endcomment -%}
+{%- if b2b_abv_zeigen and request.path != b2b_abv.url -%}
+  <dialog class="b2b-abv-popup" id="B2bAbverkaufPopup" aria-labelledby="B2bAbverkaufTitel">
+    <form method="dialog" class="b2b-abv-popup__zu-form">
+      <button class="b2b-abv-popup__zu" aria-label="Schließen">&times;</button>
+    </form>
+    <p class="b2b-abv-popup__abzeichen">−{{ b2b_abv_prozent }}&nbsp;%</p>
+    <h2 class="b2b-abv-popup__titel" id="B2bAbverkaufTitel">Abverkauf: −{{ b2b_abv_prozent }}&nbsp;% auf ausgewählte Artikel</h2>
+    <p class="b2b-abv-popup__text">Solange der Vorrat reicht. Der Rabatt wird im Warenkorb abgezogen.</p>
+    <ul class="b2b-abv-popup__bilder" role="list">
+      {%- for p in b2b_abv.products limit: 3 -%}
+        {%- if p.featured_media -%}
+          <li>{{ p.featured_media | image_url: width: 240 | image_tag: loading: 'eager', alt: p.title, width: 120, height: 120 }}</li>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+    <div class="b2b-abv-popup__knoepfe">
+      <a class="button button--primary" href="{{ b2b_abv.url }}">Zum Abverkauf</a>
+      <form method="dialog"><button class="button button--secondary">Später</button></form>
+    </div>
+  </dialog>
+  <style>
+    .b2b-abv-popup {
+      width: min(46rem, calc(100vw - 3.2rem));
+      padding: 3.2rem 2.8rem 2.8rem;
+      border: 0;
+      border-top: 4px solid rgb(199 42 9);
+      border-radius: 10px;
+      background: #fff;
+      color: #2e2e2d;
+      box-shadow: 0 20px 60px rgb(0 0 0 / 0.25);
+      text-align: center;
+    }
+    .b2b-abv-popup::backdrop { background: rgb(46 46 45 / 0.45); }
+    .b2b-abv-popup__zu-form { position: absolute; top: 0.8rem; right: 0.8rem; margin: 0; }
+    .b2b-abv-popup__zu {
+      width: 4.4rem; height: 4.4rem; border: 0; background: none;
+      font-size: 2.8rem; line-height: 1; color: inherit; cursor: pointer;
+    }
+    .b2b-abv-popup__abzeichen {
+      display: inline-block; margin: 0 0 1.2rem; padding: 0.4rem 1.2rem;
+      border-radius: 999px; background: rgb(199 42 9); color: #fff;
+      font-size: 1.6rem; font-weight: 700;
+    }
+    .b2b-abv-popup__titel { margin: 0; font-size: 2.4rem; line-height: 1.2; }
+    .b2b-abv-popup__text { margin: 1rem 0 0; font-size: 1.5rem; opacity: 0.8; }
+    .b2b-abv-popup__bilder {
+      display: flex; justify-content: center; gap: 0.8rem;
+      margin: 2rem 0 0; padding: 0; list-style: none;
+    }
+    .b2b-abv-popup__bilder img {
+      display: block; width: 9.6rem; height: 9.6rem; object-fit: cover;
+      border-radius: 6px; background: #f6f6f6;
+    }
+    .b2b-abv-popup__knoepfe { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin-top: 2.4rem; }
+    .b2b-abv-popup__knoepfe form { margin: 0; }
+    .b2b-abv-popup__knoepfe .button { min-width: 16rem; font-weight: 700; }
+  </style>
+  <script>
+    (function () {
+      var d = document.getElementById('B2bAbverkaufPopup');
+      if (!d || typeof d.showModal !== 'function') return;
+      try {
+        if (sessionStorage.getItem('b2b-abverkauf-gesehen')) return;
+        sessionStorage.setItem('b2b-abverkauf-gesehen', '1');
+      } catch (e) {}
+      /* Kurz warten, damit die Seite zuerst steht. */
+      setTimeout(function () { if (!d.open) d.showModal(); }, 800);
+      /* Klick auf den abgedunkelten Rand schliesst - nicht ein Klick in den
+         Innenabstand, der ebenfalls das dialog-Element trifft. */
+      d.addEventListener('click', function (e) {
+        if (e.target !== d) return;
+        var r = d.getBoundingClientRect();
+        if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) d.close();
+      });
+    })();
+  </script>
+{%- endif -%}
 
 {%- if settings.cart_type == 'notification' -%}
   {%- render 'cart-notification',

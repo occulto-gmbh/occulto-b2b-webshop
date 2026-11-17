@@ -1,0 +1,22 @@
+{%- comment -%}
+  Abverkauf fuer Haendler (Vorgabe 17.11.) - einzige Stelle fuer Sammlung
+  und Satz. Gibt Text aus, weil render einen eigenen Gueltigkeitsbereich hat
+  (Vorbild b2b-packs): mit capture auffangen.
+
+    teil: 'sammlung'  -> Handle der Sammlung ("abverkauf")
+    teil: 'prozent'   -> Rabatt in Prozent (10)
+
+  Der Rabatt selbst kommt NICHT aus dem Theme: In der Verwaltung braucht es
+  einen automatischen Rabatt "10 % auf Sammlung Abverkauf". Das Theme zeigt
+  nur Menuepunkt, Popup, Startseiten-Abschnitt und Abzeichen - und das erst,
+  wenn die Sammlung Produkte hat.
+
+  Genutzt von: header.liquid (Menue, Popup), header-mega-menu,
+  header-dropdown-menu, header-drawer, b2b-abverkauf-abschnitt,
+  card-product, main-product.
+{%- endcomment -%}
+{%- if teil == 'prozent' -%}
+  {%- echo 10 -%}
+{%- else -%}
+  {%- echo 'abverkauf' -%}
+{%- endif -%}

@@ -132,6 +132,7 @@
               </h3>
             </div>
             <div class="card__badge {{ settings.badge_position }}">
+              {%- render 'b2b-abverkauf-hinweis', produkt: card_product, art: 'abzeichen' -%}
               {%- if card_product.available == false -%}
                 <span
                   id="NoMediaStandardBadge-{{ section_id }}-{{ card_product.id }}"
@@ -551,6 +552,7 @@
           {% endif %}
           {% endif %}
           <div class="card__badge {{ settings.badge_position }}">
+            {%- render 'b2b-abverkauf-hinweis', produkt: card_product, art: 'abzeichen' -%}
             {%- if card_product.available == false -%}
               <span
                 id="Badge-{{ section_id }}-{{ card_product.id }}"

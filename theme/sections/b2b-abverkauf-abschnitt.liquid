@@ -1,0 +1,106 @@
+{%- comment -%}
+  Abverkauf auf der Startseite (17.11.): Nur fuer angemeldete Haendler und
+  nur, wenn die Sammlung aus snippets/b2b-abverkauf Produkte hat - sonst
+  gibt der Abschnitt nichts aus. Gaeste sehen weiter "Haendler werden"
+  (Abschnitt abschluss).
+{%- endcomment -%}
+{%- liquid
+  capture abv_handle
+    render 'b2b-abverkauf', teil: 'sammlung'
+  endcapture
+  capture abv_prozent
+    render 'b2b-abverkauf', teil: 'prozent'
+  endcapture
+  assign abv_handle = abv_handle | strip
+  assign abv_prozent = abv_prozent | strip
+  assign abv = collections[abv_handle]
+  assign zeigen = false
+  if customer and customer.tags contains 'dealer-approved'
+    if abv.products_count > 0
+      assign zeigen = true
+    endif
+  endif
+-%}
+
+{%- if zeigen -%}
+  {{ 'component-card.css' | asset_url | stylesheet_tag }}
+  {{ 'component-price.css' | asset_url | stylesheet_tag }}
+  {{ 'template-collection.css' | asset_url | stylesheet_tag }}
+
+  {%- style -%}
+    .b2b-abv { padding-block: 5.6rem; background: #fff; border-top: 3px solid rgb(199 42 9); }
+    .b2b-abv__kopf { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 1.6rem 3.2rem; margin-bottom: 2.8rem; }
+    .b2b-abv__abzeichen {
+      display: inline-block; margin: 0 0 1rem; padding: 0.4rem 1.2rem;
+      border-radius: 999px; background: rgb(199 42 9); color: #fff;
+      font-size: 1.5rem; font-weight: 700;
+    }
+    .b2b-abv__titel { margin: 0; }
+    .b2b-abv__text { margin: 0.8rem 0 0; font-size: 1.6rem; opacity: 0.8; }
+    .b2b-abv__alle { font-weight: 700; }
+  {%- endstyle -%}
+
+  <section class="b2b-abv" aria-labelledby="B2bAbv-{{ section.id }}">
+    <div class="page-width">
+      <div class="b2b-abv__kopf">
+        <div>
+          <p class="b2b-abv__abzeichen">−{{ abv_prozent }}&nbsp;%</p>
+          <h2 class="b2b-abv__titel h1" id="B2bAbv-{{ section.id }}">{{ section.settings.heading | escape }}</h2>
+          {%- if section.settings.text != blank -%}
+            <p class="b2b-abv__text">{{ section.settings.text | escape }}</p>
+          {%- endif -%}
+        </div>
+        <a class="button button--secondary b2b-abv__alle" href="{{ abv.url }}">Alle {{ abv.products_count }} Artikel ansehen</a>
+      </div>
+      <ul class="grid product-grid contains-card contains-card--product grid--2-col-tablet-down grid--4-col-desktop" role="list">
+        {%- for p in abv.products limit: section.settings.anzahl -%}
+          <li class="grid__item">
+            {% render 'card-product',
+              card_product: p,
+              media_aspect_ratio: 'square',
+              image_shape: 'default',
+              show_secondary_image: false,
+              show_vendor: false,
+              show_rating: false,
+              section_id: section.id
+            %}
+          </li>
+        {%- endfor -%}
+      </ul>
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "B2B Abverkauf",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Überschrift",
+      "default": "Abverkauf"
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Text",
+      "default": "Ausgewählte Artikel mit Rabatt – solange der Vorrat reicht."
+    },
+    {
+      "type": "range",
+      "id": "anzahl",
+      "label": "Anzahl Produkte",
+      "min": 4,
+      "max": 12,
+      "step": 4,
+      "default": 8
+    }
+  ],
+  "presets": [
+    {
+      "name": "B2B Abverkauf"
+    }
+  ]
+}
+{% endschema %}

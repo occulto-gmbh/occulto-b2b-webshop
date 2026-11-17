@@ -8,6 +8,24 @@
 <nav class="header__inline-menu">
   <ul class="list-menu list-menu--inline" role="list">
     {%- for link in section.settings.menu.links -%}
+      {%- comment -%}
+        Haendler: "Haendler werden" wird zu "Abverkauf -10 %" oder entfaellt
+        (Werte aus sections/header.liquid, 17.11.).
+      {%- endcomment -%}
+      {%- if b2b_haendler and link.url contains 'haendler-werden' -%}
+        {%- if b2b_abv_zeigen -%}
+          <li>
+            <a
+              href="{{ b2b_abv_url }}"
+              class="header__menu-item list-menu__item link link--text focus-inset b2b-menue-abverkauf"
+              {% if request.path == b2b_abv_url %}aria-current="page"{% endif %}
+            >
+              <span{% if request.path == b2b_abv_url %} class="header__active-menu-item"{% endif %}>{{ b2b_abv_label }}</span>
+            </a>
+          </li>
+        {%- endif -%}
+        {%- continue -%}
+      {%- endif -%}
       <li>
         {%- if link.links != blank -%}
           <header-menu>
