@@ -22,8 +22,10 @@
 
   Der Faktor je Zeichen haengt an der Schrift: basic-sans, gemessen
   8.14 px je Zeichen bei 15px fett. Seit 17.11. stehen die Menuepunkte wie
-  im Hauptshop in 14px fett mit 0.03em Sperrung: 8.14 * 14 / 15 + 0.42
-  = 8.02 px je Zeichen, dazu 20px Abstand je Eintrag (kein Pfeil mehr).
+  im Hauptshop in 14px fett mit 0.03em Sperrung, dazu 20px Abstand je
+  Eintrag (kein Pfeil mehr). Gerechnet waeren das 8.02 px je Zeichen,
+  gemessen am 17.11. bei 1280px: 5 Eintraege, 48 Zeichen, 441px breit =
+  7.1 px je Zeichen. Angesetzt 7.3 - plus die 6 % Reserve unten.
   Wer Schrift oder Groesse wechselt, muss hier nachmessen, sonst wird das
   Menue knapp oberhalb des Umbruchs wieder abgeschnitten.
 {%- endcomment -%}
@@ -32,7 +34,7 @@
   assign b2b_link_oben = true
   for link in section.settings.menu.links
     assign zeichen = link.title | size
-    assign eintrag = zeichen | times: 8.02 | plus: 20
+    assign eintrag = zeichen | times: 7.3 | plus: 20
     assign b2b_menue = b2b_menue | plus: eintrag
     if link.title == section.settings.b2b_link_nach and link.links != blank
       assign b2b_link_oben = false
@@ -45,7 +47,16 @@
   endcomment
   if section.settings.b2b_link_label != blank and b2b_link_oben
     assign zeichen = section.settings.b2b_link_label | size
-    assign eintrag = zeichen | times: 8.02 | plus: 20
+    assign eintrag = zeichen | times: 7.3 | plus: 20
+    assign b2b_menue = b2b_menue | plus: eintrag
+  endif
+
+  comment
+    Menuepunkt "Vororder" (17.11.) steht immer in der Zeile.
+  endcomment
+  if section.settings.b2b_vororder_label != blank
+    assign zeichen = section.settings.b2b_vororder_label | size
+    assign eintrag = zeichen | times: 7.3 | plus: 20
     assign b2b_menue = b2b_menue | plus: eintrag
   endif
 
@@ -63,12 +74,12 @@
     Mittiges Logo (wie im Hauptshop): Das Menue hat nur die linke Haelfte
     neben dem Logo. Beide Seitenspalten sind gleich breit, also braucht die
     Zeile die breitere Seite zweimal plus Raender 96, Bildmarke 70, zwei
-    Abstaende je 20 und Scrollleiste 15. Rechts stehen hoechstens 380px
-    (Zusatzlink, Vororder-Knopf, drei Symbole). Umbrechen bleibt verboten,
-    darunter kommt die Schublade.
+    Abstaende je 20 und Scrollleiste 15. Rechts stehen seit 17.11. nur die
+    drei Symbole (132px). Umbrechen bleibt verboten, darunter kommt die
+    Schublade.
   endcomment
   if section.settings.logo_position == 'middle-center'
-    assign b2b_seite = b2b_menue | at_least: 380
+    assign b2b_seite = b2b_menue | at_least: 132
     assign b2b_noetig = b2b_seite | times: 2 | plus: 221
   endif
   assign b2b_schwelle = b2b_noetig | times: 100 | divided_by: 94 | round
@@ -294,23 +305,17 @@
     box-shadow: 0 8px 24px rgb(0 0 0 / .12);
   }
   .b2b-konto__inhalt .button { display: flex; margin-top: 10px; }
-  .b2b-header-vororder {
-    display: inline-flex; align-items: center; justify-content: center;
-    min-height: 44px; margin-left: 8px; padding: 0 12px;
-    border: 1px solid currentColor; border-radius: 4px;
-    font-size: 14px; font-weight: 700; color: inherit; text-decoration: none;
-  }
   @media screen and (max-width: 749px) {
     .header { padding-inline: 12px; grid-template-columns: 44px minmax(0, 1fr) auto; }
     .header__icons .header__search { display: none; }
     .header__heading-logo-wrapper { max-width: 70px; }
-    .b2b-header-vororder { margin-left: 2px; padding-inline: 7px; font-size: 12px; }
   }
 
   /* ---------------------------------------------------------------
      Kopf wie im Hauptshop (Vorgabe 17.11., gemessen auf occulto.de bei
-     1885px): runde Bildmarke mittig, Menue links, rechts klein und grau
-     „Personalisierte Socken“, dann Konto, Suche, Warenkorb.
+     1885px): runde Bildmarke mittig, Menue links, rechts Konto, Suche,
+     Warenkorb. „Personalisierte Socken“ steht nur im Untermenue von
+     „Produkte“, „Vororder“ als Menuepunkt (beides Nico, 17.11.).
      --------------------------------------------------------------- */
   .b2b-bildmarke {
     display: block;
@@ -324,19 +329,7 @@
   @media screen and (min-width: 990px) {
     .header:has(.b2b-bildmarke) { padding-block: 6px; }
   }
-  .b2b-header-link {
-    display: none;
-    margin-right: 1.6rem;
-    font-size: 1.2rem;
-    font-weight: 400;
-    color: rgb(107 107 106);
-    text-decoration: none;
-    white-space: nowrap;
-  }
-  .b2b-header-link:hover { color: rgb(var(--color-foreground)); text-decoration: underline; }
   @media screen and (min-width: 990px) {
-    .b2b-header-link { display: inline-block; order: 0; }
-    .header__icons .b2b-header-vororder { order: 1; margin: 0 1.2rem 0 0; min-height: 3.6rem; font-size: 1.3rem; }
     .header__icons .header__icon--account,
     .header__icons .b2b-konto { order: 2; }
     .header__icons .header__search { order: 3; }
@@ -498,11 +491,6 @@
           </localization-form>
         {%- endif -%}
       </div>
-      {%- if section.settings.b2b_link_label != blank and section.settings.b2b_link_url != blank -%}
-        <a class="b2b-header-link" href="{{ section.settings.b2b_link_url }}">
-          {{- section.settings.b2b_link_label | escape -}}
-        </a>
-      {%- endif -%}
       {% render 'header-search', input_id: 'Search-In-Modal' %}
 
       {%- if shop.customer_accounts_enabled -%}
@@ -569,9 +557,6 @@
           </div>
         {%- endunless -%}
       </a>
-      {%- if customer and customer.tags contains 'dealer-approved' -%}
-        <a class="b2b-header-vororder" href="/pages/vororder">Vororder</a>
-      {%- endif -%}
     </div>
   </header>
 </{{ header_tag }}>
@@ -826,7 +811,28 @@
       "type": "text",
       "id": "b2b_link_nach",
       "label": "Zusätzlicher Menüpunkt: einfügen bei",
-      "info": "Titel des Menüpunkts. Hat er ein Untermenü, steht der Zusatzpunkt darin als letzter Eintrag, sonst dahinter. Passt keiner, hängt er hinten an. Auf großen Bildschirmen steht er außerdem klein rechts neben den Symbolen.",
+      "info": "Titel des Menüpunkts. Hat er ein Untermenü, steht der Zusatzpunkt darin als letzter Eintrag, sonst dahinter. Passt keiner, hängt er hinten an.",
+      "default": "Produkte"
+    },
+    {
+      "type": "text",
+      "id": "b2b_vororder_label",
+      "label": "Menüpunkt Vororder: Beschriftung",
+      "info": "Leer lassen, um ihn auszublenden.",
+      "default": "Vororder"
+    },
+    {
+      "type": "text",
+      "id": "b2b_vororder_url",
+      "label": "Menüpunkt Vororder: Ziel",
+      "info": "Pfad wie /pages/vororder.",
+      "default": "/pages/vororder"
+    },
+    {
+      "type": "text",
+      "id": "b2b_vororder_nach",
+      "label": "Menüpunkt Vororder: steht hinter",
+      "info": "Titel des Menüpunkts, hinter dem er steht.",
       "default": "Produkte"
     },
     {

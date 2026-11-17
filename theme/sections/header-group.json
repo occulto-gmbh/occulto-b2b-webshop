@@ -16,7 +16,7 @@
         "announcement-bar-0": {
           "type": "announcement",
           "settings": {
-            "text": "Versandkostenfrei ab [versandfrei-ab] Packs | −5 % ab 500 Packs",
+            "text": "Versandkostenfrei ab [versandfrei-ab] Packs | −5 % ab 500 Packs | Vororder −10 %",
             "link": ""
           }
         }
@@ -27,7 +27,7 @@
       "settings": {
         "auto_rotate": false,
         "change_slides_speed": 5,
-        "color_scheme": "scheme-3",
+        "color_scheme": "scheme-5",
         "show_line_separator": false,
         "show_social": false,
         "enable_country_selector": false,
@@ -52,7 +52,10 @@
         "padding_bottom": 8,
         "b2b_link_label": "Personalisierte Socken",
         "b2b_link_url": "/pages/personalisierte-socken-mit-logo",
-        "b2b_link_nach": "Produkte"
+        "b2b_link_nach": "Produkte",
+        "b2b_vororder_label": "Vororder",
+        "b2b_vororder_url": "/pages/vororder",
+        "b2b_vororder_nach": "Produkte"
       }
     }
   },

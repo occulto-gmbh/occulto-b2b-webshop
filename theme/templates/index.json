@@ -9,21 +9,18 @@
  */
 {
   "sections": {
-    "hero_split": {
-      "type": "hero-split",
+    "b2b_hero": {
+      "type": "b2b-hero",
       "settings": {
+        "video_url": "https://www.occulto.de/cdn/shop/videos/c/vp/ac04786165384ea39559e7195fad5d20/ac04786165384ea39559e7195fad5d20.HD-720p-4.5Mbps-101008118.mp4?v=0",
+        "poster_url": "https://www.occulto.de/cdn/shop/files/preview_images/ac04786165384ea39559e7195fad5d20.thumbnail.0000000000_1800x.jpg?v=1794472873",
         "image": "shopify://shop_images/occulto-hero-herbst-winter-socken.jpg",
-        "media_overline": "Jetzt verfügbar – Saisonware Herbst & Winter",
-        "media_heading": "Halloween, Weihnachten & Silvester",
-        "media_button_label": "Jetzt Saisonware bestellen",
-        "media_link": "shopify://collections/herbst-winter",
-        "text_image": "",
-        "overline": "Willkommen",
         "heading": "Occulto Händlerportal",
         "text": "<p>Entdecke das aktuelle Occulto-Sortiment und bestelle direkt zu deinen Händlerkonditionen.</p>",
-        "button_label": "Jetzt bestellen",
-        "button_link": "shopify://collections/all",
-        "button_style_secondary": false,
+        "knopf1_text": "Saisonware bestellen",
+        "knopf1_link": "shopify://collections/herbst-winter",
+        "knopf2_text": "Jetzt bestellen",
+        "knopf2_link": "shopify://collections/all",
         "color_scheme": "scheme-1"
       }
     },
@@ -100,7 +97,7 @@
     }
   },
   "order": [
-    "hero_split",
+    "b2b_hero",
     "collection_list",
     "konditionen",
     "vorteile",

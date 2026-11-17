@@ -1,0 +1,250 @@
+{%- comment -%}
+  Startseiten-Hero (Vorgabe 17.11.): Video im Hintergrund wie auf occulto.de,
+  links Begruessung, Ueberschrift und zwei gleich grosse Knoepfe
+  nebeneinander. Ersetzt hero-split, dessen Bildkarte mit eigenem Knopf
+  mit dem Hauptknopf konkurrierte.
+
+  Video: zuerst das in der Verwaltung hochgeladene (Einstellung "Video"),
+  sonst die Adresse aus "Video-Adresse" - derzeit das Video aus dem
+  Hauptshop. Ohne Video steht das Bild da. Wer reduzierte Bewegung
+  eingestellt hat, sieht nur das Standbild.
+
+  Keine dunkle Ueberlagerung (Marke: Flaechen neutral grau oder weiss):
+  links ein heller Verlauf, damit der Text auf jedem Videobild lesbar bleibt.
+{%- endcomment -%}
+
+{%- liquid
+  assign poster = section.settings.poster_url
+  if section.settings.video != blank and section.settings.video.preview_image != blank
+    assign poster = section.settings.video.preview_image | image_url: width: 1800
+  endif
+-%}
+
+{%- style -%}
+  .b2b-hero {
+    position: relative;
+    display: grid;
+    background: rgb(var(--color-background));
+    overflow: hidden;
+  }
+  .b2b-hero__medien {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    background: rgb(var(--color-background));
+  }
+  .b2b-hero__medien video,
+  .b2b-hero__medien img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 70% 50%;
+  }
+  .b2b-hero__inhalt {
+    position: relative;
+    padding: 3.2rem 2rem 4rem;
+  }
+  .b2b-hero__gruss {
+    margin: 0 0 0.8rem;
+    font-size: 1.4rem;
+    color: rgba(var(--color-foreground), 0.75);
+  }
+  .b2b-hero__titel {
+    margin: 0;
+    font-size: clamp(3.6rem, 6vw, 7.2rem);
+    line-height: 1.02;
+  }
+  .b2b-hero__text {
+    max-width: 48rem;
+    margin-top: 1.6rem;
+    font-size: 1.7rem;
+    color: rgba(var(--color-foreground), 0.8);
+  }
+  .b2b-hero__text p { margin: 0; }
+  .b2b-hero__knoepfe {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    margin-top: 2.8rem;
+  }
+  .b2b-hero__knoepfe .button {
+    flex: 1 1 22rem;
+    min-height: 5.6rem;
+    padding-inline: 2.4rem;
+    font-size: 1.6rem;
+    font-weight: 700;
+  }
+
+  @media screen and (min-width: 750px) {
+    .b2b-hero {
+      min-height: clamp(48rem, 62vh, 68rem);
+      align-items: center;
+    }
+    .b2b-hero__medien {
+      position: absolute;
+      inset: 0;
+      aspect-ratio: auto;
+    }
+    .b2b-hero__medien::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        90deg,
+        rgba(var(--color-background), 0.94) 0%,
+        rgba(var(--color-background), 0.8) 32%,
+        rgba(var(--color-background), 0) 58%
+      );
+    }
+    .b2b-hero__inhalt {
+      width: min(100%, 64rem);
+      padding: 6rem min(4.8rem, 3vw);
+    }
+    .b2b-hero__knoepfe .button { flex: 0 0 auto; min-width: 24rem; }
+  }
+{%- endstyle -%}
+
+<section class="b2b-hero color-{{ section.settings.color_scheme }}">
+  <div class="b2b-hero__medien" aria-hidden="true">
+    {%- if section.settings.video != blank -%}
+      {{
+        section.settings.video
+        | video_tag: autoplay: true, loop: true, muted: true, playsinline: true, controls: false, preload: 'metadata', image_size: '1800x', class: 'b2b-hero__video'
+      }}
+    {%- elsif section.settings.video_url != blank -%}
+      <video
+        class="b2b-hero__video"
+        src="{{ section.settings.video_url | escape }}"
+        {% if poster != blank %}poster="{{ poster | escape }}"{% endif %}
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+      ></video>
+    {%- elsif section.settings.image != blank -%}
+      {{
+        section.settings.image
+        | image_url: width: 1800
+        | image_tag: loading: 'eager', fetchpriority: 'high', widths: '600,900,1200,1800', sizes: '100vw', alt: ''
+      }}
+    {%- endif -%}
+  </div>
+
+  <div class="b2b-hero__inhalt">
+    <p class="b2b-hero__gruss">
+      {%- if customer.first_name != blank -%}
+        Willkommen, {{ customer.first_name | escape }}
+      {%- elsif customer -%}
+        Willkommen zurück
+      {%- else -%}
+        Willkommen
+      {%- endif -%}
+    </p>
+    {%- if section.settings.heading != blank -%}
+      <h1 class="b2b-hero__titel">{{ section.settings.heading | escape }}</h1>
+    {%- endif -%}
+    {%- if section.settings.text != blank -%}
+      <div class="b2b-hero__text">{{ section.settings.text }}</div>
+    {%- endif -%}
+    <div class="b2b-hero__knoepfe">
+      {%- if section.settings.knopf1_text != blank -%}
+        <a class="button button--primary" href="{{ section.settings.knopf1_link | default: '#' }}">
+          {{- section.settings.knopf1_text | escape -}}
+        </a>
+      {%- endif -%}
+      {%- if section.settings.knopf2_text != blank -%}
+        <a class="button button--secondary" href="{{ section.settings.knopf2_link | default: '#' }}">
+          {{- section.settings.knopf2_text | escape -}}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    /* Reduzierte Bewegung: Video anhalten, es bleibt das Standbild. */
+    if (!window.matchMedia || !window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    document.querySelectorAll('#shopify-section-{{ section.id }} video').forEach(function (v) {
+      v.removeAttribute('autoplay');
+      v.pause();
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "B2B Hero mit Video",
+  "settings": [
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Video",
+      "info": "In der Verwaltung hochgeladen. Hat Vorrang vor der Video-Adresse."
+    },
+    {
+      "type": "text",
+      "id": "video_url",
+      "label": "Video-Adresse",
+      "info": "MP4-Adresse, falls kein Video hochgeladen ist (derzeit das Video aus dem Hauptshop)."
+    },
+    {
+      "type": "text",
+      "id": "poster_url",
+      "label": "Standbild-Adresse zur Video-Adresse",
+      "info": "Wird gezeigt, bis das Video lädt, und bei reduzierter Bewegung."
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Bild ohne Video"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Überschrift",
+      "default": "Occulto Händlerportal"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text"
+    },
+    {
+      "type": "text",
+      "id": "knopf1_text",
+      "label": "Knopf 1 (rot): Beschriftung",
+      "default": "Saisonware bestellen"
+    },
+    {
+      "type": "url",
+      "id": "knopf1_link",
+      "label": "Knopf 1: Ziel"
+    },
+    {
+      "type": "text",
+      "id": "knopf2_text",
+      "label": "Knopf 2 (Rahmen): Beschriftung",
+      "default": "Jetzt bestellen"
+    },
+    {
+      "type": "url",
+      "id": "knopf2_link",
+      "label": "Knopf 2: Ziel"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "B2B Hero mit Video"
+    }
+  ]
+}
+{% endschema %}

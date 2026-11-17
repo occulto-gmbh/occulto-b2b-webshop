@@ -154,6 +154,20 @@
                   {%- endif -%}
                 </li>
                 {%- comment -%}
+                  Menuepunkt "Vororder" aus den Kopf-Einstellungen (Vorgabe 17.11.).
+                {%- endcomment -%}
+                {%- if link.title == section.settings.b2b_vororder_nach and section.settings.b2b_vororder_label != blank -%}
+                  <li>
+                    <a
+                      href="{{ section.settings.b2b_vororder_url }}"
+                      class="menu-drawer__menu-item list-menu__item link link--text focus-inset{% if request.path == section.settings.b2b_vororder_url %} menu-drawer__menu-item--active{% endif %}"
+                      {% if request.path == section.settings.b2b_vororder_url %}aria-current="page"{% endif %}
+                    >
+                      {{ section.settings.b2b_vororder_label | escape }}
+                    </a>
+                  </li>
+                {%- endif -%}
+                {%- comment -%}
                   Ein Menuepunkt, der nicht aus dem Shop-Menue kommt. Menues lassen
                   sich nur in der Verwaltung pflegen; dieser steht in den
                   Einstellungen des Kopfes und sitzt an der Stelle, die dort
