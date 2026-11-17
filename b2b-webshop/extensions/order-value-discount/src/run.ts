@@ -12,8 +12,9 @@ const KEIN_RABATT: FunctionRunResult = {
  * Bestellsumme ab (ab 2.500 € 5 %, ab 5.000 € 10 %, abgestimmt am 2026-09-02).
  *
  * Die 500 Packs zählen über den ganzen Warenkorb: eine Schwelle für die
- * Bestellung, kein Mindestposten. Produkte mit dem Tag einzelstueck zählen
- * nicht mit und werden vom Rabatt ausgeschlossen.
+ * Bestellung, kein Mindestposten. Produkte mit dem Tag einzelstueck oder
+ * filialversand-zuschlag zählen nicht mit und werden vom Rabatt
+ * ausgeschlossen (wie snippets/b2b-packs.liquid im Theme).
  *
  * Hier steht bewusst NICHTS über Vorordern. Seit dem 30.09.2026 laufen die
  * nicht mehr über den Warenkorb, sondern als E-Mail-Anfrage aus der Maske im

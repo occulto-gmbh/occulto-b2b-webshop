@@ -661,8 +661,20 @@
         if (sessionStorage.getItem('b2b-abverkauf-gesehen')) return;
         sessionStorage.setItem('b2b-abverkauf-gesehen', '1');
       } catch (e) {}
-      /* Kurz warten, damit die Seite zuerst steht. */
-      setTimeout(function () { if (!d.open) d.showModal(); }, 800);
+      function zeigen() { if (!d.open) d.showModal(); }
+      /* Kurz warten, damit die Seite zuerst steht. Steht noch Shopifys
+         Cookie-Abfrage offen, erst nach deren Antwort - sonst laegen zwei
+         Fenster uebereinander. */
+      setTimeout(function () {
+        var datenschutz = window.Shopify && window.Shopify.customerPrivacy;
+        var bannerOffen = false;
+        try { bannerOffen = !!(datenschutz && datenschutz.shouldShowBanner && datenschutz.shouldShowBanner()); } catch (e) {}
+        if (bannerOffen) {
+          document.addEventListener('visitorConsentCollected', function () { setTimeout(zeigen, 400); }, { once: true });
+        } else {
+          zeigen();
+        }
+      }, 800);
       /* Klick auf den abgedunkelten Rand schliesst - nicht ein Klick in den
          Innenabstand, der ebenfalls das dialog-Element trifft. */
       d.addEventListener('click', function (e) {

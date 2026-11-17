@@ -11,7 +11,7 @@ query CartValidationsGenerateRunInput {
         __typename
         ... on ProductVariant {
           product {
-            isSingleItem: hasAnyTag(tags: ["einzelstueck"])
+            isSingleItem: hasAnyTag(tags: ["einzelstueck", "filialversand-zuschlag"])
           }
         }
       }
