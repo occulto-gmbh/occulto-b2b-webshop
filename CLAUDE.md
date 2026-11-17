@@ -68,7 +68,7 @@ Nie im Live-Theme aufheben.
 Stand Besprechung 16.11.2026. Kein Skonto. „Order Deadline“ ist auf der Vororder-Seite gewollt (Feldname der Mail bleibt `Annahmeschluss`).
 | Abschluss    | Shopify-Kasse                        | E-Mail über Kontaktformular, Rechnung von Hand      |
 
-- **Einzelstücke** (Tag `einzelstueck`, z. B. Ausstellungsständer): Menge in 1er-Schritten, zählen nicht zu 300/500 Packs
+- **Einzelstücke** (Tag `einzelstueck`, z. B. Ausstellungsständer): Menge in 1er-Schritten, zählen nicht zu 100/250/500 Packs
   (`snippets/b2b-packs.liquid` zählt die Packs ohne sie), kein −5 %-Hinweis, keine Hangtag-Bilder, nicht in der Vororder.
   Vorgeschlagen über `sections/b2b-vorschlaege.liquid` (Einstellung „Immer vorschlagen“) auf Produktseite und Warenkorb.
   Die Functions kennen die Ausnahme seit 16.11. (getestet, noch nicht ausgerollt).
@@ -83,8 +83,19 @@ Stand Besprechung 16.11.2026. Kein Skonto. „Order Deadline“ ist auf der Voro
 - **Warenkorb nur für freigeschaltete Händler** (seit 17.11.): Shopify hält den Korb per Browser-Cookie auch nach
   dem Abmelden. `main-cart-items` zeigt Gästen und nicht freigeschalteten Konten nur den Anmelde-Hinweis,
   `main-cart-footer` nichts, am Korb-Symbol (`header.liquid`) steht keine Zahl. Der Korb wird nicht geleert.
+  `cart-icon-bubble.liquid` (Neuzeichnen nach Korb-Aktionen) prüft dasselbe.
   Serverseitig sperrt `extensions/minimum-order-value` die Kasse ohne Tag `dealer-approved` – erst nach dem Ausrollen.
+- Packs zählen ohne Tag `einzelstueck` **und** `filialversand-zuschlag` – im Theme (`b2b-packs`) wie in beiden Functions gleich halten.
 - Warenkorb-Kopf der Nachbestellung (`b2b-korb-art`) nennt immer nur die nächste offene Stufe: erst Versand (250 Packs), dann −5 % (500 Packs).
+  Balken (Korb und Produktseite, `b2b-groessen-bestellen`): Marken 100 Mindestmenge / 250 versandkostenfrei, Ende 500 −5 %;
+  erreichte Stufen voll, nur die Auswahl darüber gestreift.
+- **Abverkauf −10 %** (seit 17.11.): Sammlungs-Handle und Prozent nur in `snippets/b2b-abverkauf.liquid`. Nur für Händler:
+  Menüpunkt ersetzt „Händler werden“ (in den drei Menü-Snippets, Werte aus `header.liquid`), Abschnitt
+  `b2b-abverkauf-abschnitt` unter dem Hero, Popup `#B2bAbverkaufPopup` in `header.liquid` (einmal je Sitzung, wartet auf
+  das Cookie-Banner), Abzeichen/Hinweis über `b2b-abverkauf-hinweis`. Alles bleibt unsichtbar, solange die Sammlung leer ist.
+  Den Rabatt selbst legt Nico in der Verwaltung an (automatischer Rabatt 10 % auf die Sammlung, kombinierbar) – vorher nicht befüllen.
+- Startseite: Hero `sections/b2b-hero.liquid` (Bild rechts, weiß links, zwei Knöpfe; Video möglich, auf Janas Wunsch aus).
+  Produktseite: Brotkrumen `sections/b2b-pfad.liquid`. Menüpunkt „Vororder“ über Theme-Einstellungen `b2b_vororder_*`.
 - Vororder: `sections/b2b-vororder-maske.liquid` (Auswahl), `sections/b2b-vororder-korb.liquid` (Übersicht auf /cart),
   Logik in `assets/b2b-vororder.js`. Nachbestellung-Kopf: `snippets/b2b-korb-art.liquid`.
 
