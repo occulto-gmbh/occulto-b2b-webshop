@@ -145,17 +145,21 @@
     {%- unless kompakt -%}
       {%- comment -%}
         Ziel-Zaehler wie in der Kaufbox der Produktseite (gleiche Klassen,
-        Stil in b2b-stil.css): rot, mit Balken bis {{ ab_packs }} und Marke bei
-        {{ versandfrei_ab }}. Hier per Liquid - der Kopf wird nach jeder
-        Mengenaenderung neu gezeichnet.
+        Stil in b2b-stil.css): rot, mit Balken bis 500 und Marken bei der
+        Mindestmenge (100) und versandkostenfrei (250) - Vorgabe 17.11. Hier
+        per Liquid - der Kopf wird nach jeder Mengenaenderung neu gezeichnet.
       {%- endcomment -%}
       {%- liquid
         assign ziel_marke = versandfrei_ab | times: 100 | divided_by: ab_packs
+        assign mindest_marke = mindestmenge | times: 100 | divided_by: ab_packs
         assign ziel_breite = packs | at_most: ab_packs | times: 100 | divided_by: ab_packs
       -%}
       <div class="b2b-gb__ziel b2b-art__ziel{% if greift %} ist-erreicht{% endif %}">
         <p class="b2b-gb__ziel-text">
-          {%- if versandfrei == false -%}
+          {%- if mindestwert_erreicht == false -%}
+            Noch <strong>{{ wert_fehlt }} {% if wert_fehlt == 1 %}Pack{% else %}Packs{% endif %}</strong> bis zur Mindestmenge
+            <span>danach noch {{ versandfrei_ab | minus: mindestmenge }} Packs bis versandkostenfrei</span>
+          {%- elsif versandfrei == false -%}
             Noch <strong>{{ fehlende_versand }} {% if fehlende_versand == 1 %}Pack{% else %}Packs{% endif %}</strong> bis versandkostenfrei
             <span>danach noch {{ ab_packs | minus: versandfrei_ab }} Packs bis &minus;{{ satz }}&nbsp;%</span>
           {%- elsif greift == false -%}
@@ -166,11 +170,13 @@
         </p>
         <div class="b2b-gb__balken" aria-hidden="true">
           <span class="b2b-gb__balken-korb" style="width: {{ ziel_breite }}%"></span>
+          <span class="b2b-gb__marke" style="left: {{ mindest_marke }}%"></span>
           <span class="b2b-gb__marke" style="left: {{ ziel_marke }}%"></span>
         </div>
         <p class="b2b-gb__skala" aria-hidden="true">
-          <span style="left: {{ ziel_marke }}%">{{ versandfrei_ab }} · versandkostenfrei</span>
-          <span style="left: 100%">{{ ab_packs }} · &minus;{{ satz }}&nbsp;%</span>
+          <span style="left: {{ mindest_marke }}%"><b>{{ mindestmenge }}</b> Mindestmenge</span>
+          <span style="left: {{ ziel_marke }}%"><b>{{ versandfrei_ab }}</b> versandkostenfrei</span>
+          <span style="left: 100%"><b>{{ ab_packs }}</b> &minus;{{ satz }}&nbsp;%</span>
         </p>
         <p class="b2b-gb__ziel-stand">{{ packs }} {% if packs == 1 %}Pack{% else %}Packs{% endif %} im Warenkorb</p>
       </div>

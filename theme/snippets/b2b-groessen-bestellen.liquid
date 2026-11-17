@@ -40,6 +40,11 @@
     assign b2b_versand_ab = b2b_versand_text | plus: 0
     assign b2b_rabatt_ab = 500
     assign b2b_marke = b2b_versand_ab | times: 100 | divided_by: b2b_rabatt_ab
+    capture b2b_mindest_text
+      render 'b2b-mindestwert'
+    endcapture
+    assign b2b_mindest = b2b_mindest_text | plus: 0
+    assign b2b_mindest_marke = b2b_mindest | times: 100 | divided_by: b2b_rabatt_ab
   -%}
   <div class="b2b-gb" data-b2b-gb>
     {%- comment -%}
@@ -51,6 +56,7 @@
       class="b2b-gb__ziel"
       data-gb-ziel
       data-im-korb="{{ b2b_im_korb }}"
+      data-mindest="{{ b2b_mindest }}"
       data-versand="{{ b2b_versand_ab }}"
       data-rabatt="{{ b2b_rabatt_ab }}"
       data-zaehlt="{% if schritt == 1 %}nein{% else %}ja{% endif %}"
@@ -59,11 +65,13 @@
       <div class="b2b-gb__balken" aria-hidden="true">
         <span class="b2b-gb__balken-korb" data-gb-balken-korb></span>
         <span class="b2b-gb__balken-auswahl" data-gb-balken-auswahl></span>
+        <span class="b2b-gb__marke" style="left: {{ b2b_mindest_marke }}%"></span>
         <span class="b2b-gb__marke" style="left: {{ b2b_marke }}%"></span>
       </div>
       <p class="b2b-gb__skala" aria-hidden="true">
-        <span style="left: {{ b2b_marke }}%">{{ b2b_versand_ab }} · versandkostenfrei</span>
-        <span style="left: 100%">{{ b2b_rabatt_ab }} · &minus;5&nbsp;%</span>
+        <span style="left: {{ b2b_mindest_marke }}%"><b>{{ b2b_mindest }}</b> Mindestmenge</span>
+        <span style="left: {{ b2b_marke }}%"><b>{{ b2b_versand_ab }}</b> versandkostenfrei</span>
+        <span style="left: 100%"><b>{{ b2b_rabatt_ab }}</b> &minus;5&nbsp;%</span>
       </p>
       <p class="b2b-gb__ziel-stand" data-gb-ziel-stand></p>
     </div>
@@ -178,6 +186,7 @@
       /* Ziel-Zaehler: Warenkorb + Auswahl gegen die Schwellen. */
       var zielEl = wurzel.querySelector('[data-gb-ziel]');
       var imKorb = parseInt(zielEl.dataset.imKorb, 10) || 0;
+      var MINDEST = parseInt(zielEl.dataset.mindest, 10) || 0;
       var VERSAND = parseInt(zielEl.dataset.versand, 10);
       var RABATT = parseInt(zielEl.dataset.rabatt, 10);
       var ZAEHLT = zielEl.dataset.zaehlt === 'ja';
@@ -186,7 +195,10 @@
         if (!ZAEHLT) auswahl = 0;
         var gesamt = imKorb + auswahl;
         var text;
-        if (gesamt < VERSAND) {
+        if (gesamt < MINDEST) {
+          text = 'Noch <strong>' + zahl(MINDEST - gesamt) + ' Packs</strong> bis zur Mindestmenge'
+            + '<span>danach noch ' + zahl(VERSAND - MINDEST) + ' Packs bis versandkostenfrei</span>';
+        } else if (gesamt < VERSAND) {
           text = 'Noch <strong>' + zahl(VERSAND - gesamt) + ' Packs</strong> bis versandkostenfrei'
             + '<span>danach noch ' + zahl(RABATT - VERSAND) + ' Packs bis &minus;5&nbsp;%</span>';
         } else if (gesamt < RABATT) {

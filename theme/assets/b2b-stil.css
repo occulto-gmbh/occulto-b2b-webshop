@@ -972,7 +972,7 @@ main .container {
   );
 }
 
-/* Die Marke bei 300 Packs. */
+/* Die Marken bei Mindestmenge (100) und versandkostenfrei (250). */
 .b2b-gb__marke {
   position: absolute;
   top: -3px;
@@ -984,24 +984,41 @@ main .container {
 
 .b2b-gb__skala {
   position: relative;
-  height: 18px;
+  height: 32px;
   margin: 4px 0 0;
   color: rgb(var(--b2b-tinte, 46 46 45) / 0.7);
   font-size: 12px;
+  line-height: 1.3;
 }
 
-/* Beide Beschriftungen enden an ihrer Marke - mittig unter 300 stiessen
-   sie auf dem Handy an die 500er. */
+/* Drei Beschriftungen (17.11.): Zahl oben, Wort darunter, mittig unter
+   ihrer Marke. Einzeilig stiessen 100 und 250 auf dem Handy aneinander.
+   Die letzte (500) endet am Balkenende. */
 .b2b-gb__skala span {
   position: absolute;
   top: 0;
-  padding-right: 4px;
-  transform: translateX(-100%);
+  transform: translateX(-50%);
+  text-align: center;
   white-space: nowrap;
 }
 
+.b2b-gb__skala b {
+  display: block;
+  color: rgb(var(--b2b-tinte, 46 46 45));
+  font-weight: 700;
+}
+
 .b2b-gb__skala span:last-child {
-  padding-right: 0;
+  transform: translateX(-100%);
+  text-align: right;
+}
+
+/* Die erste (100) waechst nach links: ihre Zahl bleibt unter der Marke,
+   das Wort ragt in den freien Platz davor. Mittig stiess sie bei 375px
+   an „versandkostenfrei“. 12px = halbe Breite der Zahl. */
+.b2b-gb__skala span:first-child:not(:last-child) {
+  transform: translateX(calc(-100% + 12px));
+  text-align: right;
 }
 
 .b2b-gb__ziel-stand {
