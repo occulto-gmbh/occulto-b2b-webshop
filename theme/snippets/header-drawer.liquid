@@ -121,6 +121,20 @@
                                 {%- endif -%}
                               </li>
                             {%- endfor -%}
+                            {%- comment -%}
+                              Zusatzpunkt aus den Kopf-Einstellungen als letzter
+                              Eintrag im Untermenue (Besprechung 16.11.).
+                            {%- endcomment -%}
+                            {%- if link.title == section.settings.b2b_link_nach and section.settings.b2b_link_label != blank and section.settings.b2b_link_url != blank -%}
+                              <li>
+                                <a
+                                  href="{{ section.settings.b2b_link_url }}"
+                                  class="menu-drawer__menu-item link link--text list-menu__item focus-inset"
+                                >
+                                  {{ section.settings.b2b_link_label | escape }}
+                                </a>
+                              </li>
+                            {%- endif -%}
                           </ul>
                         </div>
                       </div>
@@ -147,7 +161,7 @@
                 {%- endcomment -%}
                 {%- assign b2b_zeigen = false -%}
                 {%- if section.settings.b2b_link_label != blank and section.settings.b2b_link_url != blank -%}
-                  {%- if link.title == section.settings.b2b_link_nach -%}
+                  {%- if link.title == section.settings.b2b_link_nach and link.links == blank -%}
                     {%- assign b2b_zeigen = true -%}
                   {%- elsif forloop.last -%}
                     {%- assign gefunden = false -%}

@@ -68,6 +68,21 @@
                       {%- endif -%}
                     </li>
                   {%- endfor -%}
+                  {%- comment -%}
+                    Zusatzpunkt aus den Kopf-Einstellungen als letzter
+                    Eintrag im Untermenue (Besprechung 16.11.:
+                    „Personalisierte Socken“ unter „Produkte“).
+                  {%- endcomment -%}
+                  {%- if link.title == section.settings.b2b_link_nach and section.settings.b2b_link_label != blank and section.settings.b2b_link_url != blank -%}
+                    <li>
+                      <a
+                        href="{{ section.settings.b2b_link_url }}"
+                        class="mega-menu__link mega-menu__link--level-2 link"
+                      >
+                        {{ section.settings.b2b_link_label | escape }}
+                      </a>
+                    </li>
+                  {%- endif -%}
                 </ul>
               </div>
             </details>
@@ -95,12 +110,12 @@
       {%- comment -%}
         Ein Menuepunkt, der nicht aus dem Shop-Menue kommt. Menues lassen
         sich nur in der Verwaltung pflegen; dieser steht in den
-        Einstellungen des Kopfes und sitzt an der Stelle, die dort
-        hinterlegt ist.
+        Einstellungen des Kopfes. Hat der dort genannte Menuepunkt ein
+        Untermenue, steht er darin (siehe oben), sonst dahinter.
       {%- endcomment -%}
       {%- assign b2b_zeigen = false -%}
       {%- if section.settings.b2b_link_label != blank and section.settings.b2b_link_url != blank -%}
-        {%- if link.title == section.settings.b2b_link_nach -%}
+        {%- if link.title == section.settings.b2b_link_nach and link.links == blank -%}
           {%- assign b2b_zeigen = true -%}
         {%- elsif forloop.last -%}
           {%- assign gefunden = false -%}

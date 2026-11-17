@@ -80,6 +80,10 @@ Stand Besprechung 16.11.2026. Kein Skonto. „Order Deadline“ ist auf der Voro
   (`b2b-korb-art`) und im Fuß (`main-cart-footer`, nach Änderungen per `b2bKasseNachMindestwert` in `assets/cart.js`); das Popup
   hat keinen Kassen-Knopf. Nur im Browser: `/checkout` direkt geht durch, bis `extensions/minimum-order-value` (seit 16.11. auf
   100 Packs umgebaut, getestet) ausgerollt ist. Die Warenkorb-Schublade (`cart-drawer`, derzeit aus) ist nicht gesperrt.
+- **Warenkorb nur für freigeschaltete Händler** (seit 17.11.): Shopify hält den Korb per Browser-Cookie auch nach
+  dem Abmelden. `main-cart-items` zeigt Gästen und nicht freigeschalteten Konten nur den Anmelde-Hinweis,
+  `main-cart-footer` nichts, am Korb-Symbol (`header.liquid`) steht keine Zahl. Der Korb wird nicht geleert.
+  Serverseitig sperrt `extensions/minimum-order-value` die Kasse ohne Tag `dealer-approved` – erst nach dem Ausrollen.
 - Warenkorb-Kopf der Nachbestellung (`b2b-korb-art`) nennt immer nur die nächste offene Stufe: erst Versand (250 Packs), dann −5 % (500 Packs).
 - Vororder: `sections/b2b-vororder-maske.liquid` (Auswahl), `sections/b2b-vororder-korb.liquid` (Übersicht auf /cart),
   Logik in `assets/b2b-vororder.js`. Nachbestellung-Kopf: `snippets/b2b-korb-art.liquid`.

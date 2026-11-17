@@ -17,6 +17,18 @@ export function cartValidationsGenerateRun(
     return { operations: [{ validationAdd: { errors } }] };
   }
 
+  // Bestellen nur mit freigeschaltetem Händlerkonto (17.11.2026). Der
+  // Warenkorb hängt an einem Browser-Cookie und bleibt nach dem Abmelden
+  // bestehen; das Theme blendet ihn für Gäste aus, /checkout direkt ginge
+  // aber sonst durch – auch zu Händlerpreisen.
+  if (!input.cart.buyerIdentity?.customer?.isDealer) {
+    errors.push({
+      message: "Bestellen kannst du nur mit freigeschaltetem Händlerkonto. Bitte melde dich an.",
+      target: "$.cart",
+    });
+    return { operations: [{ validationAdd: { errors } }] };
+  }
+
   const packs = input.cart.lines.reduce((sum, { quantity, merchandise }) => {
     if (merchandise.__typename !== "ProductVariant" || merchandise.product.isSingleItem) {
       return sum;

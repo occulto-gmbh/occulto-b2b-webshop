@@ -20,28 +20,32 @@
   Ab welcher Fensterbreite die Menuezeile passt - gerechnet, nicht geraten.
   Siehe scratchpad/p18-navbar-mitte.js fuer die Eichung der Faktoren.
 
-  Der Faktor je Zeichen haengt an der Schrift. Geeicht war er auf League
-  Spartan (7.7). Die Schrift ist basic-sans, gemessen
-  8.14 px je Zeichen bei 15px fett. Nachgerechnet bei 1500px:
-  Rand 40 + Logo 208 + 20 + Menue 813 + 20 + Symbole 306 + Rand 40 +
-  Scrollleiste 15 = 1462px Bedarf; die Formel ergibt damit 1469. Wer die
-  Schrift wieder wechselt, muss hier nachmessen, sonst wird das Menue knapp
-  oberhalb des Umbruchs wieder abgeschnitten.
+  Der Faktor je Zeichen haengt an der Schrift: basic-sans, gemessen
+  8.14 px je Zeichen bei 15px fett. Seit 17.11. stehen die Menuepunkte wie
+  im Hauptshop in 14px fett mit 0.03em Sperrung: 8.14 * 14 / 15 + 0.42
+  = 8.02 px je Zeichen, dazu 20px Abstand je Eintrag (kein Pfeil mehr).
+  Wer Schrift oder Groesse wechselt, muss hier nachmessen, sonst wird das
+  Menue knapp oberhalb des Umbruchs wieder abgeschnitten.
 {%- endcomment -%}
 {%- liquid
   assign b2b_menue = 0
+  assign b2b_link_oben = true
   for link in section.settings.menu.links
     assign zeichen = link.title | size
-    assign eintrag = zeichen | times: 8.14 | plus: 16
-    if link.links != blank
-      assign eintrag = eintrag | plus: 10
-    endif
+    assign eintrag = zeichen | times: 8.02 | plus: 20
     assign b2b_menue = b2b_menue | plus: eintrag
+    if link.title == section.settings.b2b_link_nach and link.links != blank
+      assign b2b_link_oben = false
+    endif
   endfor
 
-  if section.settings.b2b_link_label != blank
+  comment
+    Der Zusatzpunkt zaehlt nur, wenn er in der Zeile steht - nicht, wenn er
+    im Untermenue von „Produkte“ sitzt.
+  endcomment
+  if section.settings.b2b_link_label != blank and b2b_link_oben
     assign zeichen = section.settings.b2b_link_label | size
-    assign eintrag = zeichen | times: 8.14 | plus: 16
+    assign eintrag = zeichen | times: 8.02 | plus: 20
     assign b2b_menue = b2b_menue | plus: eintrag
   endif
 
@@ -58,12 +62,14 @@
   comment
     Mittiges Logo (wie im Hauptshop): Das Menue hat nur die linke Haelfte
     neben dem Logo. Beide Seitenspalten sind gleich breit, also braucht die
-    Zeile das Menue zweimal plus Raender 80, Logospalte 224, zwei Abstaende
-    je 20 und Scrollleiste 15. Umbrechen bleibt verboten, darunter kommt
-    die Schublade.
+    Zeile die breitere Seite zweimal plus Raender 96, Bildmarke 70, zwei
+    Abstaende je 20 und Scrollleiste 15. Rechts stehen hoechstens 380px
+    (Zusatzlink, Vororder-Knopf, drei Symbole). Umbrechen bleibt verboten,
+    darunter kommt die Schublade.
   endcomment
   if section.settings.logo_position == 'middle-center'
-    assign b2b_noetig = b2b_menue | times: 2 | plus: 359
+    assign b2b_seite = b2b_menue | at_least: 380
+    assign b2b_noetig = b2b_seite | times: 2 | plus: 221
   endif
   assign b2b_schwelle = b2b_noetig | times: 100 | divided_by: 94 | round
   assign b2b_schwelle_minus = b2b_schwelle | minus: 1
@@ -211,7 +217,7 @@
   @media screen and (min-width: 990px) {
     .section-header .header.page-width {
       max-width: 100%;
-      padding-inline: min(4rem, 3vw);
+      padding-inline: min(4.8rem, 3vw);
     }
 
     /* Logo links, Menue mittig, Symbole rechts - wie im Hauptshop.
@@ -242,10 +248,20 @@
        zusammenruecken, statt Logo und Warenkorb zu verdraengen. */
     /* Die Kopfzeilenlinks heissen header__menu-item. list-menu__item--link
        gibt es nur in der Fusszeile. */
+    /* Wie im Hauptshop (gemessen 17.11.): 14px fett, 0.03em Sperrung,
+       20px zwischen den Eintraegen, kein Pfeil an Untermenues. */
     .header__inline-menu .header__menu-item {
       white-space: nowrap;
-      padding-inline: 0.8rem;
-      font-size: 1.5rem;
+      padding-inline: 1rem;
+      font-size: 1.4rem;
+      letter-spacing: 0.03em;
+    }
+    .header__inline-menu .list-menu--inline > li:first-child > * .header__menu-item,
+    .header__inline-menu .list-menu--inline > li:first-child > .header__menu-item {
+      padding-left: 0;
+    }
+    .header__inline-menu summary.header__menu-item .icon-caret {
+      display: none;
     }
 
     /* Flex-Elemente schrumpfen von sich aus. Ohne diese Zeile quetscht die
@@ -255,7 +271,7 @@
     }
 
     .header__inline-menu summary.list-menu__item {
-      padding-right: 1.8rem;
+      padding-right: 1rem;
     }
   }
 
@@ -289,6 +305,45 @@
     .header__icons .header__search { display: none; }
     .header__heading-logo-wrapper { max-width: 70px; }
     .b2b-header-vororder { margin-left: 2px; padding-inline: 7px; font-size: 12px; }
+  }
+
+  /* ---------------------------------------------------------------
+     Kopf wie im Hauptshop (Vorgabe 17.11., gemessen auf occulto.de bei
+     1885px): runde Bildmarke mittig, Menue links, rechts klein und grau
+     „Personalisierte Socken“, dann Konto, Suche, Warenkorb.
+     --------------------------------------------------------------- */
+  .b2b-bildmarke {
+    display: block;
+    width: auto;
+    height: 5.8rem;
+    max-width: none;
+  }
+  .header__heading-logo-wrapper:has(.b2b-bildmarke) { width: auto; }
+  /* Kopfhoehe wie im Hauptshop (70px): Bildmarke 58 plus 2 x 6. */
+  .header__heading-link:has(.b2b-bildmarke) { padding: 0; }
+  @media screen and (min-width: 990px) {
+    .header:has(.b2b-bildmarke) { padding-block: 6px; }
+  }
+  .b2b-header-link {
+    display: none;
+    margin-right: 1.6rem;
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: rgb(107 107 106);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .b2b-header-link:hover { color: rgb(var(--color-foreground)); text-decoration: underline; }
+  @media screen and (min-width: 990px) {
+    .b2b-header-link { display: inline-block; order: 0; }
+    .header__icons .b2b-header-vororder { order: 1; margin: 0 1.2rem 0 0; min-height: 3.6rem; font-size: 1.3rem; }
+    .header__icons .header__icon--account,
+    .header__icons .b2b-konto { order: 2; }
+    .header__icons .header__search { order: 3; }
+    .header__icons .header__icon--cart { order: 4; }
+  }
+  @media screen and (max-width: 749px) {
+    .b2b-bildmarke { height: 4.4rem; }
   }
 {%- endstyle -%}
 
@@ -397,28 +452,22 @@
         <h1 class="header__heading">
       {%- endif -%}
       <a href="{{ routes.root_url }}" class="header__heading-link link link--text focus-inset">
-        {%- if settings.logo != blank -%}
-          <div class="header__heading-logo-wrapper">
-            {%- assign logo_alt = settings.logo.alt | default: shop.name | escape -%}
-            {%- assign logo_height = settings.logo_width | divided_by: settings.logo.aspect_ratio -%}
-            {% capture sizes %}(min-width: 750px) {{ settings.logo_width }}px, 50vw{% endcapture %}
-            {% capture widths %}{{ settings.logo_width }}, {{ settings.logo_width | times: 1.5 | round }}, {{ settings.logo_width | times: 2 }}{% endcapture %}
-            {{
-              settings.logo
-              | image_url: width: 600
-              | image_tag:
-                class: 'header__heading-logo',
-                widths: widths,
-                height: logo_height,
-                width: settings.logo_width,
-                alt: logo_alt,
-                sizes: sizes,
-                preload: true
-            }}
-          </div>
-        {%- else -%}
-          <span class="h2">{{ shop.name }}</span>
-        {%- endif -%}
+        {%- comment -%}
+          Runde Bildmarke mit Schriftzug wie im Hauptshop (Vorgabe 17.11.).
+          Quelle: oc_bildmarke_schwarz.png aus der Designsheet-Vorlage,
+          auf 260px verkleinert. Das Logo aus den Theme-Einstellungen
+          (Schriftzug) gilt weiter fuer die anderen Logo-Positionen.
+        {%- endcomment -%}
+        <div class="header__heading-logo-wrapper">
+          <img
+            src="{{ 'b2b-logo-bildmarke.png' | asset_url }}"
+            class="header__heading-logo b2b-bildmarke"
+            width="260"
+            height="221"
+            alt="{{ shop.name | escape }}"
+            fetchpriority="high"
+          >
+        </div>
       </a>
       {%- if request.page_type == 'index' -%}
         </h1>
@@ -449,6 +498,11 @@
           </localization-form>
         {%- endif -%}
       </div>
+      {%- if section.settings.b2b_link_label != blank and section.settings.b2b_link_url != blank -%}
+        <a class="b2b-header-link" href="{{ section.settings.b2b_link_url }}">
+          {{- section.settings.b2b_link_label | escape -}}
+        </a>
+      {%- endif -%}
       {% render 'header-search', input_id: 'Search-In-Modal' %}
 
       {%- if shop.customer_accounts_enabled -%}
@@ -488,21 +542,32 @@
         {%- endcase -%}
       {%- endfor -%}
 
+      {%- comment -%}
+        Gaeste und nicht freigeschaltete Konten sehen den Warenkorb nicht
+        (main-cart-items) - also auch keine Anzahl am Symbol. Sonst stuende
+        nach dem Abmelden die Zahl des alten Korbs am Symbol.
+      {%- endcomment -%}
+      {%- liquid
+        assign b2b_korb_leer = true
+        if cart != empty and customer and customer.tags contains 'dealer-approved'
+          assign b2b_korb_leer = false
+        endif
+      -%}
       <a href="{{ routes.cart_url }}" class="header__icon header__icon--cart link focus-inset" id="cart-icon-bubble">
-        {% if cart == empty %}
+        {% if b2b_korb_leer %}
           <span class="svg-wrapper">{{ 'icon-cart-empty.svg' | inline_asset_content }}</span>
         {% else %}
           <span class="svg-wrapper">{{ 'icon-cart.svg' | inline_asset_content }}</span>
         {% endif %}
         <span class="visually-hidden">{{ 'templates.cart.cart' | t }}</span>
-        {%- if cart != empty -%}
+        {%- unless b2b_korb_leer -%}
           <div class="cart-count-bubble">
             {%- if cart.item_count < 100 -%}
               <span aria-hidden="true">{{ cart.item_count }}</span>
             {%- endif -%}
             <span class="visually-hidden">{{ 'sections.header.cart_count' | t: count: cart.item_count }}</span>
           </div>
-        {%- endif -%}
+        {%- endunless -%}
       </a>
       {%- if customer and customer.tags contains 'dealer-approved' -%}
         <a class="b2b-header-vororder" href="/pages/vororder">Vororder</a>
@@ -760,9 +825,9 @@
     {
       "type": "text",
       "id": "b2b_link_nach",
-      "label": "Zusätzlicher Menüpunkt: einfügen nach",
-      "info": "Titel des Menüpunkts, hinter dem er stehen soll. Passt keiner, hängt er hinten an.",
-      "default": "Downloads"
+      "label": "Zusätzlicher Menüpunkt: einfügen bei",
+      "info": "Titel des Menüpunkts. Hat er ein Untermenü, steht der Zusatzpunkt darin als letzter Eintrag, sonst dahinter. Passt keiner, hängt er hinten an. Auf großen Bildschirmen steht er außerdem klein rechts neben den Symbolen.",
+      "default": "Produkte"
     },
     {
       "type": "select",

@@ -4,6 +4,11 @@
     "target": "cart.validations.generate.run",
     "input": {
       "cart": {
+        "buyerIdentity": {
+          "customer": {
+            "isDealer": true
+          }
+        },
         "lines": [
           {
             "quantity": 1,

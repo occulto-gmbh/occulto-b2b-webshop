@@ -17,6 +17,11 @@
   }
 {%- endstyle -%}
 
+{%- comment -%}
+  Summe und Kassen-Knopf nur fuer freigeschaltete Haendler - Gaeste sehen
+  oben in main-cart-items den Hinweis zur Anmeldung.
+{%- endcomment -%}
+{%- if customer and customer.tags contains 'dealer-approved' -%}
 <div
   class="gradient color-{{ section.settings.color_scheme }}{% if cart == empty %} is-empty{% endif %}"
   id="main-cart-footer"
@@ -158,6 +163,7 @@
     </div>
   </div>
 </div>
+{%- endif -%}
 
 {% schema %}
 {
