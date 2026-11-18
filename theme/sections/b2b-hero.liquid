@@ -173,7 +173,7 @@
 
   /* Schrift und Knoepfe gross und kraeftig (Vorgabe 18.11.). */
   .b2b-hero--hintergrund .b2b-hero__gruss { font-size: 1.6rem; }
-  .b2b-hero--hintergrund .b2b-hero__titel { font-size: clamp(4rem, 11vw, 5.6rem); }
+  .b2b-hero--hintergrund .b2b-hero__titel { font-size: clamp(4.2rem, 11.5vw, 6rem); }
   .b2b-hero--hintergrund .b2b-hero__text { font-size: 1.8rem; line-height: 1.5; color: rgba(var(--color-foreground), 0.85); }
   .b2b-hero--hintergrund .b2b-hero__knoepfe .button {
     min-height: 6.4rem;
@@ -181,33 +181,59 @@
     font-size: 1.8rem;
     letter-spacing: 0.02em;
   }
-  .b2b-hero--hintergrund .b2b-hero__knoepfe .button--primary {
-    box-shadow: 0 0.6rem 1.8rem rgba(199, 42, 9, 0.3);
+  /* 18.11. spaet (Vorgabe Nico): im Ruhezustand kaum Schatten, dafuer klar
+     als Knopf erkennbar - roter Knopf flach und satt, weisser Knopf mit
+     2-px-Rahmen, Hauptknopf mit Pfeil. Theme-Rahmen (::after) aus, der Rahmen
+     kommt als innerer Schatten, damit er beim Hover mitfaerbt. */
+  .b2b-hero.b2b-hero--hintergrund .b2b-hero__knoepfe .button {
+    gap: 1rem;
+    cursor: pointer;
+    transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.18s ease, background-color 0.15s ease, color 0.15s ease;
   }
-  /* Rahmenknopf weiss gefuellt mit kraeftigem Rand, damit er sich vom Beige abhebt. */
-  .b2b-hero--hintergrund .b2b-hero__knoepfe .button--secondary { background: #fff; }
-  .b2b-hero--hintergrund .b2b-hero__knoepfe .button {
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.18s ease, color 0.18s ease;
+  .b2b-hero.b2b-hero--hintergrund .b2b-hero__knoepfe .button::after { --border-opacity: 0; }
+  .b2b-hero.b2b-hero--hintergrund .b2b-hero__knoepfe .button--primary {
+    box-shadow: 0 0.1rem 0.2rem rgba(0, 0, 0, 0.12);
   }
-  /* 18.11.: deutliches Feedback beim Ueberfahren - roter Knopf dunkler,
-     weisser Knopf fuellt sich schwarz, beide heben sich mit Schatten an. */
-  @media (hover: hover) and (pointer: fine) {
-    .b2b-hero--hintergrund .b2b-hero__knoepfe .button:hover { transform: translateY(-4px); }
-    .b2b-hero--hintergrund .b2b-hero__knoepfe .button--primary:hover {
+  .b2b-hero.b2b-hero--hintergrund .b2b-hero__knoepfe .button--secondary {
+    background: #fff;
+    color: rgb(46, 46, 45);
+    box-shadow: inset 0 0 0 2px rgb(46, 46, 45);
+  }
+  .b2b-hero__pfeil {
+    display: inline-flex;
+    flex: none;
+    width: 1.1em;
+    height: 1.1em;
+    transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .b2b-hero__pfeil svg { width: 100%; height: 100%; }
+  /* any-hover statt hover:hover/pointer:fine: Windows-Laptops mit
+     Touchscreen melden sonst "kein Hover" und der Knopf bleibt stumm. */
+  @media (any-hover: hover) {
+    .b2b-hero.b2b-hero--hintergrund .b2b-hero__knoepfe .button:hover { transform: translateY(-3px); }
+    .b2b-hero.b2b-hero--hintergrund .b2b-hero__knoepfe .button--primary:hover {
       background-color: rgb(150, 30, 6);
-      box-shadow: 0 1.4rem 3rem rgba(150, 30, 6, 0.45);
+      box-shadow: 0 1rem 2rem -0.8rem rgba(150, 30, 6, 0.6);
     }
-    .b2b-hero--hintergrund .b2b-hero__knoepfe .button--secondary:hover {
+    .b2b-hero.b2b-hero--hintergrund .b2b-hero__knoepfe .button--secondary:hover {
       background-color: rgb(46, 46, 45);
       color: #fff;
-      box-shadow: 0 1.4rem 3rem rgba(0, 0, 0, 0.28);
+      box-shadow: inset 0 0 0 2px rgb(46, 46, 45), 0 1rem 2rem -0.8rem rgba(0, 0, 0, 0.45);
     }
-    .b2b-hero--hintergrund .b2b-hero__knoepfe .button:active { transform: translateY(-1px); }
+    .b2b-hero.b2b-hero--hintergrund .b2b-hero__knoepfe .button:hover .b2b-hero__pfeil { transform: translateX(0.5rem); }
+  }
+  .b2b-hero.b2b-hero--hintergrund .b2b-hero__knoepfe .button:active {
+    transform: translateY(0) scale(0.97);
+    transition-duration: 0.06s;
+  }
+  .b2b-hero.b2b-hero--hintergrund .b2b-hero__knoepfe .button:focus-visible {
+    outline: 3px solid rgb(46, 46, 45);
+    outline-offset: 3px;
   }
   @media (prefers-reduced-motion: reduce) {
-    .b2b-hero--hintergrund .b2b-hero__knoepfe .button { transition: none; transform: none !important; }
+    .b2b-hero.b2b-hero--hintergrund .b2b-hero__knoepfe .button,
+    .b2b-hero__pfeil { transition: none; transform: none !important; }
   }
-  .b2b-hero--hintergrund .b2b-hero__knoepfe .button--secondary::after { --border-opacity: 1; --border-offset: 1px; }
 
   @media screen and (min-width: 750px) and (max-width: 1279px) {
     .b2b-hero--hintergrund { min-height: 0; }
@@ -259,6 +285,38 @@
     -webkit-mask-image: linear-gradient(180deg, #000 93%, transparent 100%);
     mask-image: linear-gradient(180deg, #000 93%, transparent 100%);
   }
+  /* 18.11. spaet: Unterkante laeuft weich in das Hellgrau der Seite aus
+     (rgb 246 = Hintergrund von body und Sortiment-Abschnitt), ueber die volle
+     Breite. Stopps nach einer S-Kurve (3t^2 - 2t^3): der Verlauf beginnt und
+     endet flach, sonst sieht das Auge am Ende eine Linie. Text und
+     Produktpunkte liegen darueber. */
+  .b2b-hero--hintergrund.b2b-hero--neben::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    height: 4.8rem;
+    pointer-events: none;
+    background: linear-gradient(180deg,
+      rgba(246, 246, 246, 0) 0%,
+      rgba(246, 246, 246, 0.06) 15%,
+      rgba(246, 246, 246, 0.22) 30%,
+      rgba(246, 246, 246, 0.43) 45%,
+      rgba(246, 246, 246, 0.65) 60%,
+      rgba(246, 246, 246, 0.84) 75%,
+      rgba(246, 246, 246, 0.96) 88%,
+      rgb(246, 246, 246) 100%);
+  }
+  /* Die Bannerhoehe endet oft auf einem Bruchteil eines Pixels; die letzte
+     Pixelzeile mischt dann Beige ins Grau und zeigt eine feine Naht. Darum
+     sind die untersten 3 px schon im Hintergrund selbst grau. */
+  .b2b-hero--hintergrund.b2b-hero--neben {
+    background-image: linear-gradient(0deg, rgb(246, 246, 246) 0, rgb(246, 246, 246) 3px, transparent 3px);
+  }
+  .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__inhalt { position: relative; z-index: 2; }
+
   /* Ab 1280 px nahtlos (Vorgabe 18.11.): kein Rahmen, keine Ecken, kein
      Schatten. Das Bild laeuft oben, unten und rechts buendig bis an den Rand
      des Banners und liegt links unter der Textspalte - dort ist im Motiv nur
@@ -273,7 +331,7 @@
     .b2b-hero--hintergrund.b2b-hero--neben {
       /* 42rem bei 1280 px, waechst bis 36vw (684 px bei 1900), hoechstens 80rem. */
       --hh: min(36vw, calc(42rem + (100vw - 1280px) * 0.6), 80rem);
-      grid-template-columns: clamp(48rem, 36vw, 70rem) minmax(0, 1fr);
+      grid-template-columns: clamp(52rem, 40vw, 78rem) minmax(0, 1fr);
       align-items: stretch;
       min-height: var(--hh);
     }
@@ -306,7 +364,7 @@
     }
     .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__inhalt {
       position: relative;
-      z-index: 1;
+      z-index: 2;
       grid-column: 1;
       grid-row: 1;
       align-self: center;
@@ -314,9 +372,20 @@
       padding: 3.2rem 1.6rem calc(3.2rem + (100vw - 1280px) * 0.09) max(3.2rem, calc((100vw - 1280px) * 0.16 + 3.2rem));
     }
     /* Beide Knoepfe nebeneinander, auch bei der schmalsten Textspalte. */
-    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__knoepfe { gap: 1.2rem; flex-wrap: nowrap; }
-    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__titel { font-size: clamp(4.4rem, 3.4vw, 7.2rem); }
-    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__knoepfe .button { min-width: 0; flex: 0 0 auto; padding-inline: 2.4rem; }
+    /* 18.11. spaet: Schrift und Knoepfe eine Stufe groesser und mit der
+       Fensterbreite wachsend; Titel etwas enger gesetzt, wirkt so geschlossener. */
+    .b2b-hero--hintergrund.b2b-hero--neben::after { height: calc(var(--hh) * 0.26); }
+    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__gruss { font-size: clamp(1.8rem, 1.2vw, 2.2rem); }
+    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__titel { font-size: clamp(5rem, 4vw, 8.4rem); letter-spacing: -0.01em; line-height: 1.05; }
+    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__text { font-size: clamp(1.9rem, 1.4vw, 2.4rem); max-width: 60rem; }
+    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__knoepfe { margin-top: clamp(3.2rem, 2.4vw, 4.4rem); gap: clamp(1.2rem, 1vw, 1.8rem); flex-wrap: nowrap; }
+    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__knoepfe .button {
+      min-width: 0;
+      flex: 0 0 auto;
+      min-height: clamp(6.4rem, 4.2vw, 7.8rem);
+      padding-inline: clamp(2.4rem, 1.9vw, 3.8rem);
+      font-size: clamp(1.8rem, 1.35vw, 2.4rem);
+    }
   }
 
   /* Produktpunkte (Bloecke "Produktpunkt"): unsichtbare Flaeche ueber dem
@@ -469,6 +538,7 @@
       {%- if section.settings.knopf1_text != blank -%}
         <a class="button button--primary" href="{{ section.settings.knopf1_link | default: '#' }}">
           {{- section.settings.knopf1_text | escape -}}
+          <span class="b2b-hero__pfeil" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"/></svg></span>
         </a>
       {%- endif -%}
       {%- if section.settings.knopf2_text != blank -%}

@@ -219,26 +219,28 @@
     text-align: center;
   }
 
-  /* 18.11.: deutlicheres Feedback. Umrandeter Knopf fuellt sich rot, der
-     gefuellte wird dunkler; beide heben sich mit Schatten an, beim Klicken
-     sinken sie zurueck. */
-  @media (hover: hover) and (pointer: fine) {
+  /* 18.11. spaet: gleiche Sprache wie die Hero-Knoepfe. Umrandeter Knopf mit
+     2 px Rand, beim Ueberfahren fuellt er sich rot, der gefuellte wird
+     dunkler; Schatten nur beim Ueberfahren und knapp. any-hover, weil
+     Touchscreen-Laptops sonst kein Hover melden. Klick drueckt ein. */
+  .b2b-kond__knopf { border-width: 2px; padding: 16px 37px; cursor: pointer; }
+  @media (any-hover: hover) {
     .b2b-kond__knopf:hover {
       border-color: rgb(var(--b2b-akzent, 199 42 9));
       background: rgb(var(--b2b-akzent, 199 42 9));
       color: rgb(255 255 255);
-      transform: translateY(-4px);
-      box-shadow: 0 14px 30px rgb(199 42 9 / .35);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px -8px rgb(199 42 9 / .6);
     }
     .b2b-kond__knopf--naechster:hover {
       border-color: rgb(150 30 6);
       background: rgb(150 30 6);
-      box-shadow: 0 14px 30px rgb(150 30 6 / .4);
+      box-shadow: 0 10px 20px -8px rgb(150 30 6 / .6);
     }
-    .b2b-kond__knopf:active {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 14px rgb(0 0 0 / .18);
-    }
+  }
+  .b2b-kond__knopf:active {
+    transform: translateY(0) scale(0.97);
+    transition-duration: 0.06s;
   }
 
 
@@ -260,8 +262,8 @@
     }
   }
   .b2b-kond__knopf:focus-visible {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgb(0 0 0 / .12);
+    outline: 3px solid rgb(var(--b2b-tinte, 46 46 45));
+    outline-offset: 3px;
   }
   @media (prefers-reduced-motion: reduce) {
     .b2b-kond__knopf { transition: none; transform: none !important; }
