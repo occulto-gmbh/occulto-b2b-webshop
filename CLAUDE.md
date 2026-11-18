@@ -25,7 +25,10 @@ für diesen Shop vom Nutzer ausdrücklich erlaubt. Nie `shopify theme publish`.
    Das gilt für jeden größeren Auftrag – vom Nutzer am 30.09.2026 so verlangt.
 5. **Messen, nicht schätzen.** Im Browser per JS bei 1440 und 375 px: Maße, Querüberlauf, berechnete
    Stile, echte Serverantworten. Screenshot nur als Beleg am Ende.
-6. **Commit** mit dem Warum im Text. Kein Push – keine Schreibrechte auf GitHub (Stand 30.09.2026).
+6. **Commit** mit dem Warum im Text, auf einem Branch `feature/…` oder `bugfix/…` – nie direkt auf `main`.
+   **Danach pushen** (Vorgabe Nico 18.11.2026: alles immer auf GitHub). Für den Branch gibt es einen offenen PR
+   gegen `main`; gemergt wird nach Freigabe. Werktags um 17:45 gleicht die geplante Aufgabe
+   `b2b-shop-github-abgleich` Repo, Live-Theme und GitHub ab (Theme-Editor-Änderungen werden übernommen).
 
 ## Vorschau
 
@@ -111,6 +114,5 @@ Stand Besprechung 16.11.2026. Kein Skonto. „Order Deadline“ ist auf der Voro
 ## Offen (Stand 30.09.2026)
 
 
-- `main` liegt lokal mehrere Commits vor `origin`, Push erst mit Schreibrechten.
 - Functions gebaut und getestet, **nicht ausgerollt**: `shopify app deploy` wirkt sofort live, nur auf Zuruf.
   Build braucht pnpm (corepack), siehe `b2b-webshop/extensions/HINWEIS-DEPLOY.md`.
