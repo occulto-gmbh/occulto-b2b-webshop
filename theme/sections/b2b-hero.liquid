@@ -240,26 +240,32 @@
   }
   /* Ab 1280 px nahtlos (Vorgabe 18.11.): kein Rahmen, keine Ecken, kein
      Schatten. Das Bild laeuft oben, unten und rechts buendig bis an den Rand
-     des Banners und schiebt sich links um ein Neuntel seiner Breite unter die
-     Textspalte - dort ist im Motiv nur Hintergrund. Nur diese linke Kante
-     laeuft weich in die Flaechenfarbe aus, ueber Hintergrund, nicht ueber
-     Produkte. Die Hoehe des Banners ergibt sich aus dem Bild. */
+     des Banners und liegt links unter der Textspalte - dort ist im Motiv nur
+     Hintergrund. Nur diese linke Kante laeuft weich in die Flaechenfarbe aus,
+     ueber Hintergrund, nicht ueber Produkte. */
+  /* 18.11. abends: Banner hoeher (--hh), Bild rechts verankert und genau so
+     hoch wie der Banner; rechts ragt es um 6 % seiner Breite ueber den Rand
+     (nur Tannenzweig), damit die Produkte Platz fuer den weiter zur Mitte
+     gerueckten Text lassen. Text sitzt etwas oberhalb der Mitte, weil links
+     unten die Sockenspitzen liegen. */
   @media screen and (min-width: 1280px) {
     .b2b-hero--hintergrund.b2b-hero--neben {
-      grid-template-columns: clamp(48rem, 31vw, 62rem) minmax(0, 1fr);
+      /* 42rem bei 1280 px, waechst bis 36vw (684 px bei 1900), hoechstens 80rem. */
+      --hh: min(36vw, calc(42rem + (100vw - 1280px) * 0.6), 80rem);
+      grid-template-columns: clamp(48rem, 36vw, 70rem) minmax(0, 1fr);
       align-items: stretch;
-      min-height: 0;
+      min-height: var(--hh);
     }
     .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__medien {
-      position: relative;
-      inset: auto;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: auto;
+      right: calc(var(--hh) * -0.15);
       z-index: 0;
-      grid-column: 2;
-      grid-row: 1;
-      align-self: stretch;
-      width: calc(100% / 0.9);
-      margin-left: calc(-100% / 9);
-      aspect-ratio: {{ section.settings.bild_breite | default: 1983 }} / {{ section.settings.bild_hoehe | default: 793 }};
+      width: calc(var(--hh) * {{ section.settings.bild_breite | default: 1983 }} / {{ section.settings.bild_hoehe | default: 793 }});
+      margin: 0;
+      aspect-ratio: auto;
       padding: 0;
       background: transparent;
     }
@@ -273,9 +279,9 @@
       height: 100%;
       max-width: none;
       object-fit: cover;
-      object-position: 70% 50%;
-      -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 9%);
-      mask-image: linear-gradient(90deg, transparent 0, #000 9%);
+      object-position: 100% 50%;
+      -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 12%);
+      mask-image: linear-gradient(90deg, transparent 0, #000 12%);
     }
     .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__inhalt {
       position: relative;
@@ -284,7 +290,7 @@
       grid-row: 1;
       align-self: center;
       width: auto;
-      padding: 3.2rem 1.6rem 3.2rem max(3vw, 3.2rem);
+      padding: 3.2rem 1.6rem calc(3.2rem + (100vw - 1280px) * 0.09) max(3.2rem, calc((100vw - 1280px) * 0.16 + 3.2rem));
     }
     /* Beide Knoepfe nebeneinander, auch bei der schmalsten Textspalte. */
     .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__knoepfe { gap: 1.2rem; flex-wrap: nowrap; }

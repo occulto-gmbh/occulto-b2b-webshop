@@ -28,7 +28,7 @@
         "bild_datei_klein": "b2b-hero-winter-1000.webp",
         "bild_breite": 1983,
         "bild_hoehe": 793,
-        "flaeche": "#F1DED7",
+        "flaeche": "#E1CDBE",
         "heading": "Occulto Händlerportal",
         "text": "<p>Entdecke das aktuelle Occulto-Sortiment und bestelle direkt zu deinen Händlerkonditionen.</p>",
         "knopf1_text": "Saisonware bestellen",
@@ -43,10 +43,10 @@
           "settings": {
             "produkt": "occulto-weihnachtssocken-rudolph-christbaum",
             "name": "",
-            "x": 33,
-            "y": 37,
-            "breite": 14,
-            "hoehe": 60
+            "x": 37,
+            "y": 42,
+            "breite": 8,
+            "hoehe": 50
           }
         },
         "punkt_hohoho": {
@@ -54,9 +54,9 @@
           "settings": {
             "produkt": "occulto-weihnachtssocken-rudolph-hohoho",
             "name": "",
-            "x": 43,
+            "x": 45,
             "y": 42,
-            "breite": 10,
+            "breite": 8,
             "hoehe": 50
           }
         },
@@ -66,9 +66,9 @@
             "produkt": "occulto-damen-herren-winter-m-tze-modell-romy-apresski",
             "name": "Mütze Romy Après Ski",
             "x": 61,
-            "y": 42,
-            "breite": 16,
-            "hoehe": 46
+            "y": 34,
+            "breite": 18,
+            "hoehe": 40
           }
         },
         "punkt_reindeer_muetze": {
@@ -76,10 +76,10 @@
           "settings": {
             "produkt": "occulto-damen-herren-winter-m-tze-modell-noel-reindeer",
             "name": "Mütze Noel Reindeer",
-            "x": 80,
-            "y": 38,
-            "breite": 16,
-            "hoehe": 46
+            "x": 81,
+            "y": 33,
+            "breite": 18,
+            "hoehe": 40
           }
         },
         "punkt_bad_santa": {
@@ -87,10 +87,10 @@
           "settings": {
             "produkt": "occulto-weihnachtssocken-rudolph-bad-santa",
             "name": "",
-            "x": 40,
-            "y": 77,
-            "breite": 10,
-            "hoehe": 36
+            "x": 48,
+            "y": 71,
+            "breite": 8,
+            "hoehe": 40
           }
         },
         "punkt_rudi_moose": {
@@ -98,10 +98,10 @@
           "settings": {
             "produkt": "occulto-tennissocks-kids-rudi-moose",
             "name": "",
-            "x": 50,
-            "y": 79,
-            "breite": 10,
-            "hoehe": 36
+            "x": 56,
+            "y": 71,
+            "breite": 8,
+            "hoehe": 40
           }
         },
         "punkt_lebkuchenmann": {
@@ -109,10 +109,10 @@
           "settings": {
             "produkt": "occulto-weihnachtssocken-rudolph-lebkuchenmann",
             "name": "",
-            "x": 61,
-            "y": 77,
-            "breite": 10,
-            "hoehe": 36
+            "x": 65,
+            "y": 71,
+            "breite": 8,
+            "hoehe": 40
           }
         },
         "punkt_candy_cane": {
@@ -120,10 +120,10 @@
           "settings": {
             "produkt": "occulto-tennissocks-oswald-candy-cane",
             "name": "Tennissocks OSWALD Candy Cane",
-            "x": 71,
-            "y": 76,
-            "breite": 10,
-            "hoehe": 36
+            "x": 74,
+            "y": 71,
+            "breite": 8,
+            "hoehe": 40
           }
         },
         "punkt_claus_santa": {
@@ -131,10 +131,10 @@
           "settings": {
             "produkt": "occulto-tennissocks-claus-santa",
             "name": "",
-            "x": 83,
-            "y": 69,
-            "breite": 11,
-            "hoehe": 46
+            "x": 84,
+            "y": 68,
+            "breite": 9,
+            "hoehe": 45
           }
         }
       },
