@@ -414,7 +414,7 @@
       if b2b_haendler and b2b_abv.products_count > 0
         assign b2b_abv_zeigen = true
       endif
-      assign b2b_abv_label = 'Abverkauf −' | append: b2b_abv_prozent | append: ' %'
+      assign b2b_abv_label = 'Sale −' | append: b2b_abv_prozent | append: ' %'
 
       if section.settings.menu != blank
         render 'header-drawer', show_country_selector: country_selector, show_language_selector: language_selector, show_social_links: social_links, b2b_haendler: b2b_haendler, b2b_abv_zeigen: b2b_abv_zeigen, b2b_abv_url: b2b_abv.url, b2b_abv_label: b2b_abv_label
@@ -602,7 +602,7 @@
       <button class="b2b-abv-popup__zu" aria-label="Schließen">&times;</button>
     </form>
     <p class="b2b-abv-popup__abzeichen">−{{ b2b_abv_prozent }}&nbsp;%</p>
-    <h2 class="b2b-abv-popup__titel" id="B2bAbverkaufTitel">Abverkauf: −{{ b2b_abv_prozent }}&nbsp;% auf ausgewählte Artikel</h2>
+    <h2 class="b2b-abv-popup__titel" id="B2bAbverkaufTitel">Sale: −{{ b2b_abv_prozent }}&nbsp;% auf ausgewählte Artikel</h2>
     <p class="b2b-abv-popup__text">Solange der Vorrat reicht. Der Rabatt wird im Warenkorb abgezogen.</p>
     <ul class="b2b-abv-popup__bilder" role="list">
       {%- for p in b2b_abv.products limit: 3 -%}
@@ -612,7 +612,7 @@
       {%- endfor -%}
     </ul>
     <div class="b2b-abv-popup__knoepfe">
-      <a class="button button--primary" href="{{ b2b_abv.url }}">Zum Abverkauf</a>
+      <a class="button button--primary" href="{{ b2b_abv.url }}">Zum Sale</a>
       <form method="dialog"><button class="button button--secondary">Später</button></form>
     </div>
   </dialog>

@@ -12,7 +12,7 @@
     "abverkauf": {
       "type": "b2b-abverkauf-abschnitt",
       "settings": {
-        "heading": "Abverkauf",
+        "heading": "Sale",
         "text": "Ausgewählte Artikel mit Rabatt – solange der Vorrat reicht.",
         "anzahl": 8
       }
@@ -214,8 +214,8 @@
   },
   "order": [
     "b2b_hero",
-    "abverkauf",
     "collection_list",
+    "abverkauf",
     "konditionen",
     "vorteile",
     "abschluss"

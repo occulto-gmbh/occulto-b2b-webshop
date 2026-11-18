@@ -92,7 +92,9 @@ Stand Besprechung 16.11.2026. Kein Skonto. „Order Deadline“ ist auf der Voro
 - Warenkorb-Kopf der Nachbestellung (`b2b-korb-art`) nennt immer nur die nächste offene Stufe: erst Versand (250 Packs), dann −5 % (500 Packs).
   Balken (Korb und Produktseite, `b2b-groessen-bestellen`): Marken 100 Mindestmenge / 250 versandkostenfrei, Ende 500 −5 %;
   erreichte Stufen voll, nur die Auswahl darüber gestreift.
-- **Abverkauf −10 %** (seit 17.11.): Sammlungs-Handle und Prozent nur in `snippets/b2b-abverkauf.liquid`. Nur für Händler:
+- **Sale −10 %** (seit 17.11., bis 18.11. „Abverkauf“; Dateinamen heißen weiter `abverkauf`): Sammlungs-Handle (`sale`)
+  und Prozent nur in `snippets/b2b-abverkauf.liquid`. Wird der Handle in der Verwaltung geändert, muss er dort mitziehen,
+  sonst verschwinden Abschnitt, Popup und Abzeichen still. Sichtbares Wording ist „Sale“. Nur für Händler:
   Menüpunkt ersetzt „Händler werden“ (in den drei Menü-Snippets, Werte aus `header.liquid`), Abschnitt
   `b2b-abverkauf-abschnitt` unter dem Hero, Popup `#B2bAbverkaufPopup` in `header.liquid` (einmal je Sitzung, wartet auf
   das Cookie-Banner), Abzeichen/Hinweis über `b2b-abverkauf-hinweis`. Alles bleibt unsichtbar, solange die Sammlung leer ist.

@@ -3,7 +3,7 @@
   und Satz. Gibt Text aus, weil render einen eigenen Gueltigkeitsbereich hat
   (Vorbild b2b-packs): mit capture auffangen.
 
-    teil: 'sammlung'  -> Handle der Sammlung ("abverkauf")
+    teil: 'sammlung'  -> Handle der Sammlung ("sale", bis 18.11. "abverkauf")
     teil: 'prozent'   -> Rabatt in Prozent (10)
 
   Der Rabatt selbst kommt NICHT aus dem Theme: In der Verwaltung braucht es
@@ -18,5 +18,5 @@
 {%- if teil == 'prozent' -%}
   {%- echo 10 -%}
 {%- else -%}
-  {%- echo 'abverkauf' -%}
+  {%- echo 'sale' -%}
 {%- endif -%}

@@ -22,7 +22,7 @@
     {%- assign abv_prozent = abv_prozent | strip -%}
     {%- if art == 'hinweis' -%}
       <p class="b2b-pdp-abverkauf">
-        <span class="b2b-pdp-abverkauf__abzeichen">Abverkauf −{{ abv_prozent }}&nbsp;%</span>
+        <span class="b2b-pdp-abverkauf__abzeichen">Sale −{{ abv_prozent }}&nbsp;%</span>
         Der Rabatt wird im Warenkorb abgezogen.
       </p>
       <style>
@@ -30,7 +30,7 @@
         .b2b-pdp-abverkauf__abzeichen { padding: 0.3rem 1rem; border-radius: 999px; background: rgb(199 42 9); color: #fff; font-weight: 700; }
       </style>
     {%- else -%}
-      <span class="badge badge--bottom-left b2b-abzeichen-abverkauf">Abverkauf −{{ abv_prozent }}&nbsp;%</span>
+      <span class="badge badge--bottom-left b2b-abzeichen-abverkauf">Sale −{{ abv_prozent }}&nbsp;%</span>
     {%- endif -%}
   {%- endif -%}
 {%- endif -%}
