@@ -51,6 +51,21 @@ b2b-katalog { display: block; }
 }
 #product-grid > [hidden] { display: none !important; }
 
+/* 18.11.: Katalogkarten in einer Reihe gleich hoch, Knoepfe auf einer Linie.
+   Dawn streckt das Listenelement, die Karte darin aber nicht; der Knopf hing
+   direkt unter dem ein- bis dreizeiligen Titel. Jetzt fuellt die Karte die
+   Zelle, und alles unter dem Titel sitzt unten. Bilder einheitlich 3:4 -
+   "adapt" nahm sonst das Format jedes Fotos (HoHoHo war niedriger). */
+b2b-katalog #product-grid > .grid__item { display: flex; flex-direction: column; }
+b2b-katalog #product-grid > .grid__item > product-component { display: flex; flex: 1 1 auto; flex-direction: column; }
+b2b-katalog #product-grid .card-wrapper { flex: 1 1 auto; }
+b2b-katalog #product-grid .card-wrapper > .card { height: 100%; }
+b2b-katalog #product-grid .card,
+b2b-katalog #product-grid .card__inner { --ratio-percent: 133.333% !important; }
+b2b-katalog #product-grid .card > .card__content { display: flex; flex: 1 1 auto; flex-direction: column; }
+b2b-katalog #product-grid .card > .card__content > .card__information { display: flex; flex: 1 1 auto; flex-direction: column; }
+b2b-katalog #product-grid .card > .card__content > .card__information > .card__heading { margin-bottom: auto; padding-bottom: 8px; }
+
 .b2b-gb > .button--secondary { margin-top: 12px; }
 .b2b-lageranfrage { margin-top: 12px; }
 .b2b-lageranfrage label { display: block; margin-top: 12px; }
