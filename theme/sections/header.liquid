@@ -414,6 +414,20 @@
       if b2b_haendler and b2b_abv.products_count > 0
         assign b2b_abv_zeigen = true
       endif
+      comment
+        18.11.: Steht die Sale-Sammlung schon als eigener Punkt im Menue
+        (in der Verwaltung angelegt), keinen zweiten einsetzen - sonst sehen
+        Haendler "Sale -10 %" und "Sale" nebeneinander. "Haendler werden"
+        faellt fuer sie trotzdem weg.
+      endcomment
+      if b2b_abv_zeigen and section.settings.menu != blank
+        for b2b_l in section.settings.menu.links
+          if b2b_l.url == b2b_abv.url
+            assign b2b_abv_zeigen = false
+            break
+          endif
+        endfor
+      endif
       assign b2b_abv_label = 'Sale −' | append: b2b_abv_prozent | append: ' %'
 
       if section.settings.menu != blank
