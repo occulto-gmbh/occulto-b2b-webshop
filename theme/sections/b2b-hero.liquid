@@ -222,17 +222,21 @@
     .b2b-hero--hintergrund .b2b-hero__knoepfe .button { min-width: 0; flex: 0 0 auto; }
   }
 
-  /* Nebeneinander: Bild nie beschnitten. Schmal: ganzes Bild oben im
-     Seitenverhaeltnis der Datei. Ab 1280 px: Textspalte links, Bild rechts in
-     voller Breite der Spalte, senkrecht mittig; alle offenen Kanten laufen
-     weich in die Flaechenfarbe aus (rechts endet es am Fensterrand). */
+  /* Bildrahmen: traegt Bild und Produktpunkte. Ueberall sonst deckt er die
+     Medienflaeche ab wie bisher das Bild selbst. */
+  .b2b-hero__bild { position: absolute; inset: 0; }
+
+  /* Nebeneinander: Bild nie beschnitten, keine Verlaeufe ueber dem Motiv.
+     Schmal: ganzes Bild oben im Seitenverhaeltnis der Datei. Ab 1280 px:
+     Textspalte links, rechts das Bild mit Abstand zum Fensterrand, senkrecht
+     mittig im hoeheren Banner, runde Ecken statt Ueberblendung. */
   .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__medien { aspect-ratio: {{ section.settings.bild_breite | default: 1983 }} / {{ section.settings.bild_hoehe | default: 793 }}; }
   .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__medien img { object-fit: cover; object-position: 50% 50%; }
   @media screen and (min-width: 1280px) {
     .b2b-hero--hintergrund.b2b-hero--neben {
-      grid-template-columns: minmax(54rem, 40%) minmax(0, 1fr);
+      grid-template-columns: minmax(54rem, 32%) minmax(0, 1fr);
       align-items: center;
-      min-height: clamp(44rem, 30vw, 60rem);
+      min-height: clamp(52rem, 36vw, 76rem);
     }
     .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__medien {
       position: relative;
@@ -243,23 +247,25 @@
       aspect-ratio: auto;
       display: flex;
       align-items: center;
+      padding: 4rem 4vw 4rem 2vw;
       background: transparent;
     }
-    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__medien img {
+    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__bild {
       position: relative;
       inset: auto;
       width: 100%;
-      height: auto;
+      aspect-ratio: {{ section.settings.bild_breite | default: 1983 }} / {{ section.settings.bild_hoehe | default: 793 }};
+      border-radius: 2.4rem;
+    }
+    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__medien img {
+      inset: 0;
+      width: 100%;
+      height: 100%;
       max-width: none;
-      object-fit: fill;
-      -webkit-mask-image:
-        linear-gradient(90deg, transparent 0, #000 12%),
-        linear-gradient(180deg, transparent 0, #000 10%, #000 90%, transparent 100%);
-      -webkit-mask-composite: source-in;
-      mask-image:
-        linear-gradient(90deg, transparent 0, #000 12%),
-        linear-gradient(180deg, transparent 0, #000 10%, #000 90%, transparent 100%);
-      mask-composite: intersect;
+      border-radius: 2.4rem;
+      object-fit: cover;
+      -webkit-mask-image: none;
+      mask-image: none;
     }
     .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__inhalt {
       grid-column: 1;
@@ -267,13 +273,83 @@
       width: auto;
       padding: 4.8rem 2.4rem 4.8rem 4vw;
     }
-    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__titel { font-size: clamp(4.4rem, 3.6vw, 7.2rem); }
+    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__titel { font-size: clamp(4.4rem, 3.4vw, 7.2rem); }
     .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__knoepfe .button { min-width: 0; flex: 0 0 auto; padding-inline: 2.8rem; }
+  }
+
+  /* Produktpunkte (Bloecke "Produktpunkt"): unsichtbare Flaeche ueber dem
+     Produkt. Beim Ueberfahren erscheinen ein dicker Punkt und der Name, ein
+     Klick fuehrt zum Produkt. Ueberfaehrt man das Bild, deuten alle Punkte
+     sich leise an. Auf Touch-Geraeten stehen die Punkte immer da. */
+  .b2b-hero__punkt {
+    position: absolute;
+    z-index: 2;
+    left: calc(var(--x) * 1%);
+    top: calc(var(--y) * 1%);
+    width: calc(var(--b) * 1%);
+    height: calc(var(--h) * 1%);
+    transform: translate(-50%, -50%);
+    color: rgb(var(--color-foreground));
+    text-decoration: none;
+  }
+  .b2b-hero__punkt-dot {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 2.6rem;
+    height: 2.6rem;
+    margin: -1.3rem 0 0 -1.3rem;
+    border-radius: 50%;
+    background: rgb(199, 42, 9);
+    border: 0.4rem solid #fff;
+    box-shadow: 0 0.3rem 1.2rem rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+  }
+  .b2b-hero__punkt-name {
+    position: absolute;
+    left: 50%;
+    bottom: calc(50% + 2.2rem);
+    transform: translate(-50%, 0.4rem);
+    padding: 0.7rem 1.4rem;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 0 0.4rem 1.6rem rgba(0, 0, 0, 0.18);
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+  }
+  .b2b-hero__punkt--rechts .b2b-hero__punkt-name { left: auto; right: calc(50% - 2rem); transform: translate(0, 0.4rem); }
+  .b2b-hero__punkt--links .b2b-hero__punkt-name { left: calc(50% - 2rem); transform: translate(0, 0.4rem); }
+  .b2b-hero__bild:hover .b2b-hero__punkt-dot { opacity: 0.6; transform: scale(0.7); }
+  .b2b-hero__punkt:hover .b2b-hero__punkt-dot,
+  .b2b-hero__punkt:focus-visible .b2b-hero__punkt-dot { opacity: 1; transform: scale(1); }
+  .b2b-hero__punkt:hover .b2b-hero__punkt-name,
+  .b2b-hero__punkt:focus-visible .b2b-hero__punkt-name { opacity: 1; transform: translate(-50%, 0); }
+  .b2b-hero__punkt--rechts:hover .b2b-hero__punkt-name,
+  .b2b-hero__punkt--rechts:focus-visible .b2b-hero__punkt-name,
+  .b2b-hero__punkt--links:hover .b2b-hero__punkt-name,
+  .b2b-hero__punkt--links:focus-visible .b2b-hero__punkt-name { transform: translate(0, 0); }
+  .b2b-hero__punkt:focus-visible { outline: none; }
+  @media (hover: none) {
+    .b2b-hero__punkt-dot { opacity: 0.9; transform: scale(0.65); }
+  }
+  @media (hover: none) and (max-width: 749px) {
+    .b2b-hero__punkt-dot { transform: scale(0.42); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .b2b-hero__punkt-dot, .b2b-hero__punkt-name { transition: none; }
   }
 {%- endstyle -%}
 
 <section class="b2b-hero{% if hintergrund %} b2b-hero--hintergrund{% if neben %} b2b-hero--neben{% endif %}{% elsif hat_video == false %} b2b-hero--bild{% endif %} color-{{ section.settings.color_scheme }}">
-  <div class="b2b-hero__medien" aria-hidden="true">
+  <div class="b2b-hero__medien">
+   <div class="b2b-hero__bild">
     {%- if section.settings.video != blank -%}
       {{
         section.settings.video
@@ -311,6 +387,31 @@
         | image_tag: loading: 'eager', fetchpriority: 'high', widths: '600,900,1200,1800', sizes: '100vw', alt: ''
       }}
     {%- endif -%}
+
+    {%- comment -%}
+      Produktpunkte nur bei "nebeneinander": nur dort ist der Rahmen genau
+      so gross wie das Bild, sodass die Prozentangaben auf dem Motiv sitzen.
+    {%- endcomment -%}
+    {%- if neben and bild_datei != blank -%}
+      {%- for block in section.blocks -%}
+        {%- assign p = block.settings.produkt -%}
+        {%- if p != blank -%}
+          {%- assign p_name = block.settings.name | default: p.title | remove_first: 'Occulto ' -%}
+          {%- assign seite = '' -%}
+          {%- if block.settings.x > 70 -%}{%- assign seite = ' b2b-hero__punkt--rechts' -%}{%- elsif block.settings.x < 25 -%}{%- assign seite = ' b2b-hero__punkt--links' -%}{%- endif -%}
+          <a
+            class="b2b-hero__punkt{{ seite }}"
+            href="{{ p.url }}"
+            style="--x: {{ block.settings.x }}; --y: {{ block.settings.y }}; --b: {{ block.settings.breite }}; --h: {{ block.settings.hoehe }};"
+            {{ block.shopify_attributes }}
+          >
+            <span class="b2b-hero__punkt-dot" aria-hidden="true"></span>
+            <span class="b2b-hero__punkt-name">{{ p_name | escape }}</span>
+          </a>
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+   </div>
   </div>
 
   <div class="b2b-hero__inhalt">
@@ -462,6 +563,22 @@
       "id": "color_scheme",
       "label": "t:sections.all.colors.label",
       "default": "scheme-1"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "punkt",
+      "name": "Produktpunkt",
+      "limit": 16,
+      "settings": [
+        { "type": "paragraph", "content": "Nur bei Aufteilung „Text links, ganzes Bild rechts“. Lage in Prozent des Bildes: 0 = links/oben, 100 = rechts/unten." },
+        { "type": "product", "id": "produkt", "label": "Produkt" },
+        { "type": "text", "id": "name", "label": "Angezeigter Name", "info": "Leer: Produktname ohne „Occulto“." },
+        { "type": "range", "id": "x", "label": "Punkt waagrecht (%)", "min": 0, "max": 100, "step": 1, "default": 50 },
+        { "type": "range", "id": "y", "label": "Punkt senkrecht (%)", "min": 0, "max": 100, "step": 1, "default": 50 },
+        { "type": "range", "id": "breite", "label": "Klickfläche Breite (%)", "min": 4, "max": 40, "step": 1, "default": 10 },
+        { "type": "range", "id": "hoehe", "label": "Klickfläche Höhe (%)", "min": 4, "max": 80, "step": 1, "default": 36 }
+      ]
     }
   ],
   "presets": [

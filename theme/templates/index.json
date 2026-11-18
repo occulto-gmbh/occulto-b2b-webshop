@@ -36,7 +36,109 @@
         "knopf2_text": "Jetzt bestellen",
         "knopf2_link": "shopify://collections/all",
         "color_scheme": "scheme-2"
-      }
+      },
+      "blocks": {
+        "punkt_christbaum": {
+          "type": "punkt",
+          "settings": {
+            "produkt": "occulto-weihnachtssocken-rudolph-christbaum",
+            "name": "",
+            "x": 33,
+            "y": 37,
+            "breite": 14,
+            "hoehe": 60
+          }
+        },
+        "punkt_hohoho": {
+          "type": "punkt",
+          "settings": {
+            "produkt": "occulto-weihnachtssocken-rudolph-hohoho",
+            "name": "",
+            "x": 43,
+            "y": 42,
+            "breite": 10,
+            "hoehe": 50
+          }
+        },
+        "punkt_apresski": {
+          "type": "punkt",
+          "settings": {
+            "produkt": "occulto-damen-herren-winter-m-tze-modell-romy-apresski",
+            "name": "Mütze Romy Après Ski",
+            "x": 61,
+            "y": 42,
+            "breite": 16,
+            "hoehe": 46
+          }
+        },
+        "punkt_reindeer_muetze": {
+          "type": "punkt",
+          "settings": {
+            "produkt": "occulto-damen-herren-winter-m-tze-modell-noel-reindeer",
+            "name": "Mütze Noel Reindeer",
+            "x": 80,
+            "y": 38,
+            "breite": 16,
+            "hoehe": 46
+          }
+        },
+        "punkt_bad_santa": {
+          "type": "punkt",
+          "settings": {
+            "produkt": "occulto-weihnachtssocken-rudolph-bad-santa",
+            "name": "",
+            "x": 40,
+            "y": 77,
+            "breite": 10,
+            "hoehe": 36
+          }
+        },
+        "punkt_rudi_moose": {
+          "type": "punkt",
+          "settings": {
+            "produkt": "occulto-tennissocks-kids-rudi-moose",
+            "name": "",
+            "x": 50,
+            "y": 79,
+            "breite": 10,
+            "hoehe": 36
+          }
+        },
+        "punkt_lebkuchenmann": {
+          "type": "punkt",
+          "settings": {
+            "produkt": "occulto-weihnachtssocken-rudolph-lebkuchenmann",
+            "name": "",
+            "x": 61,
+            "y": 77,
+            "breite": 10,
+            "hoehe": 36
+          }
+        },
+        "punkt_candy_cane": {
+          "type": "punkt",
+          "settings": {
+            "produkt": "occulto-tennissocks-oswald-candy-cane",
+            "name": "Tennissocks OSWALD Candy Cane",
+            "x": 71,
+            "y": 76,
+            "breite": 10,
+            "hoehe": 36
+          }
+        },
+        "punkt_claus_santa": {
+          "type": "punkt",
+          "settings": {
+            "produkt": "occulto-tennissocks-claus-santa",
+            "name": "",
+            "x": 83,
+            "y": 69,
+            "breite": 11,
+            "hoehe": 46
+          }
+        }
+      },
+      "block_order": ["punkt_christbaum","punkt_hohoho","punkt_apresski","punkt_reindeer_muetze","punkt_bad_santa","punkt_rudi_moose","punkt_lebkuchenmann","punkt_candy_cane","punkt_claus_santa"]
     },
     "collection_list": {
       "type": "collection-list",
