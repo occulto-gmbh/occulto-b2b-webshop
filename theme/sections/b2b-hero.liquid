@@ -231,56 +231,71 @@
      Textspalte links, rechts das Bild mit Abstand zum Fensterrand, senkrecht
      mittig im hoeheren Banner, runde Ecken statt Ueberblendung. */
   .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__medien { aspect-ratio: {{ section.settings.bild_breite | default: 1983 }} / {{ section.settings.bild_hoehe | default: 793 }}; }
-  .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__medien img { object-fit: cover; object-position: 50% 50%; }
+  .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__medien img {
+    object-fit: cover;
+    object-position: 50% 50%;
+    /* Unterkante laeuft in die Textflaeche darunter aus - keine Naht. */
+    -webkit-mask-image: linear-gradient(180deg, #000 93%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 93%, transparent 100%);
+  }
+  /* Ab 1280 px nahtlos (Vorgabe 18.11.): kein Rahmen, keine Ecken, kein
+     Schatten. Das Bild laeuft oben, unten und rechts buendig bis an den Rand
+     des Banners und schiebt sich links um ein Neuntel seiner Breite unter die
+     Textspalte - dort ist im Motiv nur Hintergrund. Nur diese linke Kante
+     laeuft weich in die Flaechenfarbe aus, ueber Hintergrund, nicht ueber
+     Produkte. Die Hoehe des Banners ergibt sich aus dem Bild. */
   @media screen and (min-width: 1280px) {
     .b2b-hero--hintergrund.b2b-hero--neben {
-      grid-template-columns: minmax(54rem, 32%) minmax(0, 1fr);
-      align-items: center;
-      min-height: clamp(52rem, 36vw, 76rem);
+      grid-template-columns: clamp(48rem, 31vw, 62rem) minmax(0, 1fr);
+      align-items: stretch;
+      min-height: 0;
     }
     .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__medien {
       position: relative;
       inset: auto;
+      z-index: 0;
       grid-column: 2;
       grid-row: 1;
       align-self: stretch;
-      aspect-ratio: auto;
-      display: flex;
-      align-items: center;
-      padding: 4rem 4vw 4rem 2vw;
+      width: calc(100% / 0.9);
+      margin-left: calc(-100% / 9);
+      aspect-ratio: {{ section.settings.bild_breite | default: 1983 }} / {{ section.settings.bild_hoehe | default: 793 }};
+      padding: 0;
       background: transparent;
     }
     .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__bild {
-      position: relative;
-      inset: auto;
-      width: 100%;
-      aspect-ratio: {{ section.settings.bild_breite | default: 1983 }} / {{ section.settings.bild_hoehe | default: 793 }};
-      border-radius: 2.4rem;
+      position: absolute;
+      inset: 0;
     }
     .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__medien img {
       inset: 0;
       width: 100%;
       height: 100%;
       max-width: none;
-      border-radius: 2.4rem;
       object-fit: cover;
-      -webkit-mask-image: none;
-      mask-image: none;
+      object-position: 70% 50%;
+      -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 9%);
+      mask-image: linear-gradient(90deg, transparent 0, #000 9%);
     }
     .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__inhalt {
+      position: relative;
+      z-index: 1;
       grid-column: 1;
       grid-row: 1;
+      align-self: center;
       width: auto;
-      padding: 4.8rem 2.4rem 4.8rem 4vw;
+      padding: 3.2rem 1.6rem 3.2rem max(3vw, 3.2rem);
     }
+    /* Beide Knoepfe nebeneinander, auch bei der schmalsten Textspalte. */
+    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__knoepfe { gap: 1.2rem; flex-wrap: nowrap; }
     .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__titel { font-size: clamp(4.4rem, 3.4vw, 7.2rem); }
-    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__knoepfe .button { min-width: 0; flex: 0 0 auto; padding-inline: 2.8rem; }
+    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__knoepfe .button { min-width: 0; flex: 0 0 auto; padding-inline: 2.4rem; }
   }
 
   /* Produktpunkte (Bloecke "Produktpunkt"): unsichtbare Flaeche ueber dem
-     Produkt. Beim Ueberfahren erscheinen ein dicker Punkt und der Name, ein
-     Klick fuehrt zum Produkt. Ueberfaehrt man das Bild, deuten alle Punkte
-     sich leise an. Auf Touch-Geraeten stehen die Punkte immer da. */
+     Produkt. Nur beim Ueberfahren erscheinen ein dicker Punkt und der Name,
+     ein Klick fuehrt zum Produkt. Auf Touch-Geraeten bleibt alles unsichtbar,
+     Tippen auf das Produkt fuehrt direkt hin. */
   .b2b-hero__punkt {
     position: absolute;
     z-index: 2;
@@ -326,7 +341,6 @@
   }
   .b2b-hero__punkt--rechts .b2b-hero__punkt-name { left: auto; right: calc(50% - 2rem); transform: translate(0, 0.4rem); }
   .b2b-hero__punkt--links .b2b-hero__punkt-name { left: calc(50% - 2rem); transform: translate(0, 0.4rem); }
-  .b2b-hero__bild:hover .b2b-hero__punkt-dot { opacity: 0.6; transform: scale(0.7); }
   .b2b-hero__punkt:hover .b2b-hero__punkt-dot,
   .b2b-hero__punkt:focus-visible .b2b-hero__punkt-dot { opacity: 1; transform: scale(1); }
   .b2b-hero__punkt:hover .b2b-hero__punkt-name,
@@ -336,12 +350,6 @@
   .b2b-hero__punkt--links:hover .b2b-hero__punkt-name,
   .b2b-hero__punkt--links:focus-visible .b2b-hero__punkt-name { transform: translate(0, 0); }
   .b2b-hero__punkt:focus-visible { outline: none; }
-  @media (hover: none) {
-    .b2b-hero__punkt-dot { opacity: 0.9; transform: scale(0.65); }
-  }
-  @media (hover: none) and (max-width: 749px) {
-    .b2b-hero__punkt-dot { transform: scale(0.42); }
-  }
   @media (prefers-reduced-motion: reduce) {
     .b2b-hero__punkt-dot, .b2b-hero__punkt-name { transition: none; }
   }

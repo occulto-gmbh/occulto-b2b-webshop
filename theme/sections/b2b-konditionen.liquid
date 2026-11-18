@@ -107,7 +107,8 @@
   .b2b-kond__inner {
     max-width: 1240px;
     margin: 0 auto;
-    padding: 56px var(--container-gutter, 20px);
+    /* 18.11.: mehr Luft nach oben und unten, wirkte gedraengt. */
+    padding: 88px var(--container-gutter, 20px) 96px;
   }
 
   .b2b-kond__label {
@@ -236,7 +237,7 @@
 
   @media screen and (max-width: 599px) {
     .b2b-kond__inner {
-      padding-block: 40px;
+      padding-block: 56px 64px;
     }
     .b2b-kond__wert {
       font-size: 22px;
