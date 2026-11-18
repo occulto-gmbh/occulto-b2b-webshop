@@ -29,9 +29,20 @@
     assign hat_video = true
   endif
 
+  comment
+    "nebeneinander" (18.11.): fuer Motive ohne freie Flaeche - Text links in
+    einer Spalte in der Flaechenfarbe, rechts das ganze Bild, nichts
+    beschnitten. Nutzt Schrift und Knoepfe von "hintergrund" mit.
+  endcomment
   assign hintergrund = false
-  if hat_video == false and section.settings.aufteilung == 'hintergrund'
-    assign hintergrund = true
+  assign neben = false
+  if hat_video == false
+    if section.settings.aufteilung == 'hintergrund' or section.settings.aufteilung == 'nebeneinander'
+      assign hintergrund = true
+    endif
+    if section.settings.aufteilung == 'nebeneinander'
+      assign neben = true
+    endif
   endif
 
   assign bild_datei = section.settings.bild_datei | strip
@@ -210,9 +221,58 @@
     .b2b-hero--hintergrund .b2b-hero__knoepfe { margin-top: 3.2rem; gap: 1.6rem; }
     .b2b-hero--hintergrund .b2b-hero__knoepfe .button { min-width: 0; flex: 0 0 auto; }
   }
+
+  /* Nebeneinander: Bild nie beschnitten. Schmal: ganzes Bild oben im
+     Seitenverhaeltnis der Datei. Ab 1280 px: Textspalte links, Bild rechts in
+     voller Breite der Spalte, senkrecht mittig; alle offenen Kanten laufen
+     weich in die Flaechenfarbe aus (rechts endet es am Fensterrand). */
+  .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__medien { aspect-ratio: {{ section.settings.bild_breite | default: 1983 }} / {{ section.settings.bild_hoehe | default: 793 }}; }
+  .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__medien img { object-fit: cover; object-position: 50% 50%; }
+  @media screen and (min-width: 1280px) {
+    .b2b-hero--hintergrund.b2b-hero--neben {
+      grid-template-columns: minmax(54rem, 40%) minmax(0, 1fr);
+      align-items: center;
+      min-height: clamp(44rem, 30vw, 60rem);
+    }
+    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__medien {
+      position: relative;
+      inset: auto;
+      grid-column: 2;
+      grid-row: 1;
+      align-self: stretch;
+      aspect-ratio: auto;
+      display: flex;
+      align-items: center;
+      background: transparent;
+    }
+    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__medien img {
+      position: relative;
+      inset: auto;
+      width: 100%;
+      height: auto;
+      max-width: none;
+      object-fit: fill;
+      -webkit-mask-image:
+        linear-gradient(90deg, transparent 0, #000 12%),
+        linear-gradient(180deg, transparent 0, #000 10%, #000 90%, transparent 100%);
+      -webkit-mask-composite: source-in;
+      mask-image:
+        linear-gradient(90deg, transparent 0, #000 12%),
+        linear-gradient(180deg, transparent 0, #000 10%, #000 90%, transparent 100%);
+      mask-composite: intersect;
+    }
+    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__inhalt {
+      grid-column: 1;
+      grid-row: 1;
+      width: auto;
+      padding: 4.8rem 2.4rem 4.8rem 4vw;
+    }
+    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__titel { font-size: clamp(4.4rem, 3.6vw, 7.2rem); }
+    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__knoepfe .button { min-width: 0; flex: 0 0 auto; padding-inline: 2.8rem; }
+  }
 {%- endstyle -%}
 
-<section class="b2b-hero{% if hintergrund %} b2b-hero--hintergrund{% elsif hat_video == false %} b2b-hero--bild{% endif %} color-{{ section.settings.color_scheme }}">
+<section class="b2b-hero{% if hintergrund %} b2b-hero--hintergrund{% if neben %} b2b-hero--neben{% endif %}{% elsif hat_video == false %} b2b-hero--bild{% endif %} color-{{ section.settings.color_scheme }}">
   <div class="b2b-hero__medien" aria-hidden="true">
     {%- if section.settings.video != blank -%}
       {{
@@ -328,7 +388,8 @@
       "label": "Aufteilung ohne Video",
       "options": [
         { "value": "geteilt", "label": "Text links, Bild rechts" },
-        { "value": "hintergrund", "label": "Bild als Hintergrund, Text links darauf" }
+        { "value": "hintergrund", "label": "Bild als Hintergrund, Text links darauf" },
+        { "value": "nebeneinander", "label": "Text links, ganzes Bild rechts" }
       ],
       "default": "geteilt"
     },
