@@ -149,34 +149,33 @@
     }
   }
 
-  /* Bild als Hintergrund: Handy Bild oben (Ausschnitt mit den Produkten),
-     ab Tablet ganzer Hero, Text links auf der freien Flaeche. */
+  /* Bild als Hintergrund. Unter 1200 px: Bild oben (rechter Ausschnitt mit
+     allen Produkten), Text darunter. Ab 1200 px: Text links auf der freien
+     Flaeche. Das Bild steht dann ganz (contain) unten rechts und ist so hoch
+     wie der Hero; was links fehlt, fuellt die Flaechenfarbe - so bleibt die
+     freie Flaeche links auch auf breiten Bildschirmen frei und die Produkte
+     rutschen nicht unter den Text. Die freie Flaeche im Motiv reicht unten
+     nur bis gut ein Drittel der Breite (Sockenspitze). */
   .b2b-hero--hintergrund { background: {{ section.settings.flaeche }}; }
-  .b2b-hero--hintergrund .b2b-hero__medien { background: {{ section.settings.flaeche }}; aspect-ratio: 5 / 4; }
-  .b2b-hero--hintergrund .b2b-hero__medien img { object-position: 86% 60%; }
-  @media screen and (min-width: 750px) {
-    .b2b-hero--hintergrund {
-      min-height: clamp(44rem, 40vw, 64rem);
-    }
-    .b2b-hero--hintergrund .b2b-hero__medien {
-      position: absolute;
-      inset: 0;
-      aspect-ratio: auto;
-    }
-    .b2b-hero--hintergrund .b2b-hero__medien img { object-position: 100% 50%; }
-    /* Nur ein weicher Uebergang an der linken Kante, falls das Motiv bei
-       schmalen Fenstern unter den Text rutscht. */
-    .b2b-hero--hintergrund .b2b-hero__medien::after {
-      background: linear-gradient(90deg, {{ section.settings.flaeche }} 0%, {{ section.settings.flaeche | color_modify: 'alpha', 0.7 }} 30%, {{ section.settings.flaeche | color_modify: 'alpha', 0 }} 50%);
-    }
-    /* Die freie Flaeche im Bild ist nur gut ein Drittel breit: Titel kleiner,
-       Knoepfe ohne Mindestbreite, damit beide nebeneinander davor passen. */
+  .b2b-hero--hintergrund .b2b-hero__medien { background: {{ section.settings.flaeche }}; aspect-ratio: 16 / 10; }
+  .b2b-hero--hintergrund .b2b-hero__medien img { object-position: 100% 60%; }
+  @media screen and (min-width: 750px) and (max-width: 1199px) {
+    .b2b-hero--hintergrund { min-height: 0; }
+    .b2b-hero--hintergrund .b2b-hero__medien { position: relative; inset: auto; aspect-ratio: 16 / 10; }
+    .b2b-hero--hintergrund .b2b-hero__medien::after { content: none; }
+    .b2b-hero--hintergrund .b2b-hero__inhalt { width: auto; padding: 4rem 5vw 5.6rem; }
+  }
+  @media screen and (min-width: 1200px) {
+    .b2b-hero--hintergrund { min-height: clamp(40rem, 34vw, 60rem); }
+    .b2b-hero--hintergrund .b2b-hero__medien { aspect-ratio: auto; }
+    .b2b-hero--hintergrund .b2b-hero__medien img { object-fit: contain; object-position: 100% 100%; }
+    .b2b-hero--hintergrund .b2b-hero__medien::after { content: none; }
     .b2b-hero--hintergrund .b2b-hero__inhalt {
       width: min(46%, 60rem);
-      padding: 5.6rem 2rem 5.6rem 5vw;
+      padding: 4.8rem 2rem 4.8rem 4vw;
     }
-    .b2b-hero--hintergrund .b2b-hero__titel { font-size: clamp(3.6rem, 4vw, 6rem); }
-    .b2b-hero--hintergrund .b2b-hero__knoepfe .button { min-width: 0; flex: 1 1 auto; }
+    .b2b-hero--hintergrund .b2b-hero__titel { font-size: clamp(3.6rem, 3.6vw, 6rem); }
+    .b2b-hero--hintergrund .b2b-hero__knoepfe .button { min-width: 0; flex: 0 0 auto; padding-inline: 2rem; }
   }
 {%- endstyle -%}
 
