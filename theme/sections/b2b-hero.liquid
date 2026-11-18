@@ -186,6 +186,27 @@
   }
   /* Rahmenknopf weiss gefuellt mit kraeftigem Rand, damit er sich vom Beige abhebt. */
   .b2b-hero--hintergrund .b2b-hero__knoepfe .button--secondary { background: #fff; }
+  .b2b-hero--hintergrund .b2b-hero__knoepfe .button {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.18s ease, color 0.18s ease;
+  }
+  /* 18.11.: deutliches Feedback beim Ueberfahren - roter Knopf dunkler,
+     weisser Knopf fuellt sich schwarz, beide heben sich mit Schatten an. */
+  @media (hover: hover) and (pointer: fine) {
+    .b2b-hero--hintergrund .b2b-hero__knoepfe .button:hover { transform: translateY(-4px); }
+    .b2b-hero--hintergrund .b2b-hero__knoepfe .button--primary:hover {
+      background-color: rgb(150, 30, 6);
+      box-shadow: 0 1.4rem 3rem rgba(150, 30, 6, 0.45);
+    }
+    .b2b-hero--hintergrund .b2b-hero__knoepfe .button--secondary:hover {
+      background-color: rgb(46, 46, 45);
+      color: #fff;
+      box-shadow: 0 1.4rem 3rem rgba(0, 0, 0, 0.28);
+    }
+    .b2b-hero--hintergrund .b2b-hero__knoepfe .button:active { transform: translateY(-1px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .b2b-hero--hintergrund .b2b-hero__knoepfe .button { transition: none; transform: none !important; }
+  }
   .b2b-hero--hintergrund .b2b-hero__knoepfe .button--secondary::after { --border-opacity: 1; --border-offset: 1px; }
 
   @media screen and (min-width: 750px) and (max-width: 1279px) {

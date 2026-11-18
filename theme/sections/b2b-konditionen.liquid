@@ -197,7 +197,7 @@
        der Knopf wird 100px hoch - gemessen. */
     white-space: nowrap;
     text-decoration: none;
-    transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.2s ease;
+    transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.2s ease, box-shadow 0.2s ease;
   }
 
   /* Der anstehende Termin ist gefuellt, der andere nur umrandet. */
@@ -219,12 +219,25 @@
     text-align: center;
   }
 
+  /* 18.11.: deutlicheres Feedback. Umrandeter Knopf fuellt sich rot, der
+     gefuellte wird dunkler; beide heben sich mit Schatten an, beim Klicken
+     sinken sie zurueck. */
   @media (hover: hover) and (pointer: fine) {
     .b2b-kond__knopf:hover {
       border-color: rgb(var(--b2b-akzent, 199 42 9));
       background: rgb(var(--b2b-akzent, 199 42 9));
       color: rgb(255 255 255);
-      transform: translateY(-2px);
+      transform: translateY(-4px);
+      box-shadow: 0 14px 30px rgb(199 42 9 / .35);
+    }
+    .b2b-kond__knopf--naechster:hover {
+      border-color: rgb(150 30 6);
+      background: rgb(150 30 6);
+      box-shadow: 0 14px 30px rgb(150 30 6 / .4);
+    }
+    .b2b-kond__knopf:active {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgb(0 0 0 / .18);
     }
   }
 
