@@ -159,23 +159,56 @@
   .b2b-hero--hintergrund { background: {{ section.settings.flaeche }}; }
   .b2b-hero--hintergrund .b2b-hero__medien { background: {{ section.settings.flaeche }}; aspect-ratio: 16 / 10; }
   .b2b-hero--hintergrund .b2b-hero__medien img { object-position: 100% 60%; }
-  @media screen and (min-width: 750px) and (max-width: 1199px) {
+
+  /* Schrift und Knoepfe gross und kraeftig (Vorgabe 18.11.). */
+  .b2b-hero--hintergrund .b2b-hero__gruss { font-size: 1.6rem; }
+  .b2b-hero--hintergrund .b2b-hero__titel { font-size: clamp(4rem, 11vw, 5.6rem); }
+  .b2b-hero--hintergrund .b2b-hero__text { font-size: 1.8rem; line-height: 1.5; color: rgba(var(--color-foreground), 0.85); }
+  .b2b-hero--hintergrund .b2b-hero__knoepfe .button {
+    min-height: 6.4rem;
+    padding-inline: 3.2rem;
+    font-size: 1.8rem;
+    letter-spacing: 0.02em;
+  }
+  .b2b-hero--hintergrund .b2b-hero__knoepfe .button--primary {
+    box-shadow: 0 0.6rem 1.8rem rgba(199, 42, 9, 0.3);
+  }
+  /* Rahmenknopf weiss gefuellt mit kraeftigem Rand, damit er sich vom Beige abhebt. */
+  .b2b-hero--hintergrund .b2b-hero__knoepfe .button--secondary { background: #fff; }
+  .b2b-hero--hintergrund .b2b-hero__knoepfe .button--secondary::after { --border-opacity: 1; --border-offset: 1px; }
+
+  @media screen and (min-width: 750px) and (max-width: 1279px) {
     .b2b-hero--hintergrund { min-height: 0; }
     .b2b-hero--hintergrund .b2b-hero__medien { position: relative; inset: auto; aspect-ratio: 16 / 10; }
     .b2b-hero--hintergrund .b2b-hero__medien::after { content: none; }
-    .b2b-hero--hintergrund .b2b-hero__inhalt { width: auto; padding: 4rem 5vw 5.6rem; }
+    .b2b-hero--hintergrund .b2b-hero__inhalt { width: auto; padding: 4.8rem 5vw 6.4rem; }
+    .b2b-hero--hintergrund .b2b-hero__titel { font-size: 6.4rem; }
+    .b2b-hero--hintergrund .b2b-hero__knoepfe .button { flex: 0 0 auto; min-width: 26rem; }
   }
-  @media screen and (min-width: 1200px) {
-    .b2b-hero--hintergrund { min-height: clamp(40rem, 34vw, 60rem); }
+  /* Ab 1280 px: Bild in voller Hoehe rechts unten, nie beschnitten; seine
+     linke Kante laeuft weich in die Flaechenfarbe aus. */
+  @media screen and (min-width: 1280px) {
+    .b2b-hero--hintergrund { min-height: clamp(44rem, 34vw, 64rem); }
     .b2b-hero--hintergrund .b2b-hero__medien { aspect-ratio: auto; }
-    .b2b-hero--hintergrund .b2b-hero__medien img { object-fit: contain; object-position: 100% 100%; }
+    .b2b-hero--hintergrund .b2b-hero__medien img {
+      inset: 0 0 0 auto;
+      width: auto;
+      max-width: 100%;
+      object-fit: contain;
+      object-position: 100% 100%;
+      -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 14%);
+      mask-image: linear-gradient(90deg, transparent 0, #000 14%);
+    }
     .b2b-hero--hintergrund .b2b-hero__medien::after { content: none; }
     .b2b-hero--hintergrund .b2b-hero__inhalt {
-      width: min(46%, 60rem);
+      width: min(52%, 80rem);
       padding: 4.8rem 2rem 4.8rem 4vw;
     }
-    .b2b-hero--hintergrund .b2b-hero__titel { font-size: clamp(3.6rem, 3.6vw, 6rem); }
-    .b2b-hero--hintergrund .b2b-hero__knoepfe .button { min-width: 0; flex: 0 0 auto; padding-inline: 2rem; }
+    .b2b-hero--hintergrund .b2b-hero__gruss { font-size: 1.8rem; }
+    .b2b-hero--hintergrund .b2b-hero__titel { font-size: clamp(5.2rem, 4.6vw, 9rem); }
+    .b2b-hero--hintergrund .b2b-hero__text { font-size: clamp(1.8rem, 1.3vw, 2.2rem); max-width: 56rem; }
+    .b2b-hero--hintergrund .b2b-hero__knoepfe { margin-top: 3.2rem; gap: 1.6rem; }
+    .b2b-hero--hintergrund .b2b-hero__knoepfe .button { min-width: 0; flex: 0 0 auto; }
   }
 {%- endstyle -%}
 
