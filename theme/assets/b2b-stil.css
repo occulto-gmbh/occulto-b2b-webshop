@@ -1042,6 +1042,17 @@ main .container {
   font-size: 13px;
 }
 
+/* 18.11.: Klarstellung unter dem Zaehler - Mindestmenge zaehlt ueber den
+   ganzen Warenkorb, nicht je Artikel. Durch eine feine Linie abgesetzt. */
+.b2b-gb__hinweis {
+  margin: 10px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid rgb(var(--b2b-tinte, 46 46 45) / 0.1);
+  color: rgb(var(--b2b-tinte, 46 46 45) / 0.85);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
 .b2b-gb__ziel.ist-erreicht .b2b-gb__ziel-text {
   color: rgb(var(--b2b-tinte, 46 46 45));
 }
