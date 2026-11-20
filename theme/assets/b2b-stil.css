@@ -34,6 +34,47 @@
   --b2b-takt: 0.18s;
 }
 
+.b2b-freigabe-hinweis {
+  padding-block: 16px;
+  border-left: 4px solid rgb(var(--b2b-akzent));
+  background: #fff;
+}
+.b2b-freigabe-hinweis a { display: inline-block; margin-left: 12px; color: inherit; text-decoration: underline; }
+
+b2b-katalog { display: block; }
+.b2b-katalog-suche { margin-bottom: 24px; }
+.b2b-katalog-suche label { display: block; font-weight: 700; }
+.b2b-katalog-suche input {
+  width: 100%; min-height: 44px; padding: 10px 14px;
+  border: 1px solid #d0d0d0; border-radius: 4px; background: #fff; color: inherit;
+  font: inherit;
+}
+#product-grid > [hidden] { display: none !important; }
+
+/* 18.11.: Katalogkarten in einer Reihe gleich hoch, Knoepfe auf einer Linie.
+   Dawn streckt das Listenelement, die Karte darin aber nicht; der Knopf hing
+   direkt unter dem ein- bis dreizeiligen Titel. Jetzt fuellt die Karte die
+   Zelle, und alles unter dem Titel sitzt unten. Bilder einheitlich 3:4 -
+   "adapt" nahm sonst das Format jedes Fotos (HoHoHo war niedriger). */
+b2b-katalog #product-grid > .grid__item { display: flex; flex-direction: column; }
+b2b-katalog #product-grid > .grid__item > product-component { display: flex; flex: 1 1 auto; flex-direction: column; }
+b2b-katalog #product-grid .card-wrapper { flex: 1 1 auto; }
+b2b-katalog #product-grid .card-wrapper > .card { height: 100%; }
+b2b-katalog #product-grid .card,
+b2b-katalog #product-grid .card__inner { --ratio-percent: 133.333% !important; }
+b2b-katalog #product-grid .card > .card__content { display: flex; flex: 1 1 auto; flex-direction: column; }
+b2b-katalog #product-grid .card > .card__content > .card__information { display: flex; flex: 1 1 auto; flex-direction: column; }
+b2b-katalog #product-grid .card > .card__content > .card__information > .card__heading { margin-bottom: auto; padding-bottom: 8px; }
+
+.b2b-gb > .button--secondary { margin-top: 12px; }
+.b2b-lageranfrage { margin-top: 12px; }
+.b2b-lageranfrage label { display: block; margin-top: 12px; }
+.b2b-lageranfrage input[type="email"], .b2b-lageranfrage select {
+  width: 100%; min-height: 44px; padding: 10px; font: inherit;
+  background: #fff; color: inherit; border: 1px solid #d0d0d0;
+}
+.b2b-lageranfrage button { margin-top: 12px; }
+
 /* ====================================================================
    KNOEPFE
 
@@ -946,7 +987,7 @@ main .container {
   );
 }
 
-/* Die Marke bei 300 Packs. */
+/* Die Marken bei Mindestmenge (100) und versandkostenfrei (250). */
 .b2b-gb__marke {
   position: absolute;
   top: -3px;
@@ -958,30 +999,58 @@ main .container {
 
 .b2b-gb__skala {
   position: relative;
-  height: 18px;
+  height: 32px;
   margin: 4px 0 0;
   color: rgb(var(--b2b-tinte, 46 46 45) / 0.7);
   font-size: 12px;
+  line-height: 1.3;
 }
 
-/* Beide Beschriftungen enden an ihrer Marke - mittig unter 300 stiessen
-   sie auf dem Handy an die 500er. */
+/* Drei Beschriftungen (17.11.): Zahl oben, Wort darunter, mittig unter
+   ihrer Marke. Einzeilig stiessen 100 und 250 auf dem Handy aneinander.
+   Die letzte (500) endet am Balkenende. */
 .b2b-gb__skala span {
   position: absolute;
   top: 0;
-  padding-right: 4px;
-  transform: translateX(-100%);
+  transform: translateX(-50%);
+  text-align: center;
   white-space: nowrap;
 }
 
+.b2b-gb__skala b {
+  display: block;
+  color: rgb(var(--b2b-tinte, 46 46 45));
+  font-weight: 700;
+}
+
 .b2b-gb__skala span:last-child {
-  padding-right: 0;
+  transform: translateX(-100%);
+  text-align: right;
+}
+
+/* Die erste (100) waechst nach links: ihre Zahl bleibt unter der Marke,
+   das Wort ragt in den freien Platz davor. Mittig stiess sie bei 375px
+   an „versandkostenfrei“. 12px = halbe Breite der Zahl. */
+.b2b-gb__skala span:first-child:not(:last-child) {
+  transform: translateX(calc(-100% + 12px));
+  text-align: right;
 }
 
 .b2b-gb__ziel-stand {
   margin: 4px 0 0;
   color: rgb(var(--b2b-tinte, 46 46 45) / 0.7);
   font-size: 13px;
+}
+
+/* 18.11.: Klarstellung unter dem Zaehler - Mindestmenge zaehlt ueber den
+   ganzen Warenkorb, nicht je Artikel. Durch eine feine Linie abgesetzt. */
+.b2b-gb__hinweis {
+  margin: 10px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid rgb(var(--b2b-tinte, 46 46 45) / 0.1);
+  color: rgb(var(--b2b-tinte, 46 46 45) / 0.85);
+  font-size: 13px;
+  line-height: 1.45;
 }
 
 .b2b-gb__ziel.ist-erreicht .b2b-gb__ziel-text {
@@ -1008,4 +1077,16 @@ main .container {
 
 .b2b-art__ziel .b2b-gb__ziel-text {
   font-size: 18px;
+}
+
+/* Abzeichen fuer Abverkaufs-Artikel auf der Produktkarte (17.11.,
+   snippets/b2b-abverkauf-hinweis). Rot deckend, wie die Marke es erlaubt. */
+.badge.b2b-abzeichen-abverkauf {
+  border-color: rgb(var(--b2b-akzent, 199 42 9));
+  background: rgb(var(--b2b-akzent, 199 42 9));
+  color: rgb(255 255 255);
+  font-weight: 700;
+}
+.card__badge .b2b-abzeichen-abverkauf + .badge {
+  margin-left: 0.4rem;
 }

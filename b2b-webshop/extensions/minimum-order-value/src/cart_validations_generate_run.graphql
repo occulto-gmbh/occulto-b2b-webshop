@@ -1,9 +1,19 @@
 query CartValidationsGenerateRunInput {
   cart {
-    cost {
-      subtotalAmount {
-        amount
-        currencyCode
+    buyerIdentity {
+      customer {
+        isDealer: hasAnyTag(tags: ["dealer-approved"])
+      }
+    }
+    lines {
+      quantity
+      merchandise {
+        __typename
+        ... on ProductVariant {
+          product {
+            isSingleItem: hasAnyTag(tags: ["einzelstueck", "filialversand-zuschlag"])
+          }
+        }
       }
     }
   }

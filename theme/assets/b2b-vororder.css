@@ -85,25 +85,12 @@
   opacity: 0.8;
 }
 
-.b2b-vo-leiste__label {
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.b2b-vo-leiste__wahl {
-  min-height: 44px;
-  padding: 0 40px 0 14px;
-  border: 1px solid rgb(var(--b2b-linie, 226 226 225));
-  border-radius: 6px;
-  background: rgb(255 255 255);
-  font-size: 15px;
-}
 
 /* -------------------------------------------------------------- Produkte */
 
 .b2b-vo-liste {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
   gap: 16px;
 }
 
@@ -557,3 +544,8 @@ body.b2b-hat-vororder cart-items.is-empty .cart__warnings {
     padding-inline: 14px;
   }
 }
+
+.b2b-vo-produkt__kopf > a { flex: 0 0 72px; }
+.b2b-vo-produkt__kopf > div { min-width: 0; }
+.b2b-vo-produkt__titel a { color: inherit; text-decoration: none; }
+.b2b-vo-produkt__titel a:hover { text-decoration: underline; }

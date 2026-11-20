@@ -12,7 +12,8 @@
               "title": "39-42",
               "availableQuantityMetafield": null,
               "product": {
-                "title": "Occulto Tennissocke SUMMER"
+                "title": "Occulto Tennissocke SUMMER",
+                "isSingleItem": false
               }
             }
           }

@@ -14,7 +14,7 @@
  * Mengenregeln (Werte aus den Abschnitts-Einstellungen):
  *   je Größe      0 oder ab 5 Packs, in 5er-Schritten
  *   je Artikel    alle Größen zusammen mindestens 100 Packs
- *   je Vororder   mindestens 1.500 € nach Rabatt
+ *   je Vororder   kein Mindestbestellwert
  * Die Größe wird beim Tippen gerundet, so steht nie eine ungültige Größe im
  * Korb. Artikel- und Gesamtgrenze dagegen kann man erst erreichen, wenn alles
  * gewählt ist – sie werden angezeigt und sperren erst das Absenden.
@@ -79,7 +79,7 @@
 
   /* ------------------------------------------------------------- Rechnen */
 
-  /* Ganze Beträge ohne ",00" (1.500 €), sonst mit Cent (22,50 €). */
+  /* Ganze Beträge ohne ",00" (100 €), sonst mit Cent (22,50 €). */
   function euro(cent) {
     var ganz = cent % 100 === 0;
     return (cent / 100).toLocaleString('de-DE', {
@@ -94,13 +94,17 @@
     return {
       artikel: parseInt(wurzel.dataset.mindestmenge, 10) || 100,
       groesse: parseInt(wurzel.dataset.groesse, 10) || 5,
-      wert: (parseInt(wurzel.dataset.mindestwert, 10) || 1500) * 100,
+      wert: Math.max(0, Number(wurzel.dataset.mindestwert) || 0) * 100,
       satz: parseInt(wurzel.dataset.satz, 10) || 10
     };
   }
 
   /* Ältere Einträge kennen ihren Artikel noch nicht: dann gilt der Teil der
      Bezeichnung vor " / ", also der Produktname. */
+  function bezeichnung(e) {
+    return String(e.bezeichnung || '').replace(/\s*\/\s*Default Title/g, '');
+  }
+
   function artikelVon(e) {
     return e.artikel || String(e.bezeichnung || '').split(' / ')[0];
   }
@@ -257,7 +261,7 @@
 
       if (a.posten.length === 0) {
         stand.innerHTML = 'Noch nichts ausgewählt. Je Artikel mindestens <strong>' + R.artikel +
-          ' Packs</strong>, insgesamt ab <strong>' + euro(R.wert) + '</strong>.';
+          ' Packs</strong>, Größen frei kombinierbar.';
         weiter.setAttribute('aria-disabled', 'true');
         weiter.classList.add('ist-gesperrt');
         return;
@@ -324,45 +328,28 @@
 
     var bloecke = wurzel.querySelectorAll('.b2b-vo-produkt');
     for (var b = 0; b < bloecke.length; b++) karte(bloecke[b]);
-    sortierung(wurzel);
-    suche(wurzel);
+    var suchen = suche(wurzel);
+    var produkt = new URLSearchParams(location.search).get('produkt');
+    var suchfeld = document.querySelector('[data-vo-suche]');
+    function produktZeigen() {
+      if (!produkt) return;
+      var ziel = Array.from(wurzel.querySelectorAll('[data-produkt]')).find(function (b) {
+        return b.dataset.produkt === produkt;
+      });
+      if (!ziel) return;
+      if (suchfeld) suchfeld.value = ziel.dataset.name;
+      suchen();
+      ziel.scrollIntoView({ block: 'center' });
+      produkt = null;
+    }
+    produktZeigen();
     zeigen();
 
-    alleSeitenLaden(wurzel, karte).then(zeigen, zeigen);
-  }
-
-  /* Sortiert alle Karten, die beim Wechsel der Auswahl da sind - auch die
-     nachgeladenen. Der Rang hält die Katalogreihenfolge fest. */
-  function sortierung(wurzel) {
-    var wahl = document.querySelector('.b2b-vo-leiste__wahl');
-    var liste = wurzel.querySelector('.b2b-vo-liste');
-    if (!wahl || !liste) return;
-
-    wahl.addEventListener('change', function () {
-      var art = wahl.value;
-      var bloecke = Array.prototype.slice.call(liste.querySelectorAll('.b2b-vo-produkt'));
-      bloecke.forEach(function (b, i) {
-        if (b.dataset.rang === undefined) b.dataset.rang = i;
-      });
-      var t = function (b, f) { return (b.dataset[f] || '').toLowerCase(); };
-      var n = function (b, f) { return parseInt(b.dataset[f], 10) || 0; };
-
-      bloecke.sort(function (a, b) {
-        switch (art) {
-          case 'name': return t(a, 'name').localeCompare(t(b, 'name'), 'de');
-          case 'preis-auf': return n(a, 'preis') - n(b, 'preis');
-          case 'preis-ab': return n(b, 'preis') - n(a, 'preis');
-          case 'art':
-            return t(a, 'art').localeCompare(t(b, 'art'), 'de') ||
-              t(a, 'name').localeCompare(t(b, 'name'), 'de');
-          default: return n(a, 'rang') - n(b, 'rang');
-        }
-      });
-
-      var neu = document.createDocumentFragment();
-      bloecke.forEach(function (b) { neu.appendChild(b); });
-      liste.appendChild(neu);
-    });
+    alleSeitenLaden(wurzel, karte).then(function () {
+      suchen();
+      produktZeigen();
+      zeigen();
+    }, zeigen);
   }
 
   /* Sucht in Name, Produktart und Artikelnummern aller Karten, auch der
@@ -370,9 +357,9 @@
   function suche(wurzel) {
     var feld = document.querySelector('[data-vo-suche]');
     var keine = document.querySelector('[data-vo-keine]');
-    if (!feld) return;
+    if (!feld) return function () {};
 
-    feld.addEventListener('input', function () {
+    function filtern() {
       var woerter = feld.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
       var bloecke = wurzel.querySelectorAll('.b2b-vo-produkt');
       var treffer = 0;
@@ -383,7 +370,9 @@
         if (passt) treffer++;
       }
       if (keine) keine.hidden = treffer > 0;
-    });
+    }
+    feld.addEventListener('input', filtern);
+    return filtern;
   }
 
   /* =====================================================================
@@ -442,7 +431,7 @@
 
       /* Namen per textContent, nicht per innerHTML: sie kommen aus dem
          localStorage und sind damit Eingabe, kein vertrauenswürdiges Markup. */
-      li.querySelector('.b2b-vk-zeile__name').textContent = e.bezeichnung;
+      li.querySelector('.b2b-vk-zeile__name').textContent = bezeichnung(e);
       li.querySelector('.b2b-vk-zeile__sku').textContent = e.sku ? 'Art.-Nr. ' + e.sku : '';
       if (e.bild) {
         var bild = document.createElement('img');
@@ -516,7 +505,10 @@
         '<div><dt>' + a.anzahlArtikel + ' Artikel' + ' · ' + a.packs.toLocaleString('de-DE') + ' Packs</dt><dd>' + euro(a.wert) + '</dd></div>' +
         '<div><dt>Vororder-Rabatt ' + R.satz + ' %</dt><dd>−' + euro(a.abzug) + '</dd></div>' +
         '<div><dt>Versand</dt><dd>kostenlos</dd></div>' +
-        '<div class="b2b-vk-summen__gesamt"><dt>Summe netto</dt><dd>' + euro(a.summe) + '</dd></div>';
+        '<div class="b2b-vk-summen__gesamt"><dt>Summe netto</dt><dd>' + euro(a.summe) + '</dd></div>' +
+        (wurzel.dataset.land === 'AT'
+          ? '<div><dt>MwSt.</dt><dd>steuerfrei bei gültiger UID-Nummer (Reverse-Charge)</dd></div>'
+          : '<div><dt>Summe brutto (inkl. 19 % MwSt.)</dt><dd>' + euro(Math.round(a.summe * 1.19)) + '</dd></div>');
 
       offenZeigen(a);
       if (knopf) {
@@ -538,7 +530,7 @@
 
         positionenFeld.value = a.posten.map(function (p) {
           var e = p.e;
-          return (e.sku ? e.sku + '  ' : '') + e.bezeichnung + '  ' + e.menge + ' Packs  à ' +
+          return (e.sku ? e.sku + '  ' : '') + bezeichnung(e) + '  ' + e.menge + ' Packs  à ' +
             euro(e.preis) + '  = ' + euro(e.menge * e.preis);
         }).join('\n');
 

@@ -1,0 +1,36 @@
+{%- comment -%}
+  Kennzeichnet Abverkaufs-Artikel fuer angemeldete Haendler (17.11.).
+  Sammlung und Satz aus snippets/b2b-abverkauf.
+
+    produkt: das Produkt
+    art: 'abzeichen' -> rotes Abzeichen auf der Produktkarte
+         'hinweis'   -> Zeile auf der Produktseite
+
+  Gibt nichts aus, wenn das Produkt nicht in der Sammlung ist oder der
+  Kunde kein freigeschalteter Haendler ist.
+{%- endcomment -%}
+{%- if customer and customer.tags contains 'dealer-approved' -%}
+  {%- liquid
+    capture abv_handle
+      render 'b2b-abverkauf', teil: 'sammlung'
+    endcapture
+    assign abv_handle = abv_handle | strip
+    assign sammlungen = produkt.collections | map: 'handle'
+  -%}
+  {%- if sammlungen contains abv_handle -%}
+    {%- capture abv_prozent -%}{%- render 'b2b-abverkauf', teil: 'prozent' -%}{%- endcapture -%}
+    {%- assign abv_prozent = abv_prozent | strip -%}
+    {%- if art == 'hinweis' -%}
+      <p class="b2b-pdp-abverkauf">
+        <span class="b2b-pdp-abverkauf__abzeichen">Sale −{{ abv_prozent }}&nbsp;%</span>
+        Der Rabatt wird im Warenkorb abgezogen.
+      </p>
+      <style>
+        .b2b-pdp-abverkauf { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; margin: 1rem 0; font-size: 1.4rem; }
+        .b2b-pdp-abverkauf__abzeichen { padding: 0.3rem 1rem; border-radius: 999px; background: rgb(199 42 9); color: #fff; font-weight: 700; }
+      </style>
+    {%- else -%}
+      <span class="badge badge--bottom-left b2b-abzeichen-abverkauf">Sale −{{ abv_prozent }}&nbsp;%</span>
+    {%- endif -%}
+  {%- endif -%}
+{%- endif -%}

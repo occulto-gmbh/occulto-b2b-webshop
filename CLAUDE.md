@@ -25,7 +25,10 @@ für diesen Shop vom Nutzer ausdrücklich erlaubt. Nie `shopify theme publish`.
    Das gilt für jeden größeren Auftrag – vom Nutzer am 30.09.2026 so verlangt.
 5. **Messen, nicht schätzen.** Im Browser per JS bei 1440 und 375 px: Maße, Querüberlauf, berechnete
    Stile, echte Serverantworten. Screenshot nur als Beleg am Ende.
-6. **Commit** mit dem Warum im Text. Kein Push – keine Schreibrechte auf GitHub (Stand 30.09.2026).
+6. **Commit** mit dem Warum im Text, auf einem Branch `feature/…` oder `bugfix/…` – nie direkt auf `main`.
+   **Danach pushen** (Vorgabe Nico 18.11.2026: alles immer auf GitHub). Für den Branch gibt es einen offenen PR
+   gegen `main`; gemergt wird nach Freigabe. Werktags um 17:45 gleicht die geplante Aufgabe
+   `b2b-shop-github-abgleich` Repo, Live-Theme und GitHub ab (Theme-Editor-Änderungen werden übernommen).
 
 ## Vorschau
 
@@ -60,24 +63,44 @@ Nie im Live-Theme aufheben.
 |              | Nachbestellung                       | Vororder                                            |
 |--------------|--------------------------------------|-----------------------------------------------------|
 | Korb         | Shopify-Warenkorb                    | eigener Korb im Browser (`localStorage` `b2b-vororder`) |
-| Menge        | 5er-Schritte, Lagerbestand als Grenze | je Größe 0 oder ab 5, in 5er; je Artikel (alle Größen) ab 100; gesamt ab 1.500 € nach Rabatt; **keine** Lagergrenze |
-| Rabatt       | 5 % ab 500 Packs im Korb             | immer 10 %                                          |
-| Versand      | kostenlos ab 300 Packs (Rabatt „Kostenloser Versand“ in der Verwaltung) | immer kostenlos   |
+| Menge        | **mindestens 100 Packs pro Bestellung**; 5er-Schritte, Lagerbestand als Grenze | 100 Packs je Artikel/Design, Größen frei kombiniert; je Größe 0 oder ab 5 in 5er (nur Logik, nie im Text); **kein** Mindestbestellwert; **keine** Lagergrenze |
+| Rabatt       | 5 % ab 500 Packs im Korb             | 10 % auf die gesamte Vororder                       |
+| Versand      | kostenlos ab **250** Packs (Rabatt „Kostenloser Versand“ in der Verwaltung) – Zahl nur in `snippets/b2b-packs.liquid` (`teil: 'versandfrei-ab'`) | immer kostenlos   |
+| Länder       | nur Deutschland und Österreich (USt-IdNr. bzw. UID je Land) | |
+
+Stand Besprechung 16.11.2026. Kein Skonto. „Order Deadline“ ist auf der Vororder-Seite gewollt (Feldname der Mail bleibt `Annahmeschluss`).
 | Abschluss    | Shopify-Kasse                        | E-Mail über Kontaktformular, Rechnung von Hand      |
 
-- **Einzelstücke** (Tag `einzelstueck`, z. B. Ausstellungsständer): Menge in 1er-Schritten, zählen nicht zu 300/500 Packs
+- **Einzelstücke** (Tag `einzelstueck`, z. B. Ausstellungsständer): Menge in 1er-Schritten, zählen nicht zu 100/250/500 Packs
   (`snippets/b2b-packs.liquid` zählt die Packs ohne sie), kein −5 %-Hinweis, keine Hangtag-Bilder, nicht in der Vororder.
   Vorgeschlagen über `sections/b2b-vorschlaege.liquid` (Einstellung „Immer vorschlagen“) auf Produktseite und Warenkorb.
-  Die Functions `order-value-discount` und `pack-quantity-rule` kennen die Ausnahme noch nicht – vor dem Ausrollen nachziehen.
+  Die Functions kennen die Ausnahme seit 16.11. (getestet, noch nicht ausgerollt).
 - Stichtage 15.06 und 15.12, Auslieferung drei Monate später. Einzige Quelle: `snippets/b2b-vororder-termin.liquid`.
 - 5 % stehen in `snippets/b2b-preis.liquid` **und** `b2b-webshop/extensions/order-value-discount/src/run.ts` – gleich halten.
 - Vororder-Mengen stehen als Einstellungen in **zwei** Abschnitten (Maske und Warenkorb-Übersicht) und in deren
   Vorlagen (`page.b2b-vororder.json`, `cart.json`) – gleich halten. Texte dazu in `b2b-konditionen.liquid`.
-- **Mindestbestellwert Nachbestellung 300 € netto** – einzige Stelle `snippets/b2b-mindestwert.liquid`. Sperrt Kassen-Knopf im Kopf
+- **Mindestmenge Nachbestellung 100 Packs** (Einzelstücke zählen nicht) – einzige Stelle `snippets/b2b-mindestwert.liquid`. Sperrt Kassen-Knopf im Kopf
   (`b2b-korb-art`) und im Fuß (`main-cart-footer`, nach Änderungen per `b2bKasseNachMindestwert` in `assets/cart.js`); das Popup
-  hat keinen Kassen-Knopf. Nur im Browser: `/checkout` direkt geht durch, bis `extensions/minimum-order-value` (steht noch auf 500!)
-  auf 300 gesetzt und ausgerollt ist. Die Warenkorb-Schublade (`cart-drawer`, derzeit aus) ist nicht gesperrt.
-- Warenkorb-Kopf der Nachbestellung (`b2b-korb-art`) nennt immer nur die nächste offene Stufe: erst Versand (300 Packs), dann −5 % (500 Packs).
+  hat keinen Kassen-Knopf. Nur im Browser: `/checkout` direkt geht durch, bis `extensions/minimum-order-value` (seit 16.11. auf
+  100 Packs umgebaut, getestet) ausgerollt ist. Die Warenkorb-Schublade (`cart-drawer`, derzeit aus) ist nicht gesperrt.
+- **Warenkorb nur für freigeschaltete Händler** (seit 17.11.): Shopify hält den Korb per Browser-Cookie auch nach
+  dem Abmelden. `main-cart-items` zeigt Gästen und nicht freigeschalteten Konten nur den Anmelde-Hinweis,
+  `main-cart-footer` nichts, am Korb-Symbol (`header.liquid`) steht keine Zahl. Der Korb wird nicht geleert.
+  `cart-icon-bubble.liquid` (Neuzeichnen nach Korb-Aktionen) prüft dasselbe.
+  Serverseitig sperrt `extensions/minimum-order-value` die Kasse ohne Tag `dealer-approved` – erst nach dem Ausrollen.
+- Packs zählen ohne Tag `einzelstueck` **und** `filialversand-zuschlag` – im Theme (`b2b-packs`) wie in beiden Functions gleich halten.
+- Warenkorb-Kopf der Nachbestellung (`b2b-korb-art`) nennt immer nur die nächste offene Stufe: erst Versand (250 Packs), dann −5 % (500 Packs).
+  Balken (Korb und Produktseite, `b2b-groessen-bestellen`): Marken 100 Mindestmenge / 250 versandkostenfrei, Ende 500 −5 %;
+  erreichte Stufen voll, nur die Auswahl darüber gestreift.
+- **Sale −10 %** (seit 17.11., bis 18.11. „Abverkauf“; Dateinamen heißen weiter `abverkauf`): Sammlungs-Handle (`sale`)
+  und Prozent nur in `snippets/b2b-abverkauf.liquid`. Wird der Handle in der Verwaltung geändert, muss er dort mitziehen,
+  sonst verschwinden Abschnitt, Popup und Abzeichen still. Sichtbares Wording ist „Sale“. Nur für Händler:
+  Menüpunkt ersetzt „Händler werden“ (in den drei Menü-Snippets, Werte aus `header.liquid`), Abschnitt
+  `b2b-abverkauf-abschnitt` unter dem Hero, Popup `#B2bAbverkaufPopup` in `header.liquid` (einmal je Sitzung, wartet auf
+  das Cookie-Banner), Abzeichen/Hinweis über `b2b-abverkauf-hinweis`. Alles bleibt unsichtbar, solange die Sammlung leer ist.
+  Den Rabatt selbst legt Nico in der Verwaltung an (automatischer Rabatt 10 % auf die Sammlung, kombinierbar) – vorher nicht befüllen.
+- Startseite: Hero `sections/b2b-hero.liquid` (Bild rechts, weiß links, zwei Knöpfe; Video möglich, auf Janas Wunsch aus).
+  Produktseite: Brotkrumen `sections/b2b-pfad.liquid`. Menüpunkt „Vororder“ über Theme-Einstellungen `b2b_vororder_*`.
 - Vororder: `sections/b2b-vororder-maske.liquid` (Auswahl), `sections/b2b-vororder-korb.liquid` (Übersicht auf /cart),
   Logik in `assets/b2b-vororder.js`. Nachbestellung-Kopf: `snippets/b2b-korb-art.liquid`.
 
@@ -93,6 +116,5 @@ Nie im Live-Theme aufheben.
 ## Offen (Stand 30.09.2026)
 
 
-- `main` liegt lokal mehrere Commits vor `origin`, Push erst mit Schreibrechten.
 - Functions gebaut und getestet, **nicht ausgerollt**: `shopify app deploy` wirkt sofort live, nur auf Zuruf.
   Build braucht pnpm (corepack), siehe `b2b-webshop/extensions/HINWEIS-DEPLOY.md`.

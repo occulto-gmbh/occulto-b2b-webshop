@@ -26,6 +26,46 @@
 <script src="{{ 'quantity-popover.js' | asset_url }}" defer="defer"></script>
 
 {%- comment -%}
+  Warenkorb nur fuer freigeschaltete Haendler (Besprechung 17.11.).
+  Shopify haengt den Warenkorb an ein Browser-Cookie; nach dem Abmelden
+  bleibt er deshalb bestehen. Gaeste und nicht freigeschaltete Konten sehen
+  statt Positionen, Preisen und Kassen-Knopf nur den Hinweis zur Anmeldung.
+  Der Korb selbst wird nicht geleert: Meldet sich derselbe Haendler wieder
+  an, ist er wieder da (Kontowechsel regelt snippets/b2b-korb-besitzer).
+  Den Fuss (main-cart-footer) sperrt dieselbe Bedingung.
+{%- endcomment -%}
+{%- liquid
+  assign b2b_korb_sichtbar = false
+  if customer and customer.tags contains 'dealer-approved'
+    assign b2b_korb_sichtbar = true
+  endif
+-%}
+{%- unless b2b_korb_sichtbar -%}
+  {%- style -%}
+    .b2b-korb-gesperrt { max-width: 64rem; margin: 0 auto; text-align: center; }
+    .b2b-korb-gesperrt p { margin: 1.2rem 0 2.4rem; }
+    .b2b-korb-gesperrt__knoepfe { display: flex; flex-wrap: wrap; gap: 1.2rem; justify-content: center; }
+  {%- endstyle -%}
+  <div class="gradient color-{{ section.settings.color_scheme }} section-{{ section.id }}-padding">
+    <div class="page-width b2b-korb-gesperrt">
+      <h1 class="title title--primary">{{ 'sections.cart.title' | t }}</h1>
+      {%- if customer -%}
+        <p>Bestellen kannst du, sobald dein Händlerkonto freigeschaltet ist.</p>
+        <div class="b2b-korb-gesperrt__knoepfe">
+          <a class="button" href="/pages/haendler-werden">Zum Händlerformular</a>
+          <a class="button button--secondary" href="{{ routes.account_logout_url }}">Abmelden</a>
+        </div>
+      {%- else -%}
+        <p>Melde dich mit deinem Händlerkonto an, um deinen Warenkorb zu sehen und zu bestellen.</p>
+        <div class="b2b-korb-gesperrt__knoepfe">
+          <a class="button" href="{{ routes.account_login_url }}">Anmelden</a>
+          <a class="button button--secondary" href="/pages/haendler-werden">Händler werden</a>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+{%- else -%}
+{%- comment -%}
   b2b-korb faerbt den Rahmen um die Positionen in derselben Farbe wie der
   Kopf darueber - so gehoert beides sichtbar zusammen.
 {%- endcomment -%}
@@ -135,26 +175,7 @@
                         -%}
                       </div>
 
-                      {%- if item.original_price != item.final_price -%}
-                        <div class="cart-item__discounted-prices">
-                          <span class="visually-hidden">
-                            {{ 'products.product.price.regular_price' | t }}
-                          </span>
-                          <s class="cart-item__old-price product-option">
-                            {{- item.original_price | money -}}
-                          </s>
-                          <span class="visually-hidden">
-                            {{ 'products.product.price.sale_price' | t }}
-                          </span>
-                          <strong class="cart-item__final-price product-option">
-                            {{ item.final_price | money }}
-                          </strong>
-                        </div>
-                      {%- else -%}
-                        <div class="product-option">
-                          {{ item.original_price | money }}
-                        </div>
-                      {%- endif -%}
+                      {% render 'b2b-preis', preis: item.original_price, produkt: item.product, klasse: 'product-option' %}
 
                       {%- if item.product.has_only_default_variant == false
                         or item.properties.size != 0
@@ -209,28 +230,7 @@
                     <td class="cart-item__totals right medium-hide large-up-hide">
                       {%- render 'loading-spinner' -%}
                       <div class="cart-item__price-wrapper">
-                        {%- if item.original_line_price != item.final_line_price -%}
-                          <dl class="cart-item__discounted-prices">
-                            <dt class="visually-hidden">
-                              {{ 'products.product.price.regular_price' | t }}
-                            </dt>
-                            <dd>
-                              <s class="cart-item__old-price price price--end">
-                                {{ item.original_line_price | money }}
-                              </s>
-                            </dd>
-                            <dt class="visually-hidden">
-                              {{ 'products.product.price.sale_price' | t }}
-                            </dt>
-                            <dd class="price price--end">
-                              {{ item.final_line_price | money }}
-                            </dd>
-                          </dl>
-                        {%- else -%}
-                          <span class="price price--end">
-                            {{ item.original_line_price | money }}
-                          </span>
-                        {%- endif -%}
+                        {% render 'b2b-preis', preis: item.original_line_price, produkt: item.product, korbzeile: item, klasse: 'price--end', ohne_hinweis: true %}
 
                         {%- if item.variant.available and item.unit_price_measurement -%}
                           {% render 'unit-price', price: item.unit_price, measurement: item.unit_price_measurement %}
@@ -458,28 +458,7 @@
                     <td class="cart-item__totals right small-hide">
                       {%- render 'loading-spinner' -%}
                       <div class="cart-item__price-wrapper">
-                        {%- if item.original_line_price != item.final_line_price -%}
-                          <dl class="cart-item__discounted-prices">
-                            <dt class="visually-hidden">
-                              {{ 'products.product.price.regular_price' | t }}
-                            </dt>
-                            <dd>
-                              <s class="cart-item__old-price price price--end">
-                                {{ item.original_line_price | money }}
-                              </s>
-                            </dd>
-                            <dt class="visually-hidden">
-                              {{ 'products.product.price.sale_price' | t }}
-                            </dt>
-                            <dd class="price price--end">
-                              {{ item.final_line_price | money }}
-                            </dd>
-                          </dl>
-                        {%- else -%}
-                          <span class="price price--end">
-                            {{ item.original_line_price | money }}
-                          </span>
-                        {%- endif -%}
+                        {% render 'b2b-preis', preis: item.original_line_price, produkt: item.product, korbzeile: item, klasse: 'price--end', ohne_hinweis: true %}
 
                         {%- if item.variant.available and item.unit_price_measurement -%}
                           {% render 'unit-price', price: item.unit_price, measurement: item.unit_price_measurement %}
@@ -507,6 +486,7 @@
     </form>
   </div>
 </cart-items>
+{%- endunless -%}
 
 {% schema %}
 {

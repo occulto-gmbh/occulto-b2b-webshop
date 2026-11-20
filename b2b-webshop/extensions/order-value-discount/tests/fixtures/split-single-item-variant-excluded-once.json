@@ -1,0 +1,79 @@
+{
+  "payload": {
+    "export": "run",
+    "target": "purchase.order-discount.run",
+    "input": {
+      "cart": {
+        "lines": [
+          {
+            "quantity": 500,
+            "merchandise": {
+              "__typename": "ProductVariant",
+              "id": "gid://shopify/ProductVariant/1",
+              "product": {
+                "isSingleItem": false
+              }
+            },
+            "cost": {
+              "subtotalAmount": {
+                "amount": "1525.00"
+              }
+            }
+          },
+          {
+            "quantity": 1,
+            "merchandise": {
+              "__typename": "ProductVariant",
+              "id": "gid://shopify/ProductVariant/3",
+              "product": {
+                "isSingleItem": true
+              }
+            },
+            "cost": {
+              "subtotalAmount": {
+                "amount": "100.00"
+              }
+            }
+          },
+          {
+            "quantity": 2,
+            "merchandise": {
+              "__typename": "ProductVariant",
+              "id": "gid://shopify/ProductVariant/3",
+              "product": {
+                "isSingleItem": true
+              }
+            },
+            "cost": {
+              "subtotalAmount": {
+                "amount": "200.00"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "output": {
+      "discountApplicationStrategy": "FIRST",
+      "discounts": [
+        {
+          "message": "5% Händlerrabatt",
+          "targets": [
+            {
+              "orderSubtotal": {
+                "excludedVariantIds": [
+                  "gid://shopify/ProductVariant/3"
+                ]
+              }
+            }
+          ],
+          "value": {
+            "fixedAmount": {
+              "amount": "76.25"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

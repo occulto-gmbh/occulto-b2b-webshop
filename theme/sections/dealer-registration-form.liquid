@@ -50,7 +50,6 @@
           <p class="b2b-status__text">Angemeldet als {{ customer.email | escape }}. Händlerpreise, Nachbestellung und Vororder stehen dir offen.</p>
           <p class="b2b-status__knoepfe">
             <a class="button button--primary" href="{{ routes.all_products_collection_url }}">Zum Sortiment</a>
-            <a class="button button--secondary" href="/pages/massenbestellung">Massenbestellung</a>
             <a class="button button--secondary" href="/pages/vororder">Vororder</a>
           </p>
         </div>
@@ -119,7 +118,6 @@
           <span class="b2b-block__nummer" aria-hidden="true">01</span>
           <span class="b2b-block__text">
             <span class="b2b-block__titel">Unternehmen</span>
-            <span class="b2b-block__unter">Firmen- und Rechnungsdaten</span>
           </span>
         </legend>
         <div class="b2b-raster">
@@ -129,8 +127,6 @@
                 <span class="b2b-feld__name">{{ 'templates.dealer_registration.company_name' | t }}</span>
                 <span class="b2b-feld__stern" aria-hidden="true">*</span>
               </label>
-              <button type="button" class="b2b-feld__hilfe" aria-describedby="hilfe-company_name" aria-label="Erklärung einblenden">?</button>
-              <span class="b2b-feld__erklaerung" id="hilfe-company_name" role="tooltip">Der eingetragene Name deiner Firma. Er steht später auf Angebot und Rechnung.</span>
             </div>
             <input class="b2b-feld__eingabe" type="text" id="company_name" name="company_name" required autocomplete="organization">
           </div>
@@ -140,8 +136,6 @@
                 <span class="b2b-feld__name">{{ 'templates.dealer_registration.legal_form' | t }}</span>
                 <span class="b2b-feld__frei">optional</span>
               </label>
-              <button type="button" class="b2b-feld__hilfe" aria-describedby="hilfe-legal_form" aria-label="Erklärung einblenden">?</button>
-              <span class="b2b-feld__erklaerung" id="hilfe-legal_form" role="tooltip">Die Gesellschaftsform deiner Firma. Gehört auf eine vollständige Rechnung.</span>
             </div>
             <select class="b2b-feld__eingabe" id="legal_form" name="legal_form">
               <option value="">Bitte wählen</option>
@@ -164,8 +158,6 @@
                 <span class="b2b-feld__name">{{ 'templates.dealer_registration.street' | t }}</span>
                 <span class="b2b-feld__stern" aria-hidden="true">*</span>
               </label>
-              <button type="button" class="b2b-feld__hilfe" aria-describedby="hilfe-street" aria-label="Erklärung einblenden">?</button>
-              <span class="b2b-feld__erklaerung" id="hilfe-street" role="tooltip">Deine Geschäftsadresse. Wir liefern dorthin, solange du uns keine andere nennst.</span>
             </div>
             {%- comment -%}
               Hausnummer Pflicht: Am 14.10.2026 kam eine Testbestellung ohne
@@ -204,8 +196,6 @@
                 <span class="b2b-feld__name">{{ 'templates.dealer_registration.postal_code' | t }}</span>
                 <span class="b2b-feld__stern" aria-hidden="true">*</span>
               </label>
-              <button type="button" class="b2b-feld__hilfe" aria-describedby="hilfe-postal_code" aria-label="Erklärung einblenden">?</button>
-              <span class="b2b-feld__erklaerung" id="hilfe-postal_code" role="tooltip">Gehört zur Geschäftsadresse und bestimmt Versandweg und Laufzeit.</span>
             </div>
             <input class="b2b-feld__eingabe" type="text" id="postal_code" name="postal_code" required autocomplete="postal-code" inputmode="numeric">
           </div>
@@ -215,8 +205,6 @@
                 <span class="b2b-feld__name">{{ 'templates.dealer_registration.city' | t }}</span>
                 <span class="b2b-feld__stern" aria-hidden="true">*</span>
               </label>
-              <button type="button" class="b2b-feld__hilfe" aria-describedby="hilfe-city" aria-label="Erklärung einblenden">?</button>
-              <span class="b2b-feld__erklaerung" id="hilfe-city" role="tooltip">Gehört zur Geschäftsadresse.</span>
             </div>
             <input class="b2b-feld__eingabe" type="text" id="city" name="city" required autocomplete="address-level2">
           </div>
@@ -226,25 +214,20 @@
                 <span class="b2b-feld__name">{{ 'templates.dealer_registration.country' | t }}</span>
                 <span class="b2b-feld__stern" aria-hidden="true">*</span>
               </label>
-              <button type="button" class="b2b-feld__hilfe" aria-describedby="hilfe-country" aria-label="Erklärung einblenden">?</button>
-              <span class="b2b-feld__erklaerung" id="hilfe-country" role="tooltip">Wir liefern nach Deutschland, Österreich und in die Schweiz. Das Land entscheidet über Versandart und Steuerausweis.</span>
             </div>
             <select class="b2b-feld__eingabe" id="country" name="country" required autocomplete="country">
               <option value="DE">Deutschland</option>
               <option value="AT">Österreich</option>
-              <option value="CH">Schweiz</option>
             </select>
           </div>
           <div class="b2b-feld">
             <div class="b2b-feld__kopf">
               <label class="b2b-feld__label" for="vat_id">
-                <span class="b2b-feld__name">{{ 'templates.dealer_registration.vat_id' | t }}</span>
+                <span class="b2b-feld__name">USt-IdNr.</span>
                 <span class="b2b-feld__stern" aria-hidden="true">*</span>
               </label>
-              <button type="button" class="b2b-feld__hilfe" aria-describedby="hilfe-vat_id" aria-label="Erklärung einblenden">?</button>
-              <span class="b2b-feld__erklaerung" id="hilfe-vat_id" role="tooltip">Deine Umsatzsteuer-Identifikationsnummer. Ohne sie können wir dir nicht netto fakturieren.</span>
             </div>
-            <input class="b2b-feld__eingabe" type="text" id="vat_id" name="vat_id" required placeholder="z. B. DE123456789">
+            <input class="b2b-feld__eingabe" type="text" id="vat_id" name="vat_id" required placeholder="z. B. DE123456789" pattern="DE[0-9]{9}" autocapitalize="characters" spellcheck="false">
           </div>
           <div class="b2b-feld">
             <div class="b2b-feld__kopf">
@@ -252,8 +235,6 @@
                 <span class="b2b-feld__name">{{ 'templates.dealer_registration.trade_register_no' | t }}</span>
                 <span class="b2b-feld__frei">optional</span>
               </label>
-              <button type="button" class="b2b-feld__hilfe" aria-describedby="hilfe-trade_register_no" aria-label="Erklärung einblenden">?</button>
-              <span class="b2b-feld__erklaerung" id="hilfe-trade_register_no" role="tooltip">Die Nummer aus dem Handelsregister, falls deine Firma eingetragen ist. Hilft bei der Prüfung, ist aber freiwillig.</span>
             </div>
             <input class="b2b-feld__eingabe" type="text" id="trade_register_no" name="trade_register_no">
           </div>
@@ -263,8 +244,6 @@
                 <span class="b2b-feld__name">{{ 'templates.dealer_registration.company_website' | t }}</span>
                 <span class="b2b-feld__frei">optional</span>
               </label>
-              <button type="button" class="b2b-feld__hilfe" aria-describedby="hilfe-company_website" aria-label="Erklärung einblenden">?</button>
-              <span class="b2b-feld__erklaerung" id="hilfe-company_website" role="tooltip">Dein Auftritt oder Shop im Netz. Hilft uns, dein Sortiment einzuordnen, und macht die Prüfung schneller.</span>
             </div>
             <input class="b2b-feld__eingabe" type="url" id="company_website" name="company_website" autocomplete="url" placeholder="https://">
           </div>
@@ -276,7 +255,6 @@
           <span class="b2b-block__nummer" aria-hidden="true">02</span>
           <span class="b2b-block__text">
             <span class="b2b-block__titel">Ansprechpartner</span>
-            <span class="b2b-block__unter">Wer bei euch die Bestellungen macht</span>
           </span>
         </legend>
         <div class="b2b-raster">
@@ -286,8 +264,6 @@
                 <span class="b2b-feld__name">{{ 'templates.dealer_registration.contact_first_name' | t }}</span>
                 <span class="b2b-feld__stern" aria-hidden="true">*</span>
               </label>
-              <button type="button" class="b2b-feld__hilfe" aria-describedby="hilfe-contact_first_name" aria-label="Erklärung einblenden">?</button>
-              <span class="b2b-feld__erklaerung" id="hilfe-contact_first_name" role="tooltip">Wer bei euch die Bestellungen macht. An diese Person wenden wir uns bei Rückfragen.</span>
             </div>
             <input class="b2b-feld__eingabe" type="text" id="contact_first_name" name="contact_first_name" required autocomplete="given-name">
           </div>
@@ -297,8 +273,6 @@
                 <span class="b2b-feld__name">{{ 'templates.dealer_registration.contact_last_name' | t }}</span>
                 <span class="b2b-feld__stern" aria-hidden="true">*</span>
               </label>
-              <button type="button" class="b2b-feld__hilfe" aria-describedby="hilfe-contact_last_name" aria-label="Erklärung einblenden">?</button>
-              <span class="b2b-feld__erklaerung" id="hilfe-contact_last_name" role="tooltip">Wer bei euch die Bestellungen macht.</span>
             </div>
             <input class="b2b-feld__eingabe" type="text" id="contact_last_name" name="contact_last_name" required autocomplete="family-name">
           </div>
@@ -308,8 +282,6 @@
                 <span class="b2b-feld__name">{{ 'templates.dealer_registration.contact_position' | t }}</span>
                 <span class="b2b-feld__frei">optional</span>
               </label>
-              <button type="button" class="b2b-feld__hilfe" aria-describedby="hilfe-contact_position" aria-label="Erklärung einblenden">?</button>
-              <span class="b2b-feld__erklaerung" id="hilfe-contact_position" role="tooltip">Deine Funktion in der Firma. Damit landet eine Rückfrage gleich richtig.</span>
             </div>
             <select class="b2b-feld__eingabe" id="contact_position" name="contact_position">
               <option value="">Bitte wählen</option>
@@ -327,8 +299,6 @@
                 <span class="b2b-feld__name">{{ 'templates.dealer_registration.email' | t }}</span>
                 <span class="b2b-feld__stern" aria-hidden="true">*</span>
               </label>
-              <button type="button" class="b2b-feld__hilfe" aria-describedby="hilfe-email" aria-label="Erklärung einblenden">?</button>
-              <span class="b2b-feld__erklaerung" id="hilfe-email" role="tooltip">An diese Adresse geht die Freischaltung, und damit meldest du dich später an.</span>
             </div>
             <input class="b2b-feld__eingabe" type="email" id="email" name="email" required autocomplete="email" placeholder="name@firma.de">
           </div>
@@ -338,8 +308,6 @@
                 <span class="b2b-feld__name">{{ 'templates.dealer_registration.phone' | t }}</span>
                 <span class="b2b-feld__stern" aria-hidden="true">*</span>
               </label>
-              <button type="button" class="b2b-feld__hilfe" aria-describedby="hilfe-phone" aria-label="Erklärung einblenden">?</button>
-              <span class="b2b-feld__erklaerung" id="hilfe-phone" role="tooltip">Für kurze Rückfragen zu Bestellung oder Lieferung – schneller als eine Mail.</span>
             </div>
             <input class="b2b-feld__eingabe" type="tel" id="phone" name="phone" required autocomplete="tel">
           </div>
@@ -351,7 +319,6 @@
           <span class="b2b-block__nummer" aria-hidden="true">03</span>
           <span class="b2b-block__text">
             <span class="b2b-block__titel">Geschäft</span>
-            <span class="b2b-block__unter">Kurz zu deinem Vertrieb</span>
           </span>
         </legend>
         <div class="b2b-raster">
@@ -361,8 +328,6 @@
                 <span class="b2b-feld__name">{{ 'templates.dealer_registration.branches_count' | t }}</span>
                 <span class="b2b-feld__frei">optional</span>
               </label>
-              <button type="button" class="b2b-feld__hilfe" aria-describedby="hilfe-branches_count" aria-label="Erklärung einblenden">?</button>
-              <span class="b2b-feld__erklaerung" id="hilfe-branches_count" role="tooltip">Wie viele Standorte du belieferst. Danach richten sich Musterversand und Mengenstaffel.</span>
             </div>
             <input class="b2b-feld__eingabe" type="number" min="1" id="branches_count" name="branches_count" inputmode="numeric">
           </div>
@@ -372,8 +337,6 @@
                 <span class="b2b-feld__name">{{ 'templates.dealer_registration.sales_mode' | t }}</span>
                 <span class="b2b-feld__frei">optional</span>
               </label>
-              <button type="button" class="b2b-feld__hilfe" aria-describedby="hilfe-sales_mode" aria-label="Erklärung einblenden">?</button>
-              <span class="b2b-feld__erklaerung" id="hilfe-sales_mode" role="tooltip">Ob du stationär, online oder beides verkaufst. Danach richtet sich, welche Unterlagen und Bilder du von uns bekommst.</span>
             </div>
             <select class="b2b-feld__eingabe" id="sales_mode" name="sales_mode">
               <option value="stationary">{{ 'templates.dealer_registration.sales_mode_stationary' | t }}</option>
@@ -387,8 +350,6 @@
                 <span class="b2b-feld__name">{{ 'templates.dealer_registration.message' | t }}</span>
                 <span class="b2b-feld__frei">optional</span>
               </label>
-              <button type="button" class="b2b-feld__hilfe" aria-describedby="hilfe-message" aria-label="Erklärung einblenden">?</button>
-              <span class="b2b-feld__erklaerung" id="hilfe-message" role="tooltip">Platz für alles, was sonst nicht ins Formular passt – Wunschsortiment, Termin, Rückruf.</span>
             </div>
             <textarea class="b2b-feld__eingabe b2b-feld__eingabe--lang" rows="3" id="message" name="message"></textarea>
           </div>
@@ -403,6 +364,15 @@
         <label class="b2b-haken__zeile" for="terms_accepted">
           <input type="checkbox" id="terms_accepted" name="terms_accepted" required>
           <span>{{ 'templates.dealer_registration.terms_accepted' | t }} <span class="b2b-feld__stern" aria-hidden="true">*</span></span>
+        </label>
+        {%- comment -%}
+          Freiwillig und nie vorbelegt (Einwilligung). Die App traegt den
+          Kunden bei Haken fuer E-Mail-Marketing ein und setzt die Markierung
+          haendler-newsletter (b2b-webshop/app/routes/register.tsx).
+        {%- endcomment -%}
+        <label class="b2b-haken__zeile" for="newsletter">
+          <input type="checkbox" id="newsletter" name="newsletter">
+          <span>{{ 'templates.dealer_registration.newsletter' | t }}</span>
         </label>
 
         {%- comment -%}
@@ -433,6 +403,35 @@
         </button>
       </div>
     </form>
+    <script>
+      (function () {
+        var form = document.getElementById('DealerRegistrationForm');
+        var land = form.querySelector('[name="country"]');
+        var feld = form.querySelector('[name="vat_id"]');
+        var label = form.querySelector('label[for="vat_id"] .b2b-feld__name');
+        function pruefen() {
+          feld.value = feld.value.replace(/\s+/g, '').toUpperCase();
+          feld.setCustomValidity('');
+          if (feld.value && !new RegExp('^(?:' + feld.pattern + ')$').test(feld.value)) {
+            feld.setCustomValidity(land.value === 'AT'
+              ? 'Bitte gib eine UID-Nummer mit ATU und 8 Ziffern an.'
+              : 'Bitte gib eine USt-IdNr. mit DE und 9 Ziffern an.');
+          }
+        }
+        function wechseln() {
+          var at = land.value === 'AT';
+          label.textContent = at ? 'UID-Nummer' : 'USt-IdNr.';
+          feld.placeholder = at ? 'z. B. ATU12345678' : 'z. B. DE123456789';
+          feld.pattern = at ? 'ATU[0-9]{8}' : 'DE[0-9]{9}';
+          pruefen();
+        }
+        land.addEventListener('change', wechseln);
+        feld.addEventListener('input', pruefen);
+        feld.addEventListener('change', pruefen);
+        wechseln();
+      })();
+    </script>
+
     {%- endif -%}
   </div>
 </div>
@@ -474,7 +473,7 @@
     flex: 0 0 auto;
     color: rgb(var(--b2b-akzent, 199 42 9));
     font-size: 15px;
-    font-weight: 900;
+    font-weight: 700;
     letter-spacing: 0.08em;
   }
 
@@ -487,15 +486,10 @@
 
   .b2b-block__titel {
     font-size: 20px;
-    font-weight: 900;
+    font-weight: 700;
     line-height: 1.2;
   }
 
-  .b2b-block__unter {
-    font-size: 14px;
-    line-height: 1.4;
-    opacity: 0.7;
-  }
 
   /* ---------------- Raster ----------------
 
@@ -550,8 +544,7 @@
     line-height: 1.3;
   }
 
-  /* Das Label fuellt die Zeile, damit die ganze Breite anklickbar ist und
-     der Hilfeknopf rechts stehen bleibt. */
+  /* Das Label füllt die ganze Zeile. */
   .b2b-feld__label {
     display: flex;
     align-items: center;
@@ -577,57 +570,6 @@
     letter-spacing: 0.04em;
     text-transform: lowercase;
     opacity: 0.75;
-  }
-
-  .b2b-feld__hilfe {
-    display: grid;
-    place-items: center;
-    width: 18px;
-    height: 18px;
-    margin-inline-start: auto;
-    padding: 0;
-    border: 1px solid rgb(var(--b2b-linie, 226 226 225));
-    border-radius: 50%;
-    background: transparent;
-    color: rgb(var(--b2b-tinte, 46 46 45));
-    font-size: 11px;
-    font-weight: 700;
-    line-height: 1;
-    cursor: help;
-    transition: border-color 0.18s ease, color 0.18s ease;
-  }
-
-  .b2b-feld__hilfe:hover,
-  .b2b-feld__hilfe:focus-visible {
-    border-color: rgb(var(--b2b-akzent, 199 42 9));
-    color: rgb(var(--b2b-akzent, 199 42 9));
-  }
-
-  .b2b-feld__erklaerung {
-    position: absolute;
-    right: 0;
-    bottom: calc(100% + 8px);
-    z-index: 5;
-    width: max-content;
-    max-width: 260px;
-    padding: 10px 12px;
-    border-radius: 8px;
-    background: rgb(var(--b2b-tinte, 46 46 45));
-    color: rgb(255 255 255);
-    font-size: 13px;
-    font-weight: 400;
-    line-height: 1.45;
-    text-align: left;
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity 0.15s ease, visibility 0.15s ease;
-  }
-
-  .b2b-feld__kopf:hover .b2b-feld__erklaerung,
-  .b2b-feld__kopf:focus-within .b2b-feld__erklaerung,
-  .b2b-feld__kopf.ist-offen .b2b-feld__erklaerung {
-    visibility: visible;
-    opacity: 1;
   }
 
   .b2b-feld__eingabe {

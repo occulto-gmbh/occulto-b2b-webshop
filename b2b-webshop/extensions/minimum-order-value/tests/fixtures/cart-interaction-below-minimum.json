@@ -4,12 +4,22 @@
     "target": "cart.validations.generate.run",
     "input": {
       "cart": {
-        "cost": {
-          "subtotalAmount": {
-            "amount": "3.05",
-            "currencyCode": "EUR"
+        "buyerIdentity": {
+          "customer": {
+            "isDealer": true
           }
-        }
+        },
+        "lines": [
+          {
+            "quantity": 1,
+            "merchandise": {
+              "__typename": "ProductVariant",
+              "product": {
+                "isSingleItem": false
+              }
+            }
+          }
+        ]
       },
       "buyerJourney": {
         "step": "CART_INTERACTION"

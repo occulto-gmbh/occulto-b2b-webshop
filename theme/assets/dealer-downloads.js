@@ -113,7 +113,7 @@ if (!customElements.get('dealer-downloads')) {
             product.title,
             product.categories.join(', '),
             colorCode && /^\d+$/.test(colorCode) ? colorCode : '',
-            variant.size === 'Default Title' ? 'One Size' : variant.size,
+            variant.size === 'Default Title' ? 'Einheitsgröße' : variant.size,
             variant.ean,
             product.material.replace(/\s*\|\s*/g, ', '),
             // A value from the product (e.g. synced from JTL) wins over the default.

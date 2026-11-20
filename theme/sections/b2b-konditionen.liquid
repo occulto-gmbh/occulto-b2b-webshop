@@ -90,22 +90,25 @@
         </a>
       </div>
 
-      {%- if section.settings.hinweis != blank -%}
-        <p class="b2b-kond__hinweis">{{ section.settings.hinweis | escape }}</p>
-      {%- endif -%}
     </div>
   </div>
 </div>
 
 <style>
+  /* Besprechung 16.11.: Der Vororder-Block soll sich farblich vom Rest der
+     Startseite abheben. Die Seite ist grau, der Block deshalb weiss mit
+     roter Linie oben, die Karten darin grau. */
   .b2b-kond {
-    background: rgb(var(--b2b-hell, 246 246 246));
+    background: rgb(255 255 255);
+    border-top: 3px solid rgb(var(--b2b-akzent, 199 42 9));
+    border-bottom: 1px solid rgb(var(--b2b-linie, 226 226 225));
   }
 
   .b2b-kond__inner {
     max-width: 1240px;
     margin: 0 auto;
-    padding: 56px var(--container-gutter, 20px);
+    /* 18.11.: mehr Luft nach oben und unten, wirkte gedraengt. */
+    padding: 88px var(--container-gutter, 20px) 96px;
   }
 
   .b2b-kond__label {
@@ -138,13 +141,14 @@
     gap: 4px;
     padding: 20px 22px;
     border-radius: 10px;
-    background: rgb(255 255 255);
+    background: rgb(var(--b2b-hell, 246 246 246));
+    border-top: 3px solid rgb(var(--b2b-akzent, 199 42 9));
   }
 
   .b2b-kond__wert {
     color: rgb(var(--b2b-akzent, 199 42 9));
     font-size: 26px;
-    font-weight: 900;
+    font-weight: 700;
     line-height: 1.05;
   }
 
@@ -173,7 +177,7 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px;
-    max-width: 760px;
+    width: 100%;
     margin-inline: auto;
   }
 
@@ -193,7 +197,7 @@
        der Knopf wird 100px hoch - gemessen. */
     white-space: nowrap;
     text-decoration: none;
-    transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.2s ease;
+    transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.2s ease, box-shadow 0.2s ease;
   }
 
   /* Der anstehende Termin ist gefuellt, der andere nur umrandet. */
@@ -207,7 +211,7 @@
      war das hellrot auf rot. Jetzt groesser und voll deckend. */
   .b2b-kond__knopfdatum {
     font-size: 15px;
-    font-weight: 500;
+    font-weight: 400;
     /* Der Knopf selbst steht auf nowrap, damit die Beschriftung nicht
        umbricht. Die Datumszeile ist laenger und darf es sehr wohl - sonst
        ragt sie auf dem Handy aus dem Knopf heraus. */
@@ -215,21 +219,30 @@
     text-align: center;
   }
 
-  @media (hover: hover) and (pointer: fine) {
+  /* 18.11. spaet: gleiche Sprache wie die Hero-Knoepfe. Umrandeter Knopf mit
+     2 px Rand, beim Ueberfahren fuellt er sich rot, der gefuellte wird
+     dunkler; Schatten nur beim Ueberfahren und knapp. any-hover, weil
+     Touchscreen-Laptops sonst kein Hover melden. Klick drueckt ein. */
+  .b2b-kond__knopf { border-width: 2px; padding: 16px 37px; cursor: pointer; }
+  @media (any-hover: hover) {
     .b2b-kond__knopf:hover {
       border-color: rgb(var(--b2b-akzent, 199 42 9));
       background: rgb(var(--b2b-akzent, 199 42 9));
       color: rgb(255 255 255);
-      transform: translateY(-2px);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px -8px rgb(199 42 9 / .6);
+    }
+    .b2b-kond__knopf--naechster:hover {
+      border-color: rgb(150 30 6);
+      background: rgb(150 30 6);
+      box-shadow: 0 10px 20px -8px rgb(150 30 6 / .6);
     }
   }
-
-  .b2b-kond__hinweis {
-    margin: 18px 0 0;
-    font-size: 15px;
-    line-height: 1.5;
-    opacity: 0.8;
+  .b2b-kond__knopf:active {
+    transform: translateY(0) scale(0.97);
+    transition-duration: 0.06s;
   }
+
 
   @media screen and (min-width: 750px) {
     .b2b-kond__liste {
@@ -239,7 +252,7 @@
 
   @media screen and (max-width: 599px) {
     .b2b-kond__inner {
-      padding-block: 40px;
+      padding-block: 56px 64px;
     }
     .b2b-kond__wert {
       font-size: 22px;
@@ -247,6 +260,13 @@
     .b2b-kond__knoepfe {
       grid-template-columns: minmax(0, 1fr);
     }
+  }
+  .b2b-kond__knopf:focus-visible {
+    outline: 3px solid rgb(var(--b2b-tinte, 46 46 45));
+    outline-offset: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .b2b-kond__knopf { transition: none; transform: none !important; }
   }
 </style>
 
@@ -281,7 +301,7 @@
       "type": "text",
       "id": "vororder_text",
       "label": "Text",
-      "default": "Auf jede Vororder."
+      "default": "auf die gesamte Vororder"
     },
     {
       "type": "header",
@@ -297,7 +317,7 @@
       "type": "text",
       "id": "mindestmenge_text",
       "label": "Text",
-      "default": "Je Artikel, alle Größen zusammen – je Größe ab 5. Mindestbestellwert 1.500 €."
+      "default": "je Design, Größen frei kombinierbar"
     },
     {
       "type": "header",
@@ -313,7 +333,7 @@
       "type": "text",
       "id": "versand_text",
       "label": "Text",
-      "default": "Jede Vororder liefern wir ohne Versandkosten."
+      "default": "jede Vororder"
     },
     {
       "type": "text",
@@ -336,8 +356,7 @@
     {
       "type": "text",
       "id": "hinweis",
-      "label": "Kleingedrucktes",
-      "default": "Vororder-Rabatt ab 100 Packs je Artikel und 1.500 € Bestellwert, nur bis zum jeweiligen Stichtag."
+      "label": "Kleingedrucktes"
     },
     {
       "type": "color_scheme",

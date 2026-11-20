@@ -1,0 +1,53 @@
+{%- comment -%} Kontaktanfrage für ausverkaufte Größen, ohne App. {%- endcomment -%}
+{%- liquid
+  assign hat_ausverkauft = false
+  assign schritt = 5
+  if product.tags contains 'einzelstueck'
+    assign schritt = 1
+  endif
+  for variante in product.variants
+    if variante.available == false
+      assign hat_ausverkauft = true
+    elsif variante.inventory_management == 'shopify' and variante.inventory_policy != 'continue' and variante.inventory_quantity < schritt
+      assign hat_ausverkauft = true
+    endif
+  endfor
+  assign formular_id = 'Lagerbenachrichtigung-' | append: section_id | append: '-' | append: product.id
+-%}
+{%- if hat_ausverkauft -%}
+  {%- form 'contact', id: formular_id, class: 'b2b-lageranfrage' -%}
+    {%- if form.posted_successfully? -%}
+      <p role="status">Deine Anfrage ist angekommen. Wir benachrichtigen dich, sobald der Artikel wieder verfügbar ist.</p>
+    {%- else -%}
+      <details{% if form.errors %} open{% endif %}>
+        <summary class="button button--secondary button--full-width">Benachrichtigen, wenn wieder da</summary>
+        {{ form.errors | default_errors }}
+        <input type="hidden" name="contact[Art der Anfrage]" value="Lagerbenachrichtigung">
+        <input type="hidden" name="contact[Artikel]" value="{{ product.title | escape }}">
+        <input type="hidden" name="contact[Produktlink]" value="{{ shop.url }}{{ product.url }}">
+        <label for="{{ formular_id }}-email">Deine E-Mail-Adresse</label>
+        <input id="{{ formular_id }}-email" name="contact[email]" type="email" value="{{ customer.email | escape }}" required autocomplete="email">
+        <label for="{{ formular_id }}-variante">Art.-Nr. / Größe</label>
+        <select id="{{ formular_id }}-variante" name="contact[Art.-Nr. / Größe]" required>
+          {%- for variante in product.variants -%}
+            {%- liquid
+              assign ausverkauft = false
+              if variante.available == false
+                assign ausverkauft = true
+              elsif variante.inventory_management == 'shopify' and variante.inventory_policy != 'continue' and variante.inventory_quantity < schritt
+                assign ausverkauft = true
+              endif
+            -%}
+            {%- if ausverkauft -%}
+              {%- capture groesse -%}{% render 'b2b-groessen', product: product, variant: variante, teil: 'name' %}{%- endcapture -%}
+              <option value="{{ variante.sku | escape }} / {{ groesse | strip | escape }}">{{ variante.sku | escape }} / {{ groesse | strip | escape }}</option>
+            {%- endif -%}
+          {%- endfor -%}
+        </select>
+        <input type="hidden" name="contact[body]" value="Bitte benachrichtige mich, wenn die gewählte Größe wieder verfügbar ist.">
+        <button type="submit" class="button button--primary">Benachrichtigung anfragen</button>
+      </details>
+    {%- endif -%}
+  {%- endform -%}
+{%- endif -%}
+

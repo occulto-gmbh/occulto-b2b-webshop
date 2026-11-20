@@ -27,16 +27,24 @@
 
     comment
       Ziel-Zaehler: Packs im Warenkorb (ohne Einzelstuecke, b2b-packs) plus
-      die gerade gewaehlten. Die Schwellen muessen zu b2b-korb-art (300 / 500)
+      die gerade gewaehlten. Die Schwellen muessen zu b2b-korb-art (Versand / 500)
       und b2b-preis (500) passen.
     endcomment
     capture b2b_packs_text
       render 'b2b-packs'
     endcapture
     assign b2b_im_korb = b2b_packs_text | plus: 0
-    assign b2b_versand_ab = 300
+    capture b2b_versand_text
+      render 'b2b-packs', teil: 'versandfrei-ab'
+    endcapture
+    assign b2b_versand_ab = b2b_versand_text | plus: 0
     assign b2b_rabatt_ab = 500
     assign b2b_marke = b2b_versand_ab | times: 100 | divided_by: b2b_rabatt_ab
+    capture b2b_mindest_text
+      render 'b2b-mindestwert'
+    endcapture
+    assign b2b_mindest = b2b_mindest_text | plus: 0
+    assign b2b_mindest_marke = b2b_mindest | times: 100 | divided_by: b2b_rabatt_ab
   -%}
   <div class="b2b-gb" data-b2b-gb>
     {%- comment -%}
@@ -48,6 +56,7 @@
       class="b2b-gb__ziel"
       data-gb-ziel
       data-im-korb="{{ b2b_im_korb }}"
+      data-mindest="{{ b2b_mindest }}"
       data-versand="{{ b2b_versand_ab }}"
       data-rabatt="{{ b2b_rabatt_ab }}"
       data-zaehlt="{% if schritt == 1 %}nein{% else %}ja{% endif %}"
@@ -56,13 +65,16 @@
       <div class="b2b-gb__balken" aria-hidden="true">
         <span class="b2b-gb__balken-korb" data-gb-balken-korb></span>
         <span class="b2b-gb__balken-auswahl" data-gb-balken-auswahl></span>
+        <span class="b2b-gb__marke" style="left: {{ b2b_mindest_marke }}%"></span>
         <span class="b2b-gb__marke" style="left: {{ b2b_marke }}%"></span>
       </div>
       <p class="b2b-gb__skala" aria-hidden="true">
-        <span style="left: {{ b2b_marke }}%">{{ b2b_versand_ab }} · versandkostenfrei</span>
-        <span style="left: 100%">{{ b2b_rabatt_ab }} · &minus;5&nbsp;%</span>
+        <span style="left: {{ b2b_mindest_marke }}%"><b>{{ b2b_mindest }}</b> Mindestmenge</span>
+        <span style="left: {{ b2b_marke }}%"><b>{{ b2b_versand_ab }}</b> versandkostenfrei</span>
+        <span style="left: 100%"><b>{{ b2b_rabatt_ab }}</b> &minus;5&nbsp;%</span>
       </p>
       <p class="b2b-gb__ziel-stand" data-gb-ziel-stand></p>
+      <p class="b2b-gb__hinweis">Die Mindestmenge gilt für die <strong>gesamte Bestellung</strong>, nicht je Artikel: Alle Packs im Warenkorb zählen zusammen.</p>
     </div>
 
     <p class="b2b-gb__kopf">
@@ -143,6 +155,10 @@
     <button type="button" class="button button--primary button--full-width b2b-gb__knopf" data-gb-knopf disabled>
       In den Warenkorb
     </button>
+    {%- unless product.tags contains 'einzelstueck' -%}
+      <a class="button button--secondary button--full-width" href="/pages/vororder?produkt={{ product.id }}">Zur Vororder</a>
+    {%- endunless -%}
+    {% render 'b2b-lagerbenachrichtigung', product: product, section_id: section.id %}
     <p class="b2b-gb__meldung" data-gb-meldung role="status" hidden></p>
   </div>
 
@@ -171,6 +187,7 @@
       /* Ziel-Zaehler: Warenkorb + Auswahl gegen die Schwellen. */
       var zielEl = wurzel.querySelector('[data-gb-ziel]');
       var imKorb = parseInt(zielEl.dataset.imKorb, 10) || 0;
+      var MINDEST = parseInt(zielEl.dataset.mindest, 10) || 0;
       var VERSAND = parseInt(zielEl.dataset.versand, 10);
       var RABATT = parseInt(zielEl.dataset.rabatt, 10);
       var ZAEHLT = zielEl.dataset.zaehlt === 'ja';
@@ -179,17 +196,28 @@
         if (!ZAEHLT) auswahl = 0;
         var gesamt = imKorb + auswahl;
         var text;
-        if (gesamt < VERSAND) {
+        if (gesamt < MINDEST) {
+          text = 'Noch <strong>' + zahl(MINDEST - gesamt) + ' Packs</strong> bis zur Mindestmenge'
+            + '<span>danach noch ' + zahl(VERSAND - MINDEST) + ' Packs bis versandkostenfrei</span>';
+        } else if (gesamt < VERSAND) {
           text = 'Noch <strong>' + zahl(VERSAND - gesamt) + ' Packs</strong> bis versandkostenfrei'
             + '<span>danach noch ' + zahl(RABATT - VERSAND) + ' Packs bis &minus;5&nbsp;%</span>';
         } else if (gesamt < RABATT) {
           text = 'Versandkostenfrei ✓ · noch <strong>' + zahl(RABATT - gesamt) + ' Packs</strong> bis &minus;5&nbsp;%';
         } else {
-          text = '<strong>Versandkostenfrei und &minus;5&nbsp;%</strong> auf die ganze Bestellung ✓';
+          text = '<strong>Versandkostenfrei und &minus;5&nbsp;%</strong> auf alle Packs ✓';
         }
         zielEl.querySelector('[data-gb-ziel-text]').innerHTML = text;
         zielEl.classList.toggle('ist-erreicht', gesamt >= RABATT);
-        var korbAnteil = Math.min(imKorb, RABATT) / RABATT * 100;
+        /* Vorgabe 17.11.: Erreichte Ziele zeigt der Balken voll. Voll bis zum
+           Warenkorb oder zur hoechsten erreichten Stufe (100 / 250 / 500),
+           gestreift nur die Auswahl darueber hinaus. */
+        var erreicht = 0;
+        [MINDEST, VERSAND, RABATT].forEach(function (stufe) {
+          if (stufe > 0 && gesamt >= stufe) erreicht = stufe;
+        });
+        var voll = Math.min(Math.max(imKorb, erreicht), RABATT);
+        var korbAnteil = voll / RABATT * 100;
         var auswahlAnteil = Math.min(gesamt, RABATT) / RABATT * 100 - korbAnteil;
         zielEl.querySelector('[data-gb-balken-korb]').style.width = korbAnteil + '%';
         var ba = zielEl.querySelector('[data-gb-balken-auswahl]');

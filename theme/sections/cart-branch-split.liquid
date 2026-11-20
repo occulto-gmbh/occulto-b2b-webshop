@@ -39,7 +39,7 @@
         <script type="application/json" data-branch-split-config>
           {
             "addresses": [
-              {%- if customer.default_address -%}
+              {%- if customer.default_address.country_code == 'DE' or customer.default_address.country_code == 'AT' -%}
                 {%- assign address = customer.default_address -%}
                 {%- capture label -%}
                   {%- if address.company != blank -%}{{ address.company }}, z. Hd. {% endif -%}
@@ -61,7 +61,6 @@
                   , {{ branch.zip }} {{ branch.city -}}
                   {%- case branch.country -%}
                     {%- when 'AT' %}, Österreich
-                    {%- when 'CH' %}, Schweiz
                   {%- endcase -%}
                 {%- endcapture -%}
                 {%- capture short -%}

@@ -1,4 +1,9 @@
-/* B2B: Die Kassen-Knoepfe im Fuss folgen dem Mindestbestellwert. Der Kopf
+/* var statt let: cart.js wird von Schublade und Warenkorbseite eingebunden;
+   ein zweites let auf oberster Ebene braeche das zweite Skript ab. */
+var b2bKorbAktualisierungen = 0;
+var b2bKorbUnklar = false;
+
+/* B2B: Die Kassen-Knoepfe im Fuss folgen der Mindestmenge. Der Kopf
    (snippets/b2b-korb-art.liquid) rechnet ihn und traegt das Ergebnis in
    data-b2b-mindestwert-erreicht; beim Laden setzt main-cart-footer.liquid
    denselben Stand per Liquid, hier wird er nach jeder Aenderung nachgezogen. */
@@ -6,14 +11,15 @@ function b2bKasseNachMindestwert() {
   const kopf = document.querySelector('#b2b-korb-kopf [data-b2b-mindestwert-erreicht]');
   const fuss = document.getElementById('main-cart-footer');
   if (!fuss) return;
-  const erreicht = !kopf || kopf.dataset.b2bMindestwertErreicht === 'true';
-  fuss.querySelectorAll('[name="checkout"]').forEach((knopf) => {
-    if (!erreicht) knopf.disabled = true;
+  const erreicht = Boolean(kopf && kopf.dataset.b2bMindestwertErreicht === 'true');
+  const bereit = erreicht && b2bKorbAktualisierungen === 0 && !b2bKorbUnklar;
+  document.querySelectorAll('[name="checkout"]').forEach((knopf) => {
+    if (!bereit) knopf.disabled = true;
     else if (document.querySelector('.cart-item')) knopf.disabled = false;
   });
   fuss.querySelectorAll('[data-b2b-mindestwert-hinweis], .cart__dynamic-checkout-buttons').forEach((el) => {
     if (el.hasAttribute('data-b2b-mindestwert-hinweis')) el.hidden = erreicht;
-    else el.hidden = !erreicht;
+    else el.hidden = !bereit;
   });
 }
 
@@ -156,15 +162,24 @@ class CartItems extends window.StandardEvents.createViewEventElement(HTMLElement
           console.error(e);
         });
     } else {
+      b2bKorbAktualisierungen++;
+      b2bKasseNachMindestwert();
       return fetch(`${routes.cart_url}?section_id=main-cart-items`)
         .then((response) => response.text())
         .then((responseText) => {
           const html = new DOMParser().parseFromString(responseText, 'text/html');
           const sourceQty = html.querySelector('cart-items');
           this.innerHTML = sourceQty.innerHTML;
+          b2bKorbUnklar = false;
+          b2bKasseNachMindestwert();
         })
         .catch((e) => {
+          b2bKorbUnklar = true;
           console.error(e);
+        })
+        .finally(() => {
+          b2bKorbAktualisierungen = Math.max(0, b2bKorbAktualisierungen - 1);
+          b2bKasseNachMindestwert();
         });
     }
   }
@@ -209,6 +224,8 @@ class CartItems extends window.StandardEvents.createViewEventElement(HTMLElement
     const cartPerformanceUpdateMarker = CartPerformance.createStartingMarker(`${eventTarget}:user-action`);
 
     this.enableLoading(line);
+    b2bKorbAktualisierungen++;
+    b2bKasseNachMindestwert();
 
     const action = quantity === 0 ? 'remove' : 'update';
     const quantityInput = this.querySelector(`#Quantity-${line}`) || this.querySelector(`#Drawer-quantity-${line}`);
@@ -289,6 +306,7 @@ class CartItems extends window.StandardEvents.createViewEventElement(HTMLElement
               section.selector
             );
           });
+          b2bKorbUnklar = false;
           b2bKasseNachMindestwert();
           const updatedValue = parsedState.items[line - 1] ? parsedState.items[line - 1].quantity : undefined;
           let message = '';
@@ -317,6 +335,8 @@ class CartItems extends window.StandardEvents.createViewEventElement(HTMLElement
         publish(PUB_SUB_EVENTS.cartUpdate, { source: 'cart-items', cartData: parsedState, variantId: variantId });
       })
       .catch((e) => {
+        b2bKorbUnklar = true;
+        b2bKasseNachMindestwert();
         this.querySelectorAll('.loading__spinner').forEach((overlay) => overlay.classList.add('hidden'));
         const errors = document.getElementById('cart-errors') || document.getElementById('CartDrawer-CartErrors');
         if (errors) errors.textContent = window.cartStrings.error;
@@ -324,6 +344,8 @@ class CartItems extends window.StandardEvents.createViewEventElement(HTMLElement
         linesUpdateDeferred?.reject(e);
       })
       .finally(() => {
+        b2bKorbAktualisierungen = Math.max(0, b2bKorbAktualisierungen - 1);
+        b2bKasseNachMindestwert();
         this.disableLoading(line);
         CartPerformance.measureFromMarker(`${eventTarget}:user-action`, cartPerformanceUpdateMarker);
       });

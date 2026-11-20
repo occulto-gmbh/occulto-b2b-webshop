@@ -6,10 +6,34 @@
       "cart": {
         "lines": [
           {
-            "quantity": 250
+            "quantity": 250,
+            "merchandise": {
+              "__typename": "ProductVariant",
+              "id": "gid://shopify/ProductVariant/1",
+              "product": {
+                "isSingleItem": false
+              }
+            },
+            "cost": {
+              "subtotalAmount": {
+                "amount": "762.50"
+              }
+            }
           },
           {
-            "quantity": 250
+            "quantity": 250,
+            "merchandise": {
+              "__typename": "ProductVariant",
+              "id": "gid://shopify/ProductVariant/2",
+              "product": {
+                "isSingleItem": false
+              }
+            },
+            "cost": {
+              "subtotalAmount": {
+                "amount": "762.50"
+              }
+            }
           }
         ]
       }
@@ -27,8 +51,8 @@
             }
           ],
           "value": {
-            "percentage": {
-              "value": "5"
+            "fixedAmount": {
+              "amount": "76.25"
             }
           }
         }

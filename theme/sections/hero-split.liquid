@@ -23,15 +23,22 @@
       }}
     {%- endif -%}
     <div class="hero-split__text-inner">
-      {%- if section.settings.overline != blank -%}
-        <p class="hero-split__overline caption-with-letter-spacing">{{ section.settings.overline }}</p>
-      {%- endif -%}
+      <p class="hero-split__overline">
+        {%- if customer.first_name != blank -%}
+          Willkommen, {{ customer.first_name | escape }}
+        {%- elsif customer -%}
+          Willkommen zurück
+        {%- else -%}
+          Willkommen
+        {%- endif -%}
+      </p>
       {%- if section.settings.heading != blank -%}
         <h1 class="hero-split__heading">{{ section.settings.heading }}</h1>
       {%- endif -%}
       {%- if section.settings.text != blank -%}
         <div class="hero-split__body rte">{{ section.settings.text }}</div>
       {%- endif -%}
+      <div class="hero-split__buttons">
       {%- if section.settings.button_label != blank -%}
         <a
           href="{{ section.settings.button_link | default: '#' }}"
@@ -40,6 +47,10 @@
           {{ section.settings.button_label }}
         </a>
       {%- endif -%}
+      {%- if customer and customer.tags contains 'dealer-approved' -%}
+        <a href="/pages/vororder" class="button button--secondary">Vororder abgeben</a>
+      {%- endif -%}
+      </div>
     </div>
   </div>
   {%- liquid
@@ -141,7 +152,7 @@
       "type": "text",
       "id": "button_label",
       "label": "t:sections.hero-split.settings.button_label.label",
-      "default": "Produkte ansehen"
+      "default": "Jetzt bestellen"
     },
     {
       "type": "url",

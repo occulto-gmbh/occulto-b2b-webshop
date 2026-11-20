@@ -11,6 +11,7 @@
 {% endcomment %}
 
 {%- liquid
+  assign b2b_preis_produkt = item.product | default: item
   # Einzelstuecke (Tag einzelstueck, z. B. Ausstellungsstaender): ohne Packrabatt, siehe b2b-preis.
   assign b2b_einzelstueck = false
   if item.product.tags contains 'einzelstueck' or item.tags contains 'einzelstueck'
@@ -118,7 +119,7 @@
               </div>
             </price-per-item>
           {%- else -%}
-            {% render 'b2b-preis', preis: item.price, je_pack: true, uvp: item.compare_at_price, einzelstueck: b2b_einzelstueck %}
+            {% render 'b2b-preis', preis: item.price, produkt: b2b_preis_produkt, je_pack: true, uvp: item.compare_at_price, einzelstueck: b2b_einzelstueck %}
           {%- endif -%}
         </dd>
       </dl>
@@ -152,7 +153,7 @@
           </div>
         </price-per-item>
       {%- else -%}
-        {% render 'b2b-preis', preis: item.price, je_pack: true, uvp: item.compare_at_price, einzelstueck: b2b_einzelstueck %}
+        {% render 'b2b-preis', preis: item.price, produkt: b2b_preis_produkt, je_pack: true, uvp: item.compare_at_price, einzelstueck: b2b_einzelstueck %}
       {%- endif -%}
     {%- endif -%}
 
@@ -170,7 +171,7 @@
       zusammen und wundert sich im Checkout ueber eine andere Zahl.
     {%- endcomment -%}
     {%- assign zeilensumme = cart | line_items_for: item | sum: 'original_line_price' -%}
-    {% render 'b2b-preis', preis: zeilensumme, klasse: 'b2b-preis--summe', ohne_hinweis: true %}
+    {% render 'b2b-preis', preis: zeilensumme, produkt: b2b_preis_produkt, korbvariante: variant.id, klasse: 'b2b-preis--summe', ohne_hinweis: true %}
     {% # theme-check-enable %}
   </td>
 
@@ -382,7 +383,7 @@
               </div>
             </price-per-item>
           {%- else -%}
-            {% render 'b2b-preis', preis: item.price, je_pack: true, uvp: item.compare_at_price, einzelstueck: b2b_einzelstueck %}
+            {% render 'b2b-preis', preis: item.price, produkt: b2b_preis_produkt, je_pack: true, uvp: item.compare_at_price, einzelstueck: b2b_einzelstueck %}
           {%- endif -%}
         </dd>
       </dl>
@@ -416,7 +417,7 @@
           </div>
         </price-per-item>
       {%- else -%}
-        {% render 'b2b-preis', preis: item.price, je_pack: true, uvp: item.compare_at_price, einzelstueck: b2b_einzelstueck %}
+        {% render 'b2b-preis', preis: item.price, produkt: b2b_preis_produkt, je_pack: true, uvp: item.compare_at_price, einzelstueck: b2b_einzelstueck %}
       {%- endif -%}
     {%- endif -%}
 
@@ -433,7 +434,7 @@
       zusammen und wundert sich im Checkout ueber eine andere Zahl.
     {%- endcomment -%}
     {%- assign zeilensumme = cart | line_items_for: item | sum: 'original_line_price' -%}
-    {% render 'b2b-preis', preis: zeilensumme, klasse: 'b2b-preis--summe', ohne_hinweis: true %}
+    {% render 'b2b-preis', preis: zeilensumme, produkt: b2b_preis_produkt, korbvariante: variant.id, klasse: 'b2b-preis--summe', ohne_hinweis: true %}
     {% # theme-check-enable %}
   </td>
 </tr>

@@ -1,0 +1,696 @@
+{%- comment -%}
+  Startseiten-Hero (Vorgabe 17.11.): Video im Hintergrund wie auf occulto.de,
+  links Begruessung, Ueberschrift und zwei gleich grosse Knoepfe
+  nebeneinander. Ersetzt hero-split, dessen Bildkarte mit eigenem Knopf
+  mit dem Hauptknopf konkurrierte.
+
+  Video: zuerst das in der Verwaltung hochgeladene (Einstellung "Video"),
+  sonst die Adresse aus "Video-Adresse" - derzeit das Video aus dem
+  Hauptshop. Ohne Video steht das Bild da. Wer reduzierte Bewegung
+  eingestellt hat, sieht nur das Standbild.
+
+  Keine dunkle Ueberlagerung (Marke: Flaechen neutral grau oder weiss):
+  links ein heller Verlauf, damit der Text auf jedem Videobild lesbar bleibt.
+
+  Ohne Video (seit 17.11. so eingestellt - das Video kam bei Jana nicht an):
+  geteilt, links weisse Flaeche mit Text und Knoepfen, rechts das Bild der
+  Saisonware. Auf dem Handy das Bild oben, der Text darunter.
+
+  Aufteilung "Bild als Hintergrund" (18.11.): fuer breite Motive mit freier
+  Flaeche links (Winterbild aus assets/b2b-hero-winter.webp). Das Bild fuellt
+  den ganzen Hero, Text und Knoepfe stehen links auf der freien Flaeche, die
+  Hintergrundfarbe setzt die Flaeche fort, wenn der Bildschirm breiter ist.
+  Bild aus dem Theme ("Bilddatei im Theme") hat Vorrang vor "Bild ohne Video".
+{%- endcomment -%}
+
+{%- liquid
+  assign hat_video = false
+  if section.settings.video != blank or section.settings.video_url != blank
+    assign hat_video = true
+  endif
+
+  comment
+    "nebeneinander" (18.11.): fuer Motive ohne freie Flaeche - Text links in
+    einer Spalte in der Flaechenfarbe, rechts das ganze Bild, nichts
+    beschnitten. Nutzt Schrift und Knoepfe von "hintergrund" mit.
+  endcomment
+  assign hintergrund = false
+  assign neben = false
+  if hat_video == false
+    if section.settings.aufteilung == 'hintergrund' or section.settings.aufteilung == 'nebeneinander'
+      assign hintergrund = true
+    endif
+    if section.settings.aufteilung == 'nebeneinander'
+      assign neben = true
+    endif
+  endif
+
+  assign bild_datei = section.settings.bild_datei | strip
+  assign bild_datei_klein = section.settings.bild_datei_klein | strip
+
+  assign poster = section.settings.poster_url
+  if section.settings.video != blank and section.settings.video.preview_image != blank
+    assign poster = section.settings.video.preview_image | image_url: width: 1800
+  endif
+-%}
+
+{%- style -%}
+  .b2b-hero {
+    position: relative;
+    display: grid;
+    background: rgb(var(--color-background));
+    overflow: hidden;
+  }
+  .b2b-hero__medien {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    background: rgb(var(--color-background));
+  }
+  .b2b-hero__medien video,
+  .b2b-hero__medien img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 70% 50%;
+  }
+  .b2b-hero__inhalt {
+    position: relative;
+    padding: 3.2rem 2rem 4rem;
+  }
+  .b2b-hero__gruss {
+    margin: 0 0 0.8rem;
+    font-size: 1.4rem;
+    color: rgba(var(--color-foreground), 0.75);
+  }
+  .b2b-hero__titel {
+    margin: 0;
+    font-size: clamp(3.6rem, 6vw, 7.2rem);
+    line-height: 1.02;
+  }
+  .b2b-hero__text {
+    max-width: 48rem;
+    margin-top: 1.6rem;
+    font-size: 1.7rem;
+    color: rgba(var(--color-foreground), 0.8);
+  }
+  .b2b-hero__text p { margin: 0; }
+  .b2b-hero__knoepfe {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    margin-top: 2.8rem;
+  }
+  .b2b-hero__knoepfe .button {
+    flex: 1 1 22rem;
+    min-height: 5.6rem;
+    padding-inline: 2.4rem;
+    font-size: 1.6rem;
+    font-weight: 700;
+  }
+
+  @media screen and (min-width: 750px) {
+    .b2b-hero {
+      min-height: clamp(48rem, 62vh, 68rem);
+      align-items: center;
+    }
+    .b2b-hero__medien {
+      position: absolute;
+      inset: 0;
+      aspect-ratio: auto;
+    }
+    .b2b-hero__medien::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        90deg,
+        rgba(var(--color-background), 0.94) 0%,
+        rgba(var(--color-background), 0.8) 32%,
+        rgba(var(--color-background), 0) 58%
+      );
+    }
+    .b2b-hero__inhalt {
+      width: min(100%, 64rem);
+      padding: 6rem min(4.8rem, 3vw);
+    }
+    .b2b-hero__knoepfe .button { flex: 0 0 auto; min-width: 24rem; }
+
+    /* Geteilt (ohne Video): Text links auf Weiss, Bild rechts. */
+    .b2b-hero--bild {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: stretch;
+    }
+    .b2b-hero--bild .b2b-hero__medien {
+      position: relative;
+      inset: auto;
+      grid-column: 2;
+      grid-row: 1;
+      min-height: clamp(48rem, 62vh, 68rem);
+    }
+    .b2b-hero--bild .b2b-hero__medien::after { content: none; }
+    .b2b-hero--bild .b2b-hero__medien img { object-position: 50% 50%; }
+    .b2b-hero--bild .b2b-hero__inhalt {
+      grid-column: 1;
+      grid-row: 1;
+      align-self: center;
+      width: auto;
+      padding: 6rem min(6rem, 4vw) 6rem min(4.8rem, 3vw);
+    }
+  }
+
+  /* Bild als Hintergrund. Unter 1200 px: Bild oben (rechter Ausschnitt mit
+     allen Produkten), Text darunter. Ab 1200 px: Text links auf der freien
+     Flaeche. Das Bild steht dann ganz (contain) unten rechts und ist so hoch
+     wie der Hero; was links fehlt, fuellt die Flaechenfarbe - so bleibt die
+     freie Flaeche links auch auf breiten Bildschirmen frei und die Produkte
+     rutschen nicht unter den Text. Die freie Flaeche im Motiv reicht unten
+     nur bis gut ein Drittel der Breite (Sockenspitze). */
+  .b2b-hero--hintergrund { background: {{ section.settings.flaeche }}; }
+  .b2b-hero--hintergrund .b2b-hero__medien { background: {{ section.settings.flaeche }}; aspect-ratio: 16 / 10; }
+  .b2b-hero--hintergrund .b2b-hero__medien img { object-position: 100% 60%; }
+
+  /* Schrift und Knoepfe gross und kraeftig (Vorgabe 18.11.). */
+  .b2b-hero--hintergrund .b2b-hero__gruss { font-size: 1.6rem; }
+  .b2b-hero--hintergrund .b2b-hero__titel { font-size: clamp(4.2rem, 11.5vw, 6rem); }
+  .b2b-hero--hintergrund .b2b-hero__text { font-size: 1.8rem; line-height: 1.5; color: rgba(var(--color-foreground), 0.85); }
+  .b2b-hero--hintergrund .b2b-hero__knoepfe .button {
+    min-height: 6.4rem;
+    padding-inline: 3.2rem;
+    font-size: 1.8rem;
+    letter-spacing: 0.02em;
+  }
+  /* 18.11. spaet (Vorgabe Nico): im Ruhezustand kaum Schatten, dafuer klar
+     als Knopf erkennbar - roter Knopf flach und satt, weisser Knopf mit
+     3-px-Rahmen, beide Knoepfe mit Pfeil. Theme-Rahmen (::after) aus, der Rahmen
+     kommt als innerer Schatten, damit er beim Hover mitfaerbt. */
+  .b2b-hero.b2b-hero--hintergrund .b2b-hero__knoepfe .button {
+    gap: 1rem;
+    cursor: pointer;
+    transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.18s ease, background-color 0.15s ease, color 0.15s ease;
+  }
+  .b2b-hero.b2b-hero--hintergrund .b2b-hero__knoepfe .button::after { --border-opacity: 0; }
+  .b2b-hero.b2b-hero--hintergrund .b2b-hero__knoepfe .button--primary {
+    box-shadow: 0 0.1rem 0.2rem rgba(0, 0, 0, 0.12);
+  }
+  .b2b-hero.b2b-hero--hintergrund .b2b-hero__knoepfe .button--secondary {
+    background: #fff;
+    color: rgb(46, 46, 45);
+    box-shadow: inset 0 0 0 3px rgb(46, 46, 45);
+  }
+  .b2b-hero__pfeil {
+    display: inline-flex;
+    flex: none;
+    width: 1.1em;
+    height: 1.1em;
+    transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .b2b-hero__pfeil svg { width: 100%; height: 100%; }
+  /* any-hover statt hover:hover/pointer:fine: Windows-Laptops mit
+     Touchscreen melden sonst "kein Hover" und der Knopf bleibt stumm. */
+  @media (any-hover: hover) {
+    .b2b-hero.b2b-hero--hintergrund .b2b-hero__knoepfe .button:hover { transform: translateY(-3px); }
+    .b2b-hero.b2b-hero--hintergrund .b2b-hero__knoepfe .button--primary:hover {
+      background-color: rgb(150, 30, 6);
+      box-shadow: 0 1rem 2rem -0.8rem rgba(150, 30, 6, 0.6);
+    }
+    .b2b-hero.b2b-hero--hintergrund .b2b-hero__knoepfe .button--secondary:hover {
+      background-color: rgb(46, 46, 45);
+      color: #fff;
+      box-shadow: inset 0 0 0 3px rgb(46, 46, 45), 0 1rem 2rem -0.8rem rgba(0, 0, 0, 0.45);
+    }
+    .b2b-hero.b2b-hero--hintergrund .b2b-hero__knoepfe .button:hover .b2b-hero__pfeil { transform: translateX(0.5rem); }
+  }
+  .b2b-hero.b2b-hero--hintergrund .b2b-hero__knoepfe .button:active {
+    transform: translateY(0) scale(0.97);
+    transition-duration: 0.06s;
+  }
+  .b2b-hero.b2b-hero--hintergrund .b2b-hero__knoepfe .button:focus-visible {
+    outline: 3px solid rgb(46, 46, 45);
+    outline-offset: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .b2b-hero.b2b-hero--hintergrund .b2b-hero__knoepfe .button,
+    .b2b-hero__pfeil { transition: none; transform: none !important; }
+  }
+
+  @media screen and (min-width: 750px) and (max-width: 1279px) {
+    .b2b-hero--hintergrund { min-height: 0; }
+    .b2b-hero--hintergrund .b2b-hero__medien { position: relative; inset: auto; aspect-ratio: 16 / 10; }
+    .b2b-hero--hintergrund .b2b-hero__medien::after { content: none; }
+    .b2b-hero--hintergrund .b2b-hero__inhalt { width: auto; padding: 4.8rem 5vw 6.4rem; }
+    .b2b-hero--hintergrund .b2b-hero__titel { font-size: 6.4rem; }
+    .b2b-hero--hintergrund .b2b-hero__knoepfe .button { flex: 0 0 auto; min-width: 26rem; }
+  }
+  /* Ab 1280 px: Bild in voller Hoehe rechts unten, nie beschnitten; seine
+     linke Kante laeuft weich in die Flaechenfarbe aus. */
+  @media screen and (min-width: 1280px) {
+    .b2b-hero--hintergrund { min-height: clamp(44rem, 34vw, 64rem); }
+    .b2b-hero--hintergrund .b2b-hero__medien { aspect-ratio: auto; }
+    .b2b-hero--hintergrund .b2b-hero__medien img {
+      inset: 0 0 0 auto;
+      width: auto;
+      max-width: 100%;
+      object-fit: contain;
+      object-position: 100% 100%;
+      -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 14%);
+      mask-image: linear-gradient(90deg, transparent 0, #000 14%);
+    }
+    .b2b-hero--hintergrund .b2b-hero__medien::after { content: none; }
+    .b2b-hero--hintergrund .b2b-hero__inhalt {
+      width: min(52%, 80rem);
+      padding: 4.8rem 2rem 4.8rem 4vw;
+    }
+    .b2b-hero--hintergrund .b2b-hero__gruss { font-size: 1.8rem; }
+    .b2b-hero--hintergrund .b2b-hero__titel { font-size: clamp(5.2rem, 4.6vw, 9rem); }
+    .b2b-hero--hintergrund .b2b-hero__text { font-size: clamp(1.8rem, 1.3vw, 2.2rem); max-width: 56rem; }
+    .b2b-hero--hintergrund .b2b-hero__knoepfe { margin-top: 3.2rem; gap: 1.6rem; }
+    .b2b-hero--hintergrund .b2b-hero__knoepfe .button { min-width: 0; flex: 0 0 auto; }
+  }
+
+  /* Bildrahmen: traegt Bild und Produktpunkte. Ueberall sonst deckt er die
+     Medienflaeche ab wie bisher das Bild selbst. */
+  .b2b-hero__bild { position: absolute; inset: 0; }
+
+  /* Nebeneinander: Bild nie beschnitten, keine Verlaeufe ueber dem Motiv.
+     Schmal: ganzes Bild oben im Seitenverhaeltnis der Datei. Ab 1280 px:
+     Textspalte links, rechts das Bild mit Abstand zum Fensterrand, senkrecht
+     mittig im hoeheren Banner, runde Ecken statt Ueberblendung. */
+  .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__medien { aspect-ratio: {{ section.settings.bild_breite | default: 1983 }} / {{ section.settings.bild_hoehe | default: 793 }}; }
+  .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__medien img {
+    object-fit: cover;
+    object-position: 50% 50%;
+    /* Unterkante laeuft in die Textflaeche darunter aus - keine Naht. */
+    -webkit-mask-image: linear-gradient(180deg, #000 93%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 93%, transparent 100%);
+  }
+  /* 18.11. spaet: Unterkante laeuft weich in das Hellgrau der Seite aus
+     (rgb 246 = Hintergrund von body und Sortiment-Abschnitt), ueber die volle
+     Breite. Stopps nach einer S-Kurve (3t^2 - 2t^3): der Verlauf beginnt und
+     endet flach, sonst sieht das Auge am Ende eine Linie. Text und
+     Produktpunkte liegen darueber. */
+  .b2b-hero--hintergrund.b2b-hero--neben::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    height: 4.8rem;
+    pointer-events: none;
+    background: linear-gradient(180deg,
+      rgba(246, 246, 246, 0) 0%,
+      rgba(246, 246, 246, 0.06) 15%,
+      rgba(246, 246, 246, 0.22) 30%,
+      rgba(246, 246, 246, 0.43) 45%,
+      rgba(246, 246, 246, 0.65) 60%,
+      rgba(246, 246, 246, 0.84) 75%,
+      rgba(246, 246, 246, 0.96) 88%,
+      rgb(246, 246, 246) 100%);
+  }
+  /* Die Bannerhoehe endet oft auf einem Bruchteil eines Pixels; die letzte
+     Pixelzeile mischt dann Beige ins Grau und zeigt eine feine Naht. Darum
+     sind die untersten 3 px schon im Hintergrund selbst grau. */
+  .b2b-hero--hintergrund.b2b-hero--neben {
+    background-image: linear-gradient(0deg, rgb(246, 246, 246) 0, rgb(246, 246, 246) 3px, transparent 3px);
+  }
+  .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__inhalt { position: relative; z-index: 2; }
+
+  /* Ab 1280 px nahtlos (Vorgabe 18.11.): kein Rahmen, keine Ecken, kein
+     Schatten. Das Bild laeuft oben, unten und rechts buendig bis an den Rand
+     des Banners und liegt links unter der Textspalte - dort ist im Motiv nur
+     Hintergrund. Nur diese linke Kante laeuft weich in die Flaechenfarbe aus,
+     ueber Hintergrund, nicht ueber Produkte. */
+  /* 18.11. abends: Banner hoeher (--hh), Bild rechts verankert und genau so
+     hoch wie der Banner; rechts ragt es um 6 % seiner Breite ueber den Rand
+     (nur Tannenzweig), damit die Produkte Platz fuer den weiter zur Mitte
+     gerueckten Text lassen. Text sitzt etwas oberhalb der Mitte, weil links
+     unten die Sockenspitzen liegen. */
+  @media screen and (min-width: 1280px) {
+    .b2b-hero--hintergrund.b2b-hero--neben {
+      /* 42rem bei 1280 px, waechst bis 36vw (684 px bei 1900), hoechstens 80rem. */
+      --hh: min(36vw, calc(42rem + (100vw - 1280px) * 0.6), 80rem);
+      grid-template-columns: clamp(54rem, 41vw, 80rem) minmax(0, 1fr);
+      align-items: stretch;
+      min-height: var(--hh);
+    }
+    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__medien {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: auto;
+      right: calc(var(--hh) * -0.15);
+      z-index: 0;
+      width: calc(var(--hh) * {{ section.settings.bild_breite | default: 1983 }} / {{ section.settings.bild_hoehe | default: 793 }});
+      margin: 0;
+      aspect-ratio: auto;
+      padding: 0;
+      background: transparent;
+    }
+    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__bild {
+      position: absolute;
+      inset: 0;
+    }
+    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__medien img {
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      object-fit: cover;
+      object-position: 100% 50%;
+      -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 12%);
+      mask-image: linear-gradient(90deg, transparent 0, #000 12%);
+    }
+    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__inhalt {
+      position: relative;
+      z-index: 2;
+      grid-column: 1;
+      grid-row: 1;
+      align-self: center;
+      width: auto;
+      padding: 3.2rem 1.6rem calc(3.2rem + (100vw - 1280px) * 0.09) max(3.2rem, calc((100vw - 1280px) * 0.16 + 3.2rem));
+    }
+    /* Beide Knoepfe nebeneinander, auch bei der schmalsten Textspalte. */
+    /* 18.11. spaet: Schrift und Knoepfe eine Stufe groesser und mit der
+       Fensterbreite wachsend; Titel etwas enger gesetzt, wirkt so geschlossener. */
+    .b2b-hero--hintergrund.b2b-hero--neben::after { height: calc(var(--hh) * 0.26); }
+    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__gruss { font-size: clamp(1.8rem, 1.2vw, 2.2rem); }
+    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__titel { font-size: clamp(5rem, 4vw, 8.4rem); letter-spacing: -0.01em; line-height: 1.05; }
+    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__text { font-size: clamp(1.9rem, 1.4vw, 2.4rem); max-width: 60rem; }
+    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__knoepfe { margin-top: clamp(3.2rem, 2.4vw, 4.4rem); gap: clamp(1.2rem, 1vw, 1.8rem); flex-wrap: nowrap; }
+    .b2b-hero--hintergrund.b2b-hero--neben .b2b-hero__knoepfe .button {
+      min-width: 0;
+      flex: 0 0 auto;
+      min-height: clamp(6.4rem, 4.2vw, 7.8rem);
+      padding-inline: clamp(2.4rem, 1.6vw, 3.2rem);
+      font-size: clamp(1.8rem, 1.35vw, 2.4rem);
+    }
+  }
+
+  /* Produktpunkte (Bloecke "Produktpunkt"): unsichtbare Flaeche ueber dem
+     Produkt. Nur beim Ueberfahren erscheinen ein dicker Punkt und der Name,
+     ein Klick fuehrt zum Produkt. Auf Touch-Geraeten bleibt alles unsichtbar,
+     Tippen auf das Produkt fuehrt direkt hin. */
+  .b2b-hero__punkt {
+    position: absolute;
+    z-index: 2;
+    left: calc(var(--x) * 1%);
+    top: calc(var(--y) * 1%);
+    width: calc(var(--b) * 1%);
+    height: calc(var(--h) * 1%);
+    transform: translate(-50%, -50%);
+    color: rgb(var(--color-foreground));
+    text-decoration: none;
+  }
+  .b2b-hero__punkt-dot {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 2.6rem;
+    height: 2.6rem;
+    margin: -1.3rem 0 0 -1.3rem;
+    border-radius: 50%;
+    background: rgb(199, 42, 9);
+    border: 0.4rem solid #fff;
+    box-shadow: 0 0.3rem 1.2rem rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+  }
+  .b2b-hero__punkt-name {
+    position: absolute;
+    left: 50%;
+    bottom: calc(50% + 2.2rem);
+    transform: translate(-50%, 0.4rem);
+    padding: 0.7rem 1.4rem;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 0 0.4rem 1.6rem rgba(0, 0, 0, 0.18);
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+  }
+  .b2b-hero__punkt--rechts .b2b-hero__punkt-name { left: auto; right: calc(50% - 2rem); transform: translate(0, 0.4rem); }
+  .b2b-hero__punkt--links .b2b-hero__punkt-name { left: calc(50% - 2rem); transform: translate(0, 0.4rem); }
+  .b2b-hero__punkt:hover .b2b-hero__punkt-dot,
+  .b2b-hero__punkt:focus-visible .b2b-hero__punkt-dot { opacity: 1; transform: scale(1); }
+  .b2b-hero__punkt:hover .b2b-hero__punkt-name,
+  .b2b-hero__punkt:focus-visible .b2b-hero__punkt-name { opacity: 1; transform: translate(-50%, 0); }
+  .b2b-hero__punkt--rechts:hover .b2b-hero__punkt-name,
+  .b2b-hero__punkt--rechts:focus-visible .b2b-hero__punkt-name,
+  .b2b-hero__punkt--links:hover .b2b-hero__punkt-name,
+  .b2b-hero__punkt--links:focus-visible .b2b-hero__punkt-name { transform: translate(0, 0); }
+  .b2b-hero__punkt:focus-visible { outline: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .b2b-hero__punkt-dot, .b2b-hero__punkt-name { transition: none; }
+  }
+{%- endstyle -%}
+
+<section class="b2b-hero{% if hintergrund %} b2b-hero--hintergrund{% if neben %} b2b-hero--neben{% endif %}{% elsif hat_video == false %} b2b-hero--bild{% endif %} color-{{ section.settings.color_scheme }}">
+  <div class="b2b-hero__medien">
+   <div class="b2b-hero__bild">
+    {%- if section.settings.video != blank -%}
+      {{
+        section.settings.video
+        | video_tag: autoplay: true, loop: true, muted: true, playsinline: true, controls: false, preload: 'metadata', image_size: '1800x', class: 'b2b-hero__video'
+      }}
+    {%- elsif section.settings.video_url != blank -%}
+      <video
+        class="b2b-hero__video"
+        src="{{ section.settings.video_url | escape }}"
+        {% if poster != blank %}poster="{{ poster | escape }}"{% endif %}
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+      ></video>
+    {%- elsif bild_datei != blank -%}
+      <picture>
+        {%- if bild_datei_klein != blank -%}
+          <source media="(max-width: 749px)" srcset="{{ bild_datei_klein | asset_url }}">
+        {%- endif -%}
+        <img
+          src="{{ bild_datei | asset_url }}"
+          alt=""
+          width="{{ section.settings.bild_breite }}"
+          height="{{ section.settings.bild_hoehe }}"
+          loading="eager"
+          fetchpriority="high"
+        >
+      </picture>
+    {%- elsif section.settings.image != blank -%}
+      {{
+        section.settings.image
+        | image_url: width: 1800
+        | image_tag: loading: 'eager', fetchpriority: 'high', widths: '600,900,1200,1800', sizes: '100vw', alt: ''
+      }}
+    {%- endif -%}
+
+    {%- comment -%}
+      Produktpunkte nur bei "nebeneinander": nur dort ist der Rahmen genau
+      so gross wie das Bild, sodass die Prozentangaben auf dem Motiv sitzen.
+    {%- endcomment -%}
+    {%- if neben and bild_datei != blank -%}
+      {%- for block in section.blocks -%}
+        {%- assign p = block.settings.produkt -%}
+        {%- if p != blank -%}
+          {%- assign p_name = block.settings.name | default: p.title | remove_first: 'Occulto ' -%}
+          {%- assign seite = '' -%}
+          {%- if block.settings.x > 70 -%}{%- assign seite = ' b2b-hero__punkt--rechts' -%}{%- elsif block.settings.x < 25 -%}{%- assign seite = ' b2b-hero__punkt--links' -%}{%- endif -%}
+          <a
+            class="b2b-hero__punkt{{ seite }}"
+            href="{{ p.url }}"
+            style="--x: {{ block.settings.x }}; --y: {{ block.settings.y }}; --b: {{ block.settings.breite }}; --h: {{ block.settings.hoehe }};"
+            {{ block.shopify_attributes }}
+          >
+            <span class="b2b-hero__punkt-dot" aria-hidden="true"></span>
+            <span class="b2b-hero__punkt-name">{{ p_name | escape }}</span>
+          </a>
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+   </div>
+  </div>
+
+  <div class="b2b-hero__inhalt">
+    <p class="b2b-hero__gruss">
+      {%- if customer.first_name != blank -%}
+        Willkommen, {{ customer.first_name | escape }}
+      {%- elsif customer -%}
+        Willkommen zurück
+      {%- else -%}
+        Willkommen
+      {%- endif -%}
+    </p>
+    {%- if section.settings.heading != blank -%}
+      <h1 class="b2b-hero__titel">{{ section.settings.heading | escape }}</h1>
+    {%- endif -%}
+    {%- if section.settings.text != blank -%}
+      <div class="b2b-hero__text">{{ section.settings.text }}</div>
+    {%- endif -%}
+    <div class="b2b-hero__knoepfe">
+      {%- if section.settings.knopf1_text != blank -%}
+        <a class="button button--primary" href="{{ section.settings.knopf1_link | default: '#' }}">
+          {{- section.settings.knopf1_text | escape -}}
+          <span class="b2b-hero__pfeil" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"/></svg></span>
+        </a>
+      {%- endif -%}
+      {%- if section.settings.knopf2_text != blank -%}
+        <a class="button button--secondary" href="{{ section.settings.knopf2_link | default: '#' }}">
+          {{- section.settings.knopf2_text | escape -}}
+          <span class="b2b-hero__pfeil" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M11 5l5 5-5 5"/></svg></span>
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    /* Reduzierte Bewegung: Video anhalten, es bleibt das Standbild. */
+    if (!window.matchMedia || !window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    document.querySelectorAll('#shopify-section-{{ section.id }} video').forEach(function (v) {
+      v.removeAttribute('autoplay');
+      v.pause();
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "B2B Hero mit Video",
+  "settings": [
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Video",
+      "info": "In der Verwaltung hochgeladen. Hat Vorrang vor der Video-Adresse."
+    },
+    {
+      "type": "text",
+      "id": "video_url",
+      "label": "Video-Adresse",
+      "info": "MP4-Adresse, falls kein Video hochgeladen ist (derzeit das Video aus dem Hauptshop)."
+    },
+    {
+      "type": "text",
+      "id": "poster_url",
+      "label": "Standbild-Adresse zur Video-Adresse",
+      "info": "Wird gezeigt, bis das Video lädt, und bei reduzierter Bewegung."
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Bild ohne Video"
+    },
+    {
+      "type": "select",
+      "id": "aufteilung",
+      "label": "Aufteilung ohne Video",
+      "options": [
+        { "value": "geteilt", "label": "Text links, Bild rechts" },
+        { "value": "hintergrund", "label": "Bild als Hintergrund, Text links darauf" },
+        { "value": "nebeneinander", "label": "Text links, ganzes Bild rechts" }
+      ],
+      "default": "geteilt"
+    },
+    {
+      "type": "text",
+      "id": "bild_datei",
+      "label": "Bilddatei im Theme",
+      "info": "Dateiname aus assets/, z. B. b2b-hero-winter.webp. Hat Vorrang vor „Bild ohne Video“."
+    },
+    {
+      "type": "text",
+      "id": "bild_datei_klein",
+      "label": "Bilddatei im Theme fürs Handy",
+      "info": "Kleinere Fassung, z. B. b2b-hero-winter-1000.webp."
+    },
+    {
+      "type": "number",
+      "id": "bild_breite",
+      "label": "Bilddatei: Breite in px",
+      "default": 1983
+    },
+    {
+      "type": "number",
+      "id": "bild_hoehe",
+      "label": "Bilddatei: Höhe in px",
+      "default": 793
+    },
+    {
+      "type": "color",
+      "id": "flaeche",
+      "label": "Flächenfarbe bei „Bild als Hintergrund“",
+      "info": "Farbe der freien Fläche im Bild, damit der Übergang nicht auffällt.",
+      "default": "#F2E4D8"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Überschrift",
+      "default": "Occulto Händlerportal"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text"
+    },
+    {
+      "type": "text",
+      "id": "knopf1_text",
+      "label": "Knopf 1 (rot): Beschriftung",
+      "default": "Saisonware bestellen"
+    },
+    {
+      "type": "url",
+      "id": "knopf1_link",
+      "label": "Knopf 1: Ziel"
+    },
+    {
+      "type": "text",
+      "id": "knopf2_text",
+      "label": "Knopf 2 (Rahmen): Beschriftung",
+      "default": "Jetzt bestellen"
+    },
+    {
+      "type": "url",
+      "id": "knopf2_link",
+      "label": "Knopf 2: Ziel"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "punkt",
+      "name": "Produktpunkt",
+      "limit": 16,
+      "settings": [
+        { "type": "paragraph", "content": "Nur bei Aufteilung „Text links, ganzes Bild rechts“. Lage in Prozent des Bildes: 0 = links/oben, 100 = rechts/unten." },
+        { "type": "product", "id": "produkt", "label": "Produkt" },
+        { "type": "text", "id": "name", "label": "Angezeigter Name", "info": "Leer: Produktname ohne „Occulto“." },
+        { "type": "range", "id": "x", "label": "Punkt waagrecht (%)", "min": 0, "max": 100, "step": 1, "default": 50 },
+        { "type": "range", "id": "y", "label": "Punkt senkrecht (%)", "min": 0, "max": 100, "step": 1, "default": 50 },
+        { "type": "range", "id": "breite", "label": "Klickfläche Breite (%)", "min": 4, "max": 40, "step": 1, "default": 10 },
+        { "type": "range", "id": "hoehe", "label": "Klickfläche Höhe (%)", "min": 4, "max": 80, "step": 1, "default": 36 }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "B2B Hero mit Video"
+    }
+  ]
+}
+{% endschema %}

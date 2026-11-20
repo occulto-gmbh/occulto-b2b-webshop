@@ -4,12 +4,22 @@
     "target": "cart.validations.generate.run",
     "input": {
       "cart": {
-        "cost": {
-          "subtotalAmount": {
-            "amount": "100.00",
-            "currencyCode": "EUR"
+        "buyerIdentity": {
+          "customer": {
+            "isDealer": true
           }
-        }
+        },
+        "lines": [
+          {
+            "quantity": 99,
+            "merchandise": {
+              "__typename": "ProductVariant",
+              "product": {
+                "isSingleItem": false
+              }
+            }
+          }
+        ]
       },
       "buyerJourney": {
         "step": "CHECKOUT_INTERACTION"
@@ -21,7 +31,7 @@
           "validationAdd": {
             "errors": [
               {
-                "message": "Der Mindestbestellwert von 500.00 € netto wurde noch nicht erreicht. Es fehlen noch 400.00 €.",
+                "message": "Mindestmenge 100 Packs pro Bestellung. Bei abweichenden Liefermengen schreib uns an b2b@occulto.de.",
                 "target": "$.cart"
               }
             ]

@@ -20,28 +20,43 @@
   Ab welcher Fensterbreite die Menuezeile passt - gerechnet, nicht geraten.
   Siehe scratchpad/p18-navbar-mitte.js fuer die Eichung der Faktoren.
 
-  Der Faktor je Zeichen haengt an der Schrift. Geeicht war er auf League
-  Spartan (7.7). Die Schrift ist basic-sans, gemessen
-  8.14 px je Zeichen bei 15px fett. Nachgerechnet bei 1500px:
-  Rand 40 + Logo 208 + 20 + Menue 813 + 20 + Symbole 306 + Rand 40 +
-  Scrollleiste 15 = 1462px Bedarf; die Formel ergibt damit 1469. Wer die
-  Schrift wieder wechselt, muss hier nachmessen, sonst wird das Menue knapp
-  oberhalb des Umbruchs wieder abgeschnitten.
+  Der Faktor je Zeichen haengt an der Schrift: basic-sans, gemessen
+  8.14 px je Zeichen bei 15px fett. Seit 17.11. stehen die Menuepunkte wie
+  im Hauptshop in 14px fett mit 0.03em Sperrung, dazu 20px Abstand je
+  Eintrag (kein Pfeil mehr). Gerechnet waeren das 8.02 px je Zeichen,
+  gemessen am 17.11. bei 1280px: 5 Eintraege, 48 Zeichen, 441px breit =
+  7.1 px je Zeichen. Angesetzt 7.3 - plus die 6 % Reserve unten.
+  Wer Schrift oder Groesse wechselt, muss hier nachmessen, sonst wird das
+  Menue knapp oberhalb des Umbruchs wieder abgeschnitten.
 {%- endcomment -%}
 {%- liquid
   assign b2b_menue = 0
+  assign b2b_link_oben = true
   for link in section.settings.menu.links
     assign zeichen = link.title | size
-    assign eintrag = zeichen | times: 8.14 | plus: 16
-    if link.links != blank
-      assign eintrag = eintrag | plus: 10
-    endif
+    assign eintrag = zeichen | times: 7.3 | plus: 20
     assign b2b_menue = b2b_menue | plus: eintrag
+    if link.title == section.settings.b2b_link_nach and link.links != blank
+      assign b2b_link_oben = false
+    endif
   endfor
 
-  if section.settings.b2b_link_label != blank
+  comment
+    Der Zusatzpunkt zaehlt nur, wenn er in der Zeile steht - nicht, wenn er
+    im Untermenue von „Produkte“ sitzt.
+  endcomment
+  if section.settings.b2b_link_label != blank and b2b_link_oben
     assign zeichen = section.settings.b2b_link_label | size
-    assign eintrag = zeichen | times: 8.14 | plus: 16
+    assign eintrag = zeichen | times: 7.3 | plus: 20
+    assign b2b_menue = b2b_menue | plus: eintrag
+  endif
+
+  comment
+    Menuepunkt "Vororder" (17.11.) steht immer in der Zeile.
+  endcomment
+  if section.settings.b2b_vororder_label != blank
+    assign zeichen = section.settings.b2b_vororder_label | size
+    assign eintrag = zeichen | times: 7.3 | plus: 20
     assign b2b_menue = b2b_menue | plus: eintrag
   endif
 
@@ -54,6 +69,19 @@
     bei 1366 ueber, obwohl die Rechnung sie fuer passend hielt.
   endcomment
   assign b2b_noetig = b2b_menue | plus: 559
+
+  comment
+    Mittiges Logo (wie im Hauptshop): Das Menue hat nur die linke Haelfte
+    neben dem Logo. Beide Seitenspalten sind gleich breit, also braucht die
+    Zeile die breitere Seite zweimal plus Raender 96, Bildmarke 70, zwei
+    Abstaende je 20 und Scrollleiste 15. Rechts stehen seit 17.11. nur die
+    drei Symbole (132px). Umbrechen bleibt verboten, darunter kommt die
+    Schublade.
+  endcomment
+  if section.settings.logo_position == 'middle-center'
+    assign b2b_seite = b2b_menue | at_least: 132
+    assign b2b_noetig = b2b_seite | times: 2 | plus: 221
+  endif
   assign b2b_schwelle = b2b_noetig | times: 100 | divided_by: 94 | round
   assign b2b_schwelle_minus = b2b_schwelle | minus: 1
   if b2b_schwelle_minus < 990
@@ -80,17 +108,11 @@
       }
     }
 
-    /* Zwischen 990 und 1200 bleibt es beim Schubladenmenue.
-
-       Das Theme schaltet bei 990 auf die Zeile um. Mit acht Eintraegen
-       passt die dort aber nicht mehr neben Logo und Symbolen - gemessen bei
-       1024 brauchte das Menue 623 Bildpunkte, verfuegbar waren 439.
-       Umbrechen lassen war die Vorgabe ausdruecklich nicht, also bleibt
-       in diesem Band der Hamburger.
-
-       Die Grenze steht nicht fest, sie wird oben aus den Beschriftungen
-       gerechnet - aktuell {{ b2b_schwelle }} Bildpunkte. Faellt ein
-       Menuepunkt weg, ruecht sie von selbst nach unten. */
+    /* Zwischen 990 und der gerechneten Schwelle bleibt es beim
+       Schubladenmenue. Umbrechen lassen war die Vorgabe ausdruecklich nicht.
+       Die Grenze wird oben aus den Beschriftungen gerechnet - aktuell
+       {{ b2b_schwelle }} Bildpunkte. Faellt ein Menuepunkt weg, rueckt sie
+       von selbst nach unten. */
     @media screen and (min-width: 990px) and (max-width: {{ b2b_schwelle_minus }}px) {
       header-drawer {
         display: block;
@@ -206,7 +228,7 @@
   @media screen and (min-width: 990px) {
     .section-header .header.page-width {
       max-width: 100%;
-      padding-inline: min(4rem, 3vw);
+      padding-inline: min(4.8rem, 3vw);
     }
 
     /* Logo links, Menue mittig, Symbole rechts - wie im Hauptshop.
@@ -237,10 +259,20 @@
        zusammenruecken, statt Logo und Warenkorb zu verdraengen. */
     /* Die Kopfzeilenlinks heissen header__menu-item. list-menu__item--link
        gibt es nur in der Fusszeile. */
+    /* Wie im Hauptshop (gemessen 17.11.): 14px fett, 0.03em Sperrung,
+       20px zwischen den Eintraegen, kein Pfeil an Untermenues. */
     .header__inline-menu .header__menu-item {
       white-space: nowrap;
-      padding-inline: 0.8rem;
-      font-size: 1.5rem;
+      padding-inline: 1rem;
+      font-size: 1.4rem;
+      letter-spacing: 0.03em;
+    }
+    .header__inline-menu .list-menu--inline > li:first-child > * .header__menu-item,
+    .header__inline-menu .list-menu--inline > li:first-child > .header__menu-item {
+      padding-left: 0;
+    }
+    .header__inline-menu summary.header__menu-item .icon-caret {
+      display: none;
     }
 
     /* Flex-Elemente schrumpfen von sich aus. Ohne diese Zeile quetscht die
@@ -250,7 +282,7 @@
     }
 
     .header__inline-menu summary.list-menu__item {
-      padding-right: 1.8rem;
+      padding-right: 1rem;
     }
   }
 
@@ -260,6 +292,55 @@
   .header__menu-item span,
   .menu-drawer__menu-item {
     font-weight: 700;
+  }
+  @media screen and (min-width: 990px) {
+    .header--middle-center .header__inline-menu { min-width: 0; }
+    .header--middle-center .list-menu--inline { justify-content: flex-start; flex-wrap: nowrap; }
+  }
+  .b2b-konto { position: relative; }
+  .b2b-konto__inhalt {
+    position: absolute; right: 0; top: 100%; z-index: 10;
+    width: min(32rem, calc(100vw - 3rem)); padding: 20px;
+    background: #fff; color: #2e2e2d; border: 1px solid #e2e2e1;
+    box-shadow: 0 8px 24px rgb(0 0 0 / .12);
+  }
+  .b2b-konto__inhalt .button { display: flex; margin-top: 10px; }
+  @media screen and (max-width: 749px) {
+    .header { padding-inline: 12px; grid-template-columns: 44px minmax(0, 1fr) auto; }
+    .header__icons .header__search { display: none; }
+    .header__heading-logo-wrapper { max-width: 70px; }
+  }
+
+  /* ---------------------------------------------------------------
+     Kopf wie im Hauptshop (Vorgabe 17.11., gemessen auf occulto.de bei
+     1885px): runde Bildmarke mittig, Menue links, rechts Konto, Suche,
+     Warenkorb. „Personalisierte Socken“ steht nur im Untermenue von
+     „Produkte“, „Vororder“ als Menuepunkt (beides Nico, 17.11.).
+     --------------------------------------------------------------- */
+  .b2b-bildmarke {
+    display: block;
+    width: auto;
+    height: 5.8rem;
+    max-width: none;
+  }
+  .header__heading-logo-wrapper:has(.b2b-bildmarke) { width: auto; }
+  /* Konto-Symbol: Die Klasse .link unterstreicht Text - beim angemeldeten
+     Konto stand deshalb ein Strich unter dem Initial (17.11.). */
+  .header__icon--account,
+  .header__icon--account:hover { text-decoration: none; }
+  /* Kopfhoehe wie im Hauptshop (70px): Bildmarke 58 plus 2 x 6. */
+  .header__heading-link:has(.b2b-bildmarke) { padding: 0; }
+  @media screen and (min-width: 990px) {
+    .header:has(.b2b-bildmarke) { padding-block: 6px; }
+  }
+  @media screen and (min-width: 990px) {
+    .header__icons .header__icon--account,
+    .header__icons .b2b-konto { order: 2; }
+    .header__icons .header__search { order: 3; }
+    .header__icons .header__icon--cart { order: 4; }
+  }
+  @media screen and (max-width: 749px) {
+    .b2b-bildmarke { height: 4.4rem; }
   }
 {%- endstyle -%}
 
@@ -310,8 +391,47 @@
         assign render_search_left = true
       endif
 
+      comment
+        Abverkauf (17.11.): Angemeldete Haendler sehen statt "Haendler werden"
+        den Menuepunkt "Abverkauf -10 %" - aber nur, wenn die Sammlung aus
+        snippets/b2b-abverkauf Produkte hat. Sonst faellt "Haendler werden"
+        fuer sie einfach weg. Gaeste sehen weiter "Haendler werden".
+      endcomment
+      assign b2b_haendler = false
+      if customer and customer.tags contains 'dealer-approved'
+        assign b2b_haendler = true
+      endif
+      capture b2b_abv_handle
+        render 'b2b-abverkauf', teil: 'sammlung'
+      endcapture
+      capture b2b_abv_prozent
+        render 'b2b-abverkauf', teil: 'prozent'
+      endcapture
+      assign b2b_abv_handle = b2b_abv_handle | strip
+      assign b2b_abv_prozent = b2b_abv_prozent | strip
+      assign b2b_abv = collections[b2b_abv_handle]
+      assign b2b_abv_zeigen = false
+      if b2b_haendler and b2b_abv.products_count > 0
+        assign b2b_abv_zeigen = true
+      endif
+      comment
+        18.11.: Steht die Sale-Sammlung schon als eigener Punkt im Menue
+        (in der Verwaltung angelegt), keinen zweiten einsetzen - sonst sehen
+        Haendler "Sale -10 %" und "Sale" nebeneinander. "Haendler werden"
+        faellt fuer sie trotzdem weg.
+      endcomment
+      if b2b_abv_zeigen and section.settings.menu != blank
+        for b2b_l in section.settings.menu.links
+          if b2b_l.url == b2b_abv.url
+            assign b2b_abv_zeigen = false
+            break
+          endif
+        endfor
+      endif
+      assign b2b_abv_label = 'Sale −' | append: b2b_abv_prozent | append: ' %'
+
       if section.settings.menu != blank
-        render 'header-drawer', show_country_selector: country_selector, show_language_selector: language_selector, show_social_links: social_links
+        render 'header-drawer', show_country_selector: country_selector, show_language_selector: language_selector, show_social_links: social_links, b2b_haendler: b2b_haendler, b2b_abv_zeigen: b2b_abv_zeigen, b2b_abv_url: b2b_abv.url, b2b_abv_label: b2b_abv_label
       endif
 
       if render_search_left
@@ -355,9 +475,9 @@
     {%- liquid
       if section.settings.menu != blank
         if section.settings.menu_type_desktop == 'dropdown'
-          render 'header-dropdown-menu'
+          render 'header-dropdown-menu', b2b_haendler: b2b_haendler, b2b_abv_zeigen: b2b_abv_zeigen, b2b_abv_url: b2b_abv.url, b2b_abv_label: b2b_abv_label
         elsif section.settings.menu_type_desktop != 'drawer'
-          render 'header-mega-menu'
+          render 'header-mega-menu', b2b_haendler: b2b_haendler, b2b_abv_zeigen: b2b_abv_zeigen, b2b_abv_url: b2b_abv.url, b2b_abv_label: b2b_abv_label
         endif
       endif
     %}
@@ -368,28 +488,22 @@
         <h1 class="header__heading">
       {%- endif -%}
       <a href="{{ routes.root_url }}" class="header__heading-link link link--text focus-inset">
-        {%- if settings.logo != blank -%}
-          <div class="header__heading-logo-wrapper">
-            {%- assign logo_alt = settings.logo.alt | default: shop.name | escape -%}
-            {%- assign logo_height = settings.logo_width | divided_by: settings.logo.aspect_ratio -%}
-            {% capture sizes %}(min-width: 750px) {{ settings.logo_width }}px, 50vw{% endcapture %}
-            {% capture widths %}{{ settings.logo_width }}, {{ settings.logo_width | times: 1.5 | round }}, {{ settings.logo_width | times: 2 }}{% endcapture %}
-            {{
-              settings.logo
-              | image_url: width: 600
-              | image_tag:
-                class: 'header__heading-logo',
-                widths: widths,
-                height: logo_height,
-                width: settings.logo_width,
-                alt: logo_alt,
-                sizes: sizes,
-                preload: true
-            }}
-          </div>
-        {%- else -%}
-          <span class="h2">{{ shop.name }}</span>
-        {%- endif -%}
+        {%- comment -%}
+          Runde Bildmarke mit Schriftzug wie im Hauptshop (Vorgabe 17.11.).
+          Quelle: oc_bildmarke_schwarz.png aus der Designsheet-Vorlage,
+          auf 260px verkleinert. Das Logo aus den Theme-Einstellungen
+          (Schriftzug) gilt weiter fuer die anderen Logo-Positionen.
+        {%- endcomment -%}
+        <div class="header__heading-logo-wrapper">
+          <img
+            src="{{ 'b2b-logo-bildmarke.png' | asset_url }}"
+            class="header__heading-logo b2b-bildmarke"
+            width="260"
+            height="221"
+            alt="{{ shop.name | escape }}"
+            fetchpriority="high"
+          >
+        </div>
       </a>
       {%- if request.page_type == 'index' -%}
         </h1>
@@ -423,6 +537,7 @@
       {% render 'header-search', input_id: 'Search-In-Modal' %}
 
       {%- if shop.customer_accounts_enabled -%}
+        {%- if customer and customer.tags contains 'dealer-approved' -%}
         <shopify-account
           menu="{{ settings.customer_account_menu | default: 'customer-account-main-menu' }}"
           class="header__icon header__icon--account link focus-inset"
@@ -430,6 +545,25 @@
           <span slot="signed-out-avatar" class="svg-wrapper">{{ 'icon-account.svg' | inline_asset_content }}</span>
           <span slot="signed-out-avatar" class="visually-hidden">{{ 'customer.log_in' | t }}</span>
         </shopify-account>
+        {%- else -%}
+          <details class="b2b-konto">
+            <summary class="header__icon header__icon--account link focus-inset" aria-label="Händlerkonto">
+              <span class="svg-wrapper">{{ 'icon-account.svg' | inline_asset_content }}</span>
+            </summary>
+            <div class="b2b-konto__inhalt">
+              {%- if customer -%}
+                <p>Dein Konto ist noch nicht als Händlerkonto freigeschaltet.</p>
+              {%- else -%}
+                <p>Melde dich mit deinem Händlerkonto an oder bewirb dich als Handelspartner.</p>
+                <a class="button button--primary" href="{{ routes.account_login_url }}">Anmelden</a>
+              {%- endif -%}
+              <a class="button button--secondary" href="/pages/haendler-werden">Händler werden</a>
+              {%- if customer -%}
+                <a class="button button--tertiary" href="{{ routes.account_logout_url }}">Abmelden</a>
+              {%- endif -%}
+            </div>
+          </details>
+        {%- endif -%}
       {%- endif -%}
 
       {%- for block in section.blocks -%}
@@ -439,25 +573,132 @@
         {%- endcase -%}
       {%- endfor -%}
 
+      {%- comment -%}
+        Gaeste und nicht freigeschaltete Konten sehen den Warenkorb nicht
+        (main-cart-items) - also auch keine Anzahl am Symbol. Sonst stuende
+        nach dem Abmelden die Zahl des alten Korbs am Symbol.
+      {%- endcomment -%}
+      {%- liquid
+        assign b2b_korb_leer = true
+        if cart != empty and customer and customer.tags contains 'dealer-approved'
+          assign b2b_korb_leer = false
+        endif
+      -%}
       <a href="{{ routes.cart_url }}" class="header__icon header__icon--cart link focus-inset" id="cart-icon-bubble">
-        {% if cart == empty %}
+        {% if b2b_korb_leer %}
           <span class="svg-wrapper">{{ 'icon-cart-empty.svg' | inline_asset_content }}</span>
         {% else %}
           <span class="svg-wrapper">{{ 'icon-cart.svg' | inline_asset_content }}</span>
         {% endif %}
         <span class="visually-hidden">{{ 'templates.cart.cart' | t }}</span>
-        {%- if cart != empty -%}
+        {%- unless b2b_korb_leer -%}
           <div class="cart-count-bubble">
             {%- if cart.item_count < 100 -%}
               <span aria-hidden="true">{{ cart.item_count }}</span>
             {%- endif -%}
             <span class="visually-hidden">{{ 'sections.header.cart_count' | t: count: cart.item_count }}</span>
           </div>
-        {%- endif -%}
+        {%- endunless -%}
       </a>
     </div>
   </header>
 </{{ header_tag }}>
+
+{%- comment -%}
+  Abverkauf-Popup (17.11.): fuer angemeldete Haendler einmal je Sitzung
+  (sessionStorage), nur wenn die Abverkaufs-Sammlung Produkte hat und man
+  nicht schon auf ihr steht. Natives <dialog>: Escape und Fokus erledigt der
+  Browser.
+{%- endcomment -%}
+{%- if b2b_abv_zeigen and request.path != b2b_abv.url -%}
+  <dialog class="b2b-abv-popup" id="B2bAbverkaufPopup" aria-labelledby="B2bAbverkaufTitel">
+    <form method="dialog" class="b2b-abv-popup__zu-form">
+      <button class="b2b-abv-popup__zu" aria-label="Schließen">&times;</button>
+    </form>
+    <p class="b2b-abv-popup__abzeichen">−{{ b2b_abv_prozent }}&nbsp;%</p>
+    <h2 class="b2b-abv-popup__titel" id="B2bAbverkaufTitel">Sale: −{{ b2b_abv_prozent }}&nbsp;% auf ausgewählte Artikel</h2>
+    <p class="b2b-abv-popup__text">Solange der Vorrat reicht. Der Rabatt wird im Warenkorb abgezogen.</p>
+    <ul class="b2b-abv-popup__bilder" role="list">
+      {%- for p in b2b_abv.products limit: 3 -%}
+        {%- if p.featured_media -%}
+          <li>{{ p.featured_media | image_url: width: 240 | image_tag: loading: 'eager', alt: p.title, width: 120, height: 120 }}</li>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+    <div class="b2b-abv-popup__knoepfe">
+      <a class="button button--primary" href="{{ b2b_abv.url }}">Zum Sale</a>
+      <form method="dialog"><button class="button button--secondary">Später</button></form>
+    </div>
+  </dialog>
+  <style>
+    .b2b-abv-popup {
+      width: min(46rem, calc(100vw - 3.2rem));
+      padding: 3.2rem 2.8rem 2.8rem;
+      border: 0;
+      border-top: 4px solid rgb(199 42 9);
+      border-radius: 10px;
+      background: #fff;
+      color: #2e2e2d;
+      box-shadow: 0 20px 60px rgb(0 0 0 / 0.25);
+      text-align: center;
+    }
+    .b2b-abv-popup::backdrop { background: rgb(46 46 45 / 0.45); }
+    .b2b-abv-popup__zu-form { position: absolute; top: 0.8rem; right: 0.8rem; margin: 0; }
+    .b2b-abv-popup__zu {
+      width: 4.4rem; height: 4.4rem; border: 0; background: none;
+      font-size: 2.8rem; line-height: 1; color: inherit; cursor: pointer;
+    }
+    .b2b-abv-popup__abzeichen {
+      display: inline-block; margin: 0 0 1.2rem; padding: 0.4rem 1.2rem;
+      border-radius: 999px; background: rgb(199 42 9); color: #fff;
+      font-size: 1.6rem; font-weight: 700;
+    }
+    .b2b-abv-popup__titel { margin: 0; font-size: 2.4rem; line-height: 1.2; }
+    .b2b-abv-popup__text { margin: 1rem 0 0; font-size: 1.5rem; opacity: 0.8; }
+    .b2b-abv-popup__bilder {
+      display: flex; justify-content: center; gap: 0.8rem;
+      margin: 2rem 0 0; padding: 0; list-style: none;
+    }
+    .b2b-abv-popup__bilder img {
+      display: block; width: 9.6rem; height: 9.6rem; object-fit: cover;
+      border-radius: 6px; background: #f6f6f6;
+    }
+    .b2b-abv-popup__knoepfe { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin-top: 2.4rem; }
+    .b2b-abv-popup__knoepfe form { margin: 0; }
+    .b2b-abv-popup__knoepfe .button { min-width: 16rem; font-weight: 700; }
+  </style>
+  <script>
+    (function () {
+      var d = document.getElementById('B2bAbverkaufPopup');
+      if (!d || typeof d.showModal !== 'function') return;
+      try {
+        if (sessionStorage.getItem('b2b-abverkauf-gesehen')) return;
+        sessionStorage.setItem('b2b-abverkauf-gesehen', '1');
+      } catch (e) {}
+      function zeigen() { if (!d.open) d.showModal(); }
+      /* Kurz warten, damit die Seite zuerst steht. Steht noch Shopifys
+         Cookie-Abfrage offen, erst nach deren Antwort - sonst laegen zwei
+         Fenster uebereinander. */
+      setTimeout(function () {
+        var datenschutz = window.Shopify && window.Shopify.customerPrivacy;
+        var bannerOffen = false;
+        try { bannerOffen = !!(datenschutz && datenschutz.shouldShowBanner && datenschutz.shouldShowBanner()); } catch (e) {}
+        if (bannerOffen) {
+          document.addEventListener('visitorConsentCollected', function () { setTimeout(zeigen, 400); }, { once: true });
+        } else {
+          zeigen();
+        }
+      }, 800);
+      /* Klick auf den abgedunkelten Rand schliesst - nicht ein Klick in den
+         Innenabstand, der ebenfalls das dialog-Element trifft. */
+      d.addEventListener('click', function (e) {
+        if (e.target !== d) return;
+        var r = d.getBoundingClientRect();
+        if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) d.close();
+      });
+    })();
+  </script>
+{%- endif -%}
 
 {%- if settings.cart_type == 'notification' -%}
   {%- render 'cart-notification',
@@ -708,9 +949,30 @@
     {
       "type": "text",
       "id": "b2b_link_nach",
-      "label": "Zusätzlicher Menüpunkt: einfügen nach",
-      "info": "Titel des Menüpunkts, hinter dem er stehen soll. Passt keiner, hängt er hinten an.",
-      "default": "Downloads"
+      "label": "Zusätzlicher Menüpunkt: einfügen bei",
+      "info": "Titel des Menüpunkts. Hat er ein Untermenü, steht der Zusatzpunkt darin als letzter Eintrag, sonst dahinter. Passt keiner, hängt er hinten an.",
+      "default": "Produkte"
+    },
+    {
+      "type": "text",
+      "id": "b2b_vororder_label",
+      "label": "Menüpunkt Vororder: Beschriftung",
+      "info": "Leer lassen, um ihn auszublenden.",
+      "default": "Vororder"
+    },
+    {
+      "type": "text",
+      "id": "b2b_vororder_url",
+      "label": "Menüpunkt Vororder: Ziel",
+      "info": "Pfad wie /pages/vororder.",
+      "default": "/pages/vororder"
+    },
+    {
+      "type": "text",
+      "id": "b2b_vororder_nach",
+      "label": "Menüpunkt Vororder: steht hinter",
+      "info": "Titel des Menüpunkts, hinter dem er steht.",
+      "default": "Produkte"
     },
     {
       "type": "select",

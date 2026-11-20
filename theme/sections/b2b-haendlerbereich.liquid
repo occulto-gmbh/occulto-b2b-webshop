@@ -10,9 +10,10 @@
   Verlinkt wird er im Verwaltungsmenü "customer-account-main-menu" – das
   Menü steht im Konto-Symbol im Kopf und links auf Shopifys Kontoseite.
 
-  Die Zahlen (300 / 500 Packs, 5 %, 10 %) stehen auch in b2b-korb-art und
-  b2b-preis - aendern sie sich, hier mitziehen. Packs ohne Einzelstücke zählt
-  snippets/b2b-packs.
+  Versandschwelle und Mindestmenge kommen aus snippets/b2b-packs und
+  b2b-mindestwert (seit 17.11., vorher stand hier fest 300). 500 Packs, 5 %
+  und 10 % stehen auch in b2b-korb-art und b2b-preis - aendern sie sich, hier
+  mitziehen. Packs ohne Einzelstücke zählt snippets/b2b-packs.
 {%- endcomment -%}
 
 {{ 'b2b-haendlerbereich.css' | asset_url | stylesheet_tag }}
@@ -23,7 +24,14 @@
     assign haendler = true
   endif
 
-  assign versandfrei_ab = 300
+  capture versand_text
+    render 'b2b-packs', teil: 'versandfrei-ab'
+  endcapture
+  assign versandfrei_ab = versand_text | plus: 0
+  capture mindest_text
+    render 'b2b-mindestwert'
+  endcapture
+  assign mindestmenge = mindest_text | plus: 0
   assign rabatt_ab = 500
 
   capture packs_text
@@ -77,7 +85,10 @@
         {%- if packs > 0 -%}
           <p class="b2b-hb__zahl">{{ packs }} <span>{% if packs == 1 %}Pack{% else %}Packs{% endif %} im Warenkorb</span></p>
           <p class="b2b-hb__stand">
-            {%- if packs < versandfrei_ab -%}
+            {%- if packs < mindestmenge -%}
+              {%- assign rest = mindestmenge | minus: packs -%}
+              Noch {{ rest }} {% if rest == 1 %}Pack{% else %}Packs{% endif %} bis zur Mindestmenge
+            {%- elsif packs < versandfrei_ab -%}
               {%- assign rest = versandfrei_ab | minus: packs -%}
               Noch {{ rest }} {% if rest == 1 %}Pack{% else %}Packs{% endif %} bis versandkostenfrei
             {%- elsif packs < rabatt_ab -%}
@@ -90,7 +101,7 @@
           <a class="button button--primary" href="{{ routes.cart_url }}">Zum Warenkorb</a>
         {%- else -%}
           <p class="b2b-hb__zahl">&minus;5&nbsp;% <span>ab {{ rabatt_ab }} Packs im Warenkorb</span></p>
-          <p class="b2b-hb__stand">Ab Lager, in 5er-Packs. Versandkostenfrei ab {{ versandfrei_ab }} Packs.</p>
+          <p class="b2b-hb__stand">Ab Lager, in 5er-Packs. Mindestmenge {{ mindestmenge }} Packs, versandkostenfrei ab {{ versandfrei_ab }} Packs.</p>
           <a class="button button--primary" href="{{ routes.all_products_collection_url }}">Sortiment ansehen</a>
         {%- endif -%}
       </section>
@@ -100,7 +111,7 @@
         <h2 class="b2b-hb__kachelname">Vororder</h2>
         <p class="b2b-hb__zahl">&minus;10&nbsp;% <span>auf jede Vororder</span></p>
         <p class="b2b-hb__stand">
-          Annahmeschluss {% render 'b2b-vororder-termin' %} · Auslieferung ab {% render 'b2b-vororder-termin', teil: 'lieferung' %}
+          Order Deadline {% render 'b2b-vororder-termin' %} · Auslieferung ab {% render 'b2b-vororder-termin', teil: 'lieferung' %}
         </p>
         <a class="button button--secondary" href="/pages/vororder">Vororder abgeben</a>
       </section>

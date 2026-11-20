@@ -6,10 +6,34 @@
       "cart": {
         "lines": [
           {
-            "quantity": 250
+            "quantity": 250,
+            "merchandise": {
+              "__typename": "ProductVariant",
+              "id": "gid://shopify/ProductVariant/1",
+              "product": {
+                "isSingleItem": false
+              }
+            },
+            "cost": {
+              "subtotalAmount": {
+                "amount": "762.50"
+              }
+            }
           },
           {
-            "quantity": 245
+            "quantity": 249,
+            "merchandise": {
+              "__typename": "ProductVariant",
+              "id": "gid://shopify/ProductVariant/2",
+              "product": {
+                "isSingleItem": false
+              }
+            },
+            "cost": {
+              "subtotalAmount": {
+                "amount": "759.45"
+              }
+            }
           }
         ]
       }

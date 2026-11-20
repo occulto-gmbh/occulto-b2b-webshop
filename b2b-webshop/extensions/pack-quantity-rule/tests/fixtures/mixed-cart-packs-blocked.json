@@ -1,0 +1,53 @@
+{
+  "payload": {
+    "export": "cart-validations-generate-run",
+    "target": "cart.validations.generate.run",
+    "input": {
+      "cart": {
+        "lines": [
+          {
+            "quantity": 1,
+            "merchandise": {
+              "__typename": "ProductVariant",
+              "title": "Standard",
+              "availableQuantityMetafield": null,
+              "product": {
+                "title": "Occulto Ständer",
+                "isSingleItem": true
+              }
+            }
+          },
+          {
+            "quantity": 7,
+            "merchandise": {
+              "__typename": "ProductVariant",
+              "title": "39-42",
+              "availableQuantityMetafield": null,
+              "product": {
+                "title": "Occulto Tennissocke SUMMER",
+                "isSingleItem": false
+              }
+            }
+          }
+        ]
+      },
+      "buyerJourney": {
+        "step": "CHECKOUT_INTERACTION"
+      }
+    },
+    "output": {
+      "operations": [
+        {
+          "validationAdd": {
+            "errors": [
+              {
+                "message": "Occulto Tennissocke SUMMER – 39-42: Bitte in 5er-Schritten bestellen (5, 10, 15, ...). Aktuelle Menge: 7.",
+                "target": "$.cart"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

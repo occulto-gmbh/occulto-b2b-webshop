@@ -1,15 +1,27 @@
-{% if cart == empty %}
+{%- comment -%}
+  B2B: Korb nur fuer freigeschaltete Haendler - nach dem Abmelden keine Zahl
+  am Symbol (wie b2b_korb_leer in header.liquid).
+{%- endcomment -%}
+{%- liquid
+  assign b2b_korb_leer = true
+  if customer and customer.tags contains 'dealer-approved'
+    if cart != empty
+      assign b2b_korb_leer = false
+    endif
+  endif
+-%}
+{% if b2b_korb_leer %}
   <span class="svg-wrapper">{{ 'icon-cart-empty.svg' | inline_asset_content }}</span>
 {% else %}
   <span class="svg-wrapper">{{ 'icon-cart.svg' | inline_asset_content }}</span>
 {% endif %}
 
 <span class="visually-hidden">{{ 'templates.cart.cart' | t }}</span>
-{%- if cart != empty -%}
+{%- unless b2b_korb_leer -%}
   <div class="cart-count-bubble">
     {%- if cart.item_count < 100 -%}
       <span aria-hidden="true">{{ cart.item_count }}</span>
     {%- endif -%}
     <span class="visually-hidden">{{ 'sections.header.cart_count' | t: count: cart.item_count }}</span>
   </div>
-{%- endif -%}
+{%- endunless -%}
