@@ -13,6 +13,11 @@
               "product": {
                 "isSingleItem": false
               }
+            },
+            "cost": {
+              "subtotalAmount": {
+                "amount": "1525.00"
+              }
             }
           },
           {
@@ -23,6 +28,11 @@
               "product": {
                 "isSingleItem": true
               }
+            },
+            "cost": {
+              "subtotalAmount": {
+                "amount": "100.00"
+              }
             }
           },
           {
@@ -32,6 +42,11 @@
               "id": "gid://shopify/ProductVariant/3",
               "product": {
                 "isSingleItem": true
+              }
+            },
+            "cost": {
+              "subtotalAmount": {
+                "amount": "200.00"
               }
             }
           }
@@ -53,8 +68,8 @@
             }
           ],
           "value": {
-            "percentage": {
-              "value": "5"
+            "fixedAmount": {
+              "amount": "76.25"
             }
           }
         }

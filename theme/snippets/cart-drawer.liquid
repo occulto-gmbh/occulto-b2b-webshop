@@ -165,7 +165,9 @@
                             -%}
                           </div>
 
-                          {%- if item.original_price != item.final_price -%}
+                          {%- if customer and customer.tags contains 'dealer-approved' -%}
+                            {% render 'b2b-preis', preis: item.original_price, produkt: item.product, klasse: 'product-option' %}
+                          {%- elsif item.original_price != item.final_price -%}
                             <div class="cart-item__discounted-prices">
                               <span class="visually-hidden">
                                 {{ 'products.product.price.regular_price' | t }}
@@ -249,7 +251,9 @@
                         <td class="cart-item__totals right" role="cell" headers="CartDrawer-ColumnTotal">
                           {%- render 'loading-spinner' -%}
                           <div class="cart-item__price-wrapper">
-                            {%- if item.original_line_price != item.final_line_price -%}
+                            {%- if customer and customer.tags contains 'dealer-approved' -%}
+                              {% render 'b2b-preis', preis: item.original_line_price, produkt: item.product, korbzeile: item, klasse: 'price--end', ohne_hinweis: true %}
+                            {%- elsif item.original_line_price != item.final_line_price -%}
                               <div class="cart-item__discounted-prices">
                                 <span class="visually-hidden">
                                   {{ 'products.product.price.regular_price' | t }}

@@ -20,6 +20,9 @@
   deshalb der Listenpreis und daneben, was noch fehlt.
 
   @param preis     Listenpreis in Cent
+  @param produkt   Produkt fuer Sale-Sammlung und Rabatt-Ausnahmen
+  @param korbzeile  Warenkorbzeile fuer die Zeilensumme mit Restcent-Verteilung
+  @param korbvariante  Varianten-ID fuer die Summe in der Schnellbestellliste
   @param vororder  true -> Vororder-Satz, sonst Nachbestellung
   @param je_pack   true -> "/Pack" anhaengen
   @param klasse    zusaetzliche CSS-Klassen
@@ -39,6 +42,10 @@
   assign b2b_satz_nachbestellung = 5
   assign b2b_satz_vororder = 10
   assign b2b_ab_packs = 500
+  assign preis_produkt = produkt
+  if preis_produkt.tags contains 'einzelstueck' or preis_produkt.tags contains 'filialversand-zuschlag'
+    assign einzelstueck = true
+  endif
 
   comment
     Der Vororder-Satz kommt ausschliesslich von der Maske, die ihn
@@ -71,13 +78,90 @@
     assign ohne_hinweis = true
   endif
 
+  assign mengen_satz = 0
+  if greift
+    assign mengen_satz = satz
+  endif
+  assign sale_satz = 0
+  unless vororder
+    if customer and customer.tags contains 'dealer-approved'
+      capture abv_handle
+        render 'b2b-abverkauf', teil: 'sammlung'
+      endcapture
+      assign abv_handle = abv_handle | strip
+      assign sammlungen = preis_produkt.collections | map: 'handle'
+      if sammlungen contains abv_handle
+        capture abv_prozent
+          render 'b2b-abverkauf', teil: 'prozent'
+        endcapture
+        assign sale_satz = abv_prozent | plus: 0
+        assign satz = mengen_satz | plus: sale_satz
+        assign greift = true
+      endif
+    endif
+  endunless
+
   comment
-    Ganzzahlrechnung auf Cent. divided_by schneidet ab, der Abzug faellt also
+    Mengenrabatt mit Ganzzahlrechnung auf Cent. divided_by schneidet ab, der Abzug faellt also
     hoechstens einen Cent kleiner aus als der rechnerische - nie groesser.
-    Damit steht im Shop nie ein niedrigerer Preis, als der Checkout berechnet.
+    Bei Korbsummen wird der Restcent ueber die laufende Originalsumme verteilt.
   endcomment
-  assign abzug = preis | times: satz | divided_by: 100
+  comment
+    Sale und Menge beziehen sich beide auf den Originalpreis, nie auf den
+    schon reduzierten Preis: Sale -10 % plus Menge -5 % ergibt -15 %.
+    Den Mengenabzug wie die Function abrunden. Im Korb kommt der Sale-Abzug
+    aus final_line_price; ausserhalb wird der angezeigte Sale-Preis berechnet.
+  endcomment
+  assign mengen_abzug = preis | times: mengen_satz | divided_by: 100
+  assign sale_abzug = preis | times: sale_satz | divided_by: 100
+  if korbzeile != blank or korbvariante != blank
+    comment
+      Fuer echte Korbsummen den bereits angewendeten Produktrabatt nehmen.
+      Den Mengenrabatt aus laufenden Originalsummen verteilen: dadurch
+      ergeben auch mehrere Zeilen zusammen genau floor(Originalsumme * 5 / 100).
+    endcomment
+    assign summe_davor = 0
+    assign mengen_abzug = 0
+    assign sale_abzug = 0
+    for position in cart.items
+      assign mengen_ausnahme = false
+      if position.product.tags contains 'einzelstueck' or position.product.tags contains 'filialversand-zuschlag'
+        assign mengen_ausnahme = true
+      endif
+      assign summe_danach = summe_davor
+      unless mengen_ausnahme
+        assign summe_danach = summe_davor | plus: position.original_line_price
+      endunless
+      if position.key == korbzeile.key or position.variant_id == korbvariante
+        assign produkt_abzug = position.original_line_price | minus: position.final_line_price
+        assign sale_abzug = sale_abzug | plus: produkt_abzug
+        assign rabatt_davor = summe_davor | times: mengen_satz | divided_by: 100
+        assign rabatt_danach = summe_danach | times: mengen_satz | divided_by: 100
+        assign zeilen_abzug = rabatt_danach | minus: rabatt_davor
+        assign mengen_abzug = mengen_abzug | plus: zeilen_abzug
+      endif
+      assign summe_davor = summe_danach
+    endfor
+  endif
+  assign abzug = mengen_abzug | plus: sale_abzug
+  comment
+    Korbzeile mit einem Produktrabatt, der nicht aus der Sale-Sammlung kommt
+    (z. B. spaeter der Haendlerpreis als Rabatt): trotzdem durchgestrichen
+    zeigen, sonst stuende dort der Originalpreis statt des Kassenpreises.
+  endcomment
+  if abzug > 0
+    assign greift = true
+  endif
   assign neuer_preis = preis | minus: abzug
+  if sale_satz > 0 and korbzeile == blank and korbvariante == blank
+    comment
+      Einzelpreise mit dem gesamten Satz anzeigen, bei Sale und Menge also
+      Originalpreis * 85 / 100. Die Korbsumme wird oben separat centgenau berechnet.
+    endcomment
+    assign rest_satz = 100 | minus: satz
+    assign neuer_preis = preis | times: rest_satz | divided_by: 100
+    assign abzug = preis | minus: neuer_preis
+  endif
 
   assign alt_text = preis | money
   assign neu_text = neuer_preis | money

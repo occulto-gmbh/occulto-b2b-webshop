@@ -13,6 +13,11 @@
               "product": {
                 "isSingleItem": true
               }
+            },
+            "cost": {
+              "subtotalAmount": {
+                "amount": "50000.00"
+              }
             }
           }
         ]

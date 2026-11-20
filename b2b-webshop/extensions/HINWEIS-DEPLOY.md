@@ -7,7 +7,7 @@ Stand 16.11.2026. Für die neuen Konditionen angepasst, **nicht ausgerollt**.
 | Function | Regel |
 |---|---|
 | `minimum-order-value` | Mindestens 100 Packs pro Bestellung an der Kasse; Einzelstücke zählen nicht mit. Bestellungen nur mit Einzelstücken sind erlaubt. |
-| `order-value-discount` | 5 % ab 500 Packs im Warenkorb; Einzelstücke zählen nicht mit und werden nicht rabattiert. |
+| `order-value-discount` | Ab 500 Packs: fester Bestellrabatt von 5 % der Original-Zeilensummen (`cost.subtotalAmount`, vor Produktrabatten), auf ganze Cent abgerundet. Sale −10 % + Menge −5 % ergeben insgesamt −15 % vom Originalpreis: 1.525,00 € − 152,50 € − 76,25 € = 1.296,25 €. Einzelstücke und Filialversand-Zuschläge zählen nicht mit und werden nicht rabattiert. |
 | `pack-quantity-rule` | Je Größe in 5er-Schritten, außer beim exakten Restbestand; Einzelstücke in 1er-Schritten. |
 
 Einzelstücke sind Produkte mit dem Tag `einzelstueck` (z. B. Ständer).

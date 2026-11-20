@@ -13,6 +13,11 @@
               "product": {
                 "isSingleItem": false
               }
+            },
+            "cost": {
+              "subtotalAmount": {
+                "amount": "1540.25"
+              }
             }
           }
         ]
@@ -31,8 +36,8 @@
             }
           ],
           "value": {
-            "percentage": {
-              "value": "5"
+            "fixedAmount": {
+              "amount": "77.01"
             }
           }
         }

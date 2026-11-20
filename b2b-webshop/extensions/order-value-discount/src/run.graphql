@@ -3,6 +3,11 @@ query RunInput {
     # Einzelstücke zählen nicht zur Packmenge und werden nicht rabattiert.
     lines {
       quantity
+      cost {
+        subtotalAmount {
+          amount
+        }
+      }
       merchandise {
         __typename
         ... on ProductVariant {

@@ -13,6 +13,11 @@
               "product": {
                 "isSingleItem": false
               }
+            },
+            "cost": {
+              "subtotalAmount": {
+                "amount": "762.50"
+              }
             }
           },
           {
@@ -22,6 +27,11 @@
               "id": "gid://shopify/ProductVariant/2",
               "product": {
                 "isSingleItem": false
+              }
+            },
+            "cost": {
+              "subtotalAmount": {
+                "amount": "759.45"
               }
             }
           }

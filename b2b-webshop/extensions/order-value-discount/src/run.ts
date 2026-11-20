@@ -26,14 +26,26 @@ const KEIN_RABATT: FunctionRunResult = {
  * Die 5 % stehen auch in theme/snippets/b2b-preis.liquid, das den Preis schon
  * in den Übersichten durchgestrichen anzeigt. Weichen sie voneinander ab,
  * steht im Shop ein anderer Preis als an der Kasse.
+ * Der feste Betrag sind 5 % der Originalsumme vor Produktrabatten:
+ * Sale -10 % plus Menge -5 % sollen zusammen -15 % vom Originalpreis sein.
+ * Ein prozentualer Bestellrabatt auf die reduzierte Summe ergäbe nur -14,5 %.
+ * CartLineCost.subtotalAmount liefert laut schema.graphql die Zeilensumme
+ * vor Rabatten; compareAtAmountPerQuantity ist dagegen die UVP.
+ *
+ * ACHTUNG (Stand 20.11.2026): Das stimmt nur, solange am Produkt der
+ * Haendlerpreis steht. Wird extensions/dealer-price aktiv (UVP am Produkt,
+ * Haendlerpreis als Produktrabatt), ist subtotalAmount die UVP-Summe und die
+ * 5 % fielen zu hoch aus. Dann muss die Basis hier der Haendlerpreis sein
+ * (Metafeld occulto.dealer_price), nicht subtotalAmount.
  */
 const SATZ = 5;
 const AB_PACKS = 500;
 
 export function run(input: RunInput): FunctionRunResult {
   let packs = 0;
+  let originalsummeCent = 0;
   const excludedVariantIds: string[] = [];
-  for (const { quantity, merchandise } of input.cart.lines) {
+  for (const { quantity, merchandise, cost } of input.cart.lines) {
     if (merchandise.__typename !== "ProductVariant") {
       continue;
     }
@@ -41,6 +53,9 @@ export function run(input: RunInput): FunctionRunResult {
       excludedVariantIds.push(merchandise.id);
     } else {
       packs += quantity;
+      // Dezimalbetrag ohne Gleitkomma-Multiplikation in ganze Cent zerlegen.
+      const [euro, cent = ""] = String(cost.subtotalAmount.amount).split(".");
+      originalsummeCent += Number(euro) * 100 + Number(cent.padEnd(2, "0").slice(0, 2));
     }
   }
 
@@ -48,13 +63,16 @@ export function run(input: RunInput): FunctionRunResult {
     return KEIN_RABATT;
   }
 
+  // Erst die Originalsumme bilden, dann den Rabatt auf ganze Cent abrunden.
+  const rabattCent = Math.floor(originalsummeCent * SATZ / 100);
+
   return {
     discountApplicationStrategy: DiscountApplicationStrategy.First,
     discounts: [
       {
         message: `${SATZ}% Händlerrabatt`,
         targets: [{ orderSubtotal: { excludedVariantIds: [...new Set(excludedVariantIds)] } }],
-        value: { percentage: { value: SATZ.toString() } },
+        value: { fixedAmount: { amount: (rabattCent / 100).toFixed(2) } },
       },
     ],
   };

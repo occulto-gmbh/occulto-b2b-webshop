@@ -77,13 +77,14 @@
     endif
 
     comment
-      Die 5 % gelten nur fuer Packs - Einzelstuecke bleiben aussen vor.
+      Die 5 % gelten auf die Originalsumme der Packs vor Sale-Rabatten.
+      Einzelstuecke und Filialversand bleiben wie in der Function aussen vor.
     endcomment
-    assign rabattfaehig = cart.total_price
+    assign rabattfaehig = 0
     for item in cart.items
-      if item.product.tags contains 'einzelstueck'
-        assign rabattfaehig = rabattfaehig | minus: item.final_line_price
-      endif
+      unless item.product.tags contains 'einzelstueck' or item.product.tags contains 'filialversand-zuschlag'
+        assign rabattfaehig = rabattfaehig | plus: item.original_line_price
+      endunless
     endfor
     assign ersparnis = rabattfaehig | times: satz | divided_by: 100
     assign fehlende_packs = ab_packs | minus: packs
